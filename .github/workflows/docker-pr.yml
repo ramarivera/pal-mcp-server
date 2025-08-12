@@ -106,21 +106,6 @@ jobs:
             
             💡 Add `docker-build` label to manually trigger builds
 
-      - name: Add Docker build comment (fork PRs)
-        if: github.event.pull_request.head.repo.full_name != github.repository
-        uses: marocchino/sticky-pull-request-comment@d2ad0de260ae8b0235ce059e63f2949ba9e05943 # v2.9.3
-        with:
-          header: docker-build
-          message: |
-            ## 🐳 Docker Build Complete (Build Only)
-            
-            **PR**: #${{ github.event.number }} | **Commit**: `${{ github.sha }}`
-            
-            ✅ **Docker build successful** - Multi-platform image built and tested
-            
-            **Note**: Fork PRs only build (no push) for security. Images will be available once PR is merged.
-            
-            💡 Add `docker-build` label to manually trigger builds
 
       - name: Update job summary (internal PRs)
         if: github.event.pull_request.head.repo.full_name == github.repository
