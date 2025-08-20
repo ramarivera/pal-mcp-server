@@ -3,16 +3,20 @@
 [zen_web.webm](https://github.com/user-attachments/assets/851e3911-7f06-47c0-a4ab-a2601236697c)
 
 <div align="center">
-  <b>🤖 <a href="https://www.anthropic.com/claude-code">Claude</a> OR <a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a> + [Gemini / OpenAI / Grok / OpenRouter / DIAL / Ollama / Any Model] = Your Ultimate AI Development Team</b>
+  <b>🤖 <a href="https://www.anthropic.com/claude-code">Claude Code</a> OR <a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a> + [Gemini / OpenAI / Grok / OpenRouter / DIAL / Ollama / Anthropic / Any Model] = Your Ultimate AI Development Team</b>
 </div>
 
 <br/>
 
-**AI orchestration for Claude Code** - A Model Context Protocol server that gives Claude access to multiple AI models for enhanced code analysis, problem-solving, and collaborative development.
+**AI orchestration for Claude Code** - A Model Context Protocol server that gives your CLI of choice (e.g. [Claude Code](https://www.anthropic.com/claude-code)) access to multiple AI models for enhanced code analysis, problem-solving, and collaborative development.
 
 **True AI collaboration with conversation continuity** - Claude stays in control but gets perspectives from the best AI for each subtask. Context carries forward seamlessly across tools and models, enabling complex workflows like: code reviews with multiple models → automated planning → implementation → pre-commit validation.
 
-> **You're in control.** Claude orchestrates the AI team, but you decide the workflow. Craft powerful prompts that bring in Gemini, O3, Flash, or local models exactly when needed.
+> **You're in control.** Claude orchestrates the AI team, but you decide the workflow. Craft powerful prompts that bring in Gemini Pro, GPT 5, Flash, or local offline models exactly when needed.
+
+#### Recommended AI Stack
+
+Use Claude Code with **Opus 4.1** (for all the agentic work) + **Gemini 2.5 Pro** (for deeper thinking, reviews, helping debug, perform pre-commit analysis, general discussion) and achieve outstanding results.
 
 ## Quick Start (5 minutes)
 
