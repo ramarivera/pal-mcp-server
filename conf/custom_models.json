@@ -239,7 +239,7 @@
       "supports_images": true,
       "max_image_size_mb": 20.0,
       "supports_temperature": true,
-      "temperature_constraint": "fixed",
+      "temperature_constraint": "range",
       "description": "GPT-5 (400K context, 128K output) - Advanced model with reasoning support"
     },
     {
