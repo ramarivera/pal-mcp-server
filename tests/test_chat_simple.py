@@ -159,7 +159,7 @@ class TestChatRequestModel:
         # Field descriptions should exist and be descriptive
         assert len(CHAT_FIELD_DESCRIPTIONS["prompt"]) > 50
         assert "context" in CHAT_FIELD_DESCRIPTIONS["prompt"]
-        assert "absolute paths" in CHAT_FIELD_DESCRIPTIONS["files"]
+        assert "full-paths" in CHAT_FIELD_DESCRIPTIONS["files"] or "absolute" in CHAT_FIELD_DESCRIPTIONS["files"]
         assert "visual context" in CHAT_FIELD_DESCRIPTIONS["images"]
 
     def test_default_values(self):

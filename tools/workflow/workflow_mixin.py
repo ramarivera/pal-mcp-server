@@ -23,6 +23,7 @@ Features:
 import json
 import logging
 import os
+import re
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
@@ -1518,16 +1519,32 @@ class BaseWorkflowMixin(ABC):
             )
 
             if model_response.content:
+                content = model_response.content.strip()
+
+                # Try to extract JSON from markdown code blocks if present
+                if "```json" in content or "```" in content:
+                    json_match = re.search(r"```(?:json)?\s*(.*?)\s*```", content, re.DOTALL)
+                    if json_match:
+                        content = json_match.group(1).strip()
+
                 try:
                     # Try to parse as JSON
-                    analysis_result = json.loads(model_response.content.strip())
+                    analysis_result = json.loads(content)
                     return analysis_result
-                except json.JSONDecodeError:
-                    # Return as text if not valid JSON
+                except json.JSONDecodeError as e:
+                    # Log the parse error with more details but don't fail
+                    logger.info(
+                        f"[{self.get_name()}] Expert analysis returned non-JSON response (this is OK for smaller models). "
+                        f"Parse error: {str(e)}. Response length: {len(model_response.content)} chars."
+                    )
+                    logger.debug(f"First 500 chars of response: {model_response.content[:500]!r}")
+
+                    # Still return the analysis as plain text - this is valid
                     return {
                         "status": "analysis_complete",
                         "raw_analysis": model_response.content,
-                        "parse_error": "Response was not valid JSON",
+                        "format": "text",  # Indicate it's plain text, not an error
+                        "note": "Analysis provided in plain text format",
                     }
             else:
                 return {"error": "No response from model", "status": "empty_response"}

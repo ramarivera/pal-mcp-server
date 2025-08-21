@@ -14,9 +14,67 @@
 
 > **You're in control.** Claude orchestrates the AI team, but you decide the workflow. Craft powerful prompts that bring in Gemini Pro, GPT 5, Flash, or local offline models exactly when needed.
 
+<details>
+<summary><b>Reasons to Use Zen MCP</b></summary>
+
+1. **Multi-Model Orchestration** - Claude coordinates with Gemini Pro, O3, GPT-5, and 50+ other models to get the best analysis for each task
+
+2. **Context Revival Magic** - Even after Claude's context resets, continue conversations seamlessly by having other models "remind" Claude of the discussion
+
+3. **Guided Workflows** - Enforces systematic investigation phases that prevent rushed analysis and ensure thorough code examination
+
+4. **Extended Context Windows** - Break Claude's limits by delegating to Gemini (1M tokens) or O3 (200K tokens) for massive codebases
+
+5. **True Conversation Continuity** - Full context flows across tools and models - Gemini remembers what O3 said 10 steps ago
+
+6. **Model-Specific Strengths** - Extended thinking with Gemini Pro, blazing speed with Flash, strong reasoning with O3, privacy with local Ollama
+
+7. **Professional Code Reviews** - Multi-pass analysis with severity levels, actionable feedback, and consensus from multiple AI experts
+
+8. **Smart Debugging Assistant** - Systematic root cause analysis with hypothesis tracking and confidence levels
+
+9. **Automatic Model Selection** - Claude intelligently picks the right model for each subtask (or you can specify)
+
+10. **Vision Capabilities** - Analyze screenshots, diagrams, and visual content with vision-enabled models
+
+11. **Local Model Support** - Run Llama, Mistral, or other models locally for complete privacy and zero API costs
+
+12. **Bypass MCP Token Limits** - Automatically works around MCP's 25K limit for large prompts and responses
+
+**The Killer Feature:** When Claude's context resets, just ask to "continue with O3" - the other model's response magically revives Claude's understanding without re-ingesting documents!
+
+#### Example: Multi-Model Code Review Workflow
+
+1. `Perform a codereview using gemini pro and o3 and use planner to generate a detailed plan, implement the fixes and do a final precommit check by continuing from the previous codereview`
+2. This triggers a [`codereview`](docs/tools/codereview.md) workflow where Claude walks the code, looking for all kinds of issues
+3. After multiple passes, collects relevant code and makes note of issues along the way
+4. Maintains a `confidence` level between `exploring`, `low`, `medium`, `high` and `certain` to track how confidently it's been able to find and identify issues
+5. Generates a detailed list of critical -> low issues
+6. Shares the relevant files, findings, etc with **Gemini Pro** to perform a deep dive for a second [`codereview`](docs/tools/codereview.md)
+7. Comes back with a response and next does the same with o3, adding to the prompt if a new discovery comes to light
+8. When done, Claude takes in all the feedback and combines a single list of all critical -> low issues, including good patterns in your code. The final list includes new findings or revisions in case Claude misunderstood or missed something crucial and one of the other models pointed this out
+9. It then uses the [`planner`](docs/tools/planner.md) workflow to break the work down into simpler steps if a major refactor is required
+10. Claude then performs the actual work of fixing highlighted issues
+11. When done, Claude returns to Gemini Pro for a [`precommit`](docs/tools/precommit.md) review
+
+All within a single conversation thread! Gemini Pro in step 11 _knows_ what was recommended by O3 in step 7! Taking that context
+and review into consideration to aid with its final pre-commit review.
+
+**Think of it as Claude Code _for_ Claude Code.** This MCP isn't magic. It's just **super-glue**.
+
+> **Remember:** Claude stays in full control — but **YOU** call the shots.
+> Zen is designed to have Claude engage other models only when needed — and to follow through with meaningful back-and-forth.
+> **You're** the one who crafts the powerful prompt that makes Claude bring in Gemini, Flash, O3 — or fly solo.
+> You're the guide. The prompter. The puppeteer.
+> #### You are the AI - **Actually Intelligent**.
+
 #### Recommended AI Stack
 
-Use Claude Code with **Opus 4.1** (for all the agentic work) + **Gemini 2.5 Pro** (for deeper thinking, reviews, helping debug, perform pre-commit analysis, general discussion) and achieve outstanding results.
+For best results, use Claude Code with:
+- **Opus 4.1** - All agentic work and orchestration
+- **Gemini 2.5 Pro** - Deep thinking, code reviews, debugging, pre-commit analysis
+
+</details>
 
 ## Quick Start (5 minutes)
 
@@ -132,20 +190,6 @@ cd zen-mcp-server
 → Structured planning → Multiple expert opinions → Consensus building → Implementation roadmap
 
 👉 **[Advanced Usage Guide](docs/advanced-usage.md)** for complex workflows, model configuration, and power-user features
-
-## Why Zen MCP?
-
-**Problem:** Claude is brilliant but sometimes needs:
-- Multiple AI perspectives for complex decisions
-- Systematic workflows to prevent rushed analysis
-- Extended context beyond its limits
-- Access to specialized models (reasoning, speed, local)
-
-**Solution:** Zen orchestrates AI models as Claude's development team:
-- **Claude stays in control** - You give instructions to Claude
-- **Models provide expertise** - Each AI contributes their strengths
-- **Context flows seamlessly** - Full conversation history across tools
-- **You decide the workflow** - Simple requests or complex orchestration
 
 ## Quick Links
 

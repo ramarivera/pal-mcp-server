@@ -339,7 +339,8 @@ class PrecommitTool(WorkflowTool):
         # Check for continuation - fast track mode
         if request:
             continuation_id = self.get_request_continuation_id(request)
-            if continuation_id and hasattr(request, "precommit_type") and request.precommit_type == "external":
+            precommit_type = self.get_precommit_type(request)
+            if continuation_id and precommit_type == "external":
                 if step_number == 1:
                     return [
                         "Execute git status to see all changes",
@@ -352,7 +353,7 @@ class PrecommitTool(WorkflowTool):
 
         # Extract counts for normal flow
         findings_count = len(findings.split("\n")) if findings else 0
-        issues_count = len(self.consolidated_findings.issues_found) if hasattr(self, "consolidated_findings") else 0
+        issues_count = self.get_consolidated_issues_count()
 
         if step_number == 1:
             # Initial pre-commit investigation tasks
@@ -586,8 +587,18 @@ class PrecommitTool(WorkflowTool):
         return request.findings
 
     def get_precommit_type(self, request) -> str:
-        """Precommit tools use precommit_type field."""
-        return request.precommit_type or "external"
+        """Get precommit type from request. Hook method for clean inheritance."""
+        try:
+            return request.precommit_type or "external"
+        except AttributeError:
+            return "external"  # Default to external validation
+
+    def get_consolidated_issues_count(self) -> int:
+        """Get count of issues from consolidated findings. Hook method for clean access."""
+        try:
+            return len(self.consolidated_findings.issues_found)
+        except AttributeError:
+            return 0
 
     def get_completion_message(self) -> str:
         """Precommit-specific completion message."""
