@@ -33,25 +33,20 @@ COMMON_FIELD_DESCRIPTIONS = {
         "max (100% of model max). Higher modes enable deeper reasoning at the cost of speed."
     ),
     "use_websearch": (
-        "Enable web search for documentation, best practices, and current information. "
-        "When enabled, the model can request Claude to perform web searches and share results back "
-        "during conversations. Particularly useful for: brainstorming sessions, architectural design "
-        "discussions, exploring industry best practices, working with specific frameworks/technologies, "
-        "researching solutions to complex problems, or when current documentation and community insights "
-        "would enhance the analysis."
+        "Enable web search for documentation and current information. Model can request Claude to perform "
+        "searches during conversation. Useful for: architecture discussions, best practices, framework docs, "
+        "solution research, or when current information would enhance analysis."
     ),
     "continuation_id": (
-        "Thread continuation ID for multi-turn conversations. When provided, the complete conversation "
-        "history is automatically embedded as context. Your response should build upon this history "
-        "without repeating previous analysis or instructions. Focus on providing only new insights, "
-        "additional findings, or answers to follow-up questions. Can be used across different tools."
+        "Thread continuation ID for multi-turn conversations. Automatically reuse the last continuation_id "
+        "when this appears to be a follow-up or related discussion (unless user explicitly provides a different ID). "
+        "When provided, the tool embeds complete conversation history as context. Your response should build upon this history "
+        "without repeating previous analysis. Focus on providing only new insights. Works across different tools."
     ),
     "images": (
-        "Optional image(s) for visual context. Accepts absolute file paths or "
-        "base64 data URLs. Only provide when user explicitly mentions images. "
-        "When including images, please describe what you believe each image contains "
-        "to aid with contextual understanding. Useful for UI discussions, diagrams, "
-        "visual problems, error screens, architecture mockups, and visual analysis tasks."
+        "Optional images for visual context. MUST be absolute file paths or base64 data. "
+        "Only use when user mentions images. Describe what each image contains. "
+        "Useful for: UI, diagrams, error screens, mockups, visual analysis."
     ),
     "files": ("Optional files for context (must be FULL absolute paths to real files / folders - DO NOT SHORTEN)"),
 }
@@ -61,10 +56,10 @@ WORKFLOW_FIELD_DESCRIPTIONS = {
     "step": "Current work step content and findings from your overall work",
     "step_number": "Current step number in the work sequence (starts at 1)",
     "total_steps": "Estimated total steps needed to complete the work",
-    "next_step_required": "Whether another work step is needed after this one",
+    "next_step_required": "Whether another work step is needed after this one. When false, aim to reduce total_steps to match step_number to avoid mismatch.",
     "findings": "Important findings, evidence and insights discovered in this step of the work",
     "files_checked": "List of files examined during this work step",
-    "relevant_files": "Files identified as relevant to the issue/goal",
+    "relevant_files": "Files identified as relevant to the issue/goal (must be FULL absolute paths to real files / folders - DO NOT SHORTEN)",
     "relevant_context": "Methods/functions identified as involved in the issue",
     "issues_found": "Issues identified with severity levels during work",
     "confidence": (
