@@ -2,6 +2,26 @@
 
 <!-- version list -->
 
+## v5.9.0 (2025-08-21)
+
+### Documentation
+
+- Update instructions for precommit
+  ([`90821b5`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/90821b51ff653475d9fb1bc70b57951d963e8841))
+
+### Features
+
+- Refactored and improved codereview in line with precommit. Reviews are now either external
+  (default) or internal. Takes away anxiety and loss of tokens when Claude incorrectly decides to be
+  'confident' about its own changes and bungle things up.
+  ([`80d21e5`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/80d21e57c0246762c0a306ede5b93d6aeb2315d8))
+
+### Refactoring
+
+- Minor prompt tweaks
+  ([`d30c212`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/d30c212029c05b767d99b5391c1dd4cee78ef336))
+
+
 ## v5.8.6 (2025-08-20)
 
 ### Bug Fixes
