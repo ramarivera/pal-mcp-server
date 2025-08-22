@@ -130,8 +130,7 @@ class GeminiModelProvider(ModelProvider):
             # Check if custom base URL is provided
             if self._base_url:
                 # Use HttpOptions to set custom endpoint
-                from google.genai.types import HttpOptions
-                http_options = HttpOptions(baseUrl=self._base_url)
+                http_options = types.HttpOptions(baseUrl=self._base_url)
                 logger.debug(f"Initializing Gemini client with custom endpoint: {self._base_url}")
                 self._client = genai.Client(api_key=self.api_key, http_options=http_options)
             else:
