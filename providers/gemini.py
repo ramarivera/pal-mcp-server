@@ -121,7 +121,7 @@ class GeminiModelProvider(ModelProvider):
         super().__init__(api_key, **kwargs)
         self._client = None
         self._token_counters = {}  # Cache for token counting
-        self._base_url = kwargs.get('base_url', None)  # Optional custom endpoint
+        self._base_url = kwargs.get("base_url", None)  # Optional custom endpoint
 
     @property
     def client(self):
