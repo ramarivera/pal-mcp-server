@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v5.10.0 (2025-08-22)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`1254205`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/12542054a214022d3f515e53367f5bf3a77fb289))
+
+### Features
+
+- Refactored and tweaked model descriptions / schema to use fewer tokens at launch (average
+  reduction per field description: 60-80%) without sacrificing tool effectiveness
+  ([`4b202f5`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/4b202f5d1d24cea1394adab26a976188f847bd09))
+
+
 ## v5.9.0 (2025-08-21)
 
 ### Documentation
