@@ -210,15 +210,16 @@ class CustomProvider(OpenAICompatibleProvider):
 
         # Check for specific model patterns that don't support temperature
         for pattern in _TEMP_UNSUPPORTED_PATTERNS:
-            if (
-                pattern == model_lower
-                or model_lower.startswith(f"{pattern}-")
-                or model_lower.startswith(f"openai/{pattern}")
-                or model_lower.startswith(f"deepseek/{pattern}")
-                or model_lower.endswith(f"-{pattern}")
-                or f"/{pattern}" in model_lower
-                or f"-{pattern}-" in model_lower
-            ):
+            conditions = (
+                pattern == model_lower,
+                model_lower.startswith(f"{pattern}-"),
+                model_lower.startswith(f"openai/{pattern}"),
+                model_lower.startswith(f"deepseek/{pattern}"),
+                model_lower.endswith(f"-{pattern}"),
+                f"/{pattern}" in model_lower,
+                f"-{pattern}-" in model_lower,
+            )
+            if any(conditions):
                 return False, f"detected non-temperature-supporting model pattern '{pattern}'"
 
         # Check for specific keywords that indicate non-supporting variants

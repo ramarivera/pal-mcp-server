@@ -548,11 +548,7 @@ of the evidence, even when it strongly points in one direction.""",
             system_prompt = self._get_stance_enhanced_prompt(stance, stance_prompt)
 
             # Get model context for temperature validation
-            model_context = ModelContext(
-                model_name=model_name,
-                provider=provider.get_provider_type(),
-                provider_instance=provider,
-            )
+            model_context = ModelContext(model_name=model_name)
 
             # Validate temperature against model constraints (respects supports_temperature)
             validated_temperature, temp_warnings = self.validate_and_correct_temperature(
