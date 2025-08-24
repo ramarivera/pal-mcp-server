@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v5.10.2 (2025-08-24)
+
+### Bug Fixes
+
+- Another fix for https://github.com/BeehiveInnovations/zen-mcp-server/issues/251
+  ([`a07036e`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/a07036e6805042895109c00f921c58a09caaa319))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`9da5c37`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/9da5c37809cbde19d0c7ffed273ae93ca883a016))
+
+
 ## v5.10.0 (2025-08-22)
 
 ### Chores
