@@ -2,6 +2,23 @@
 
 <!-- version list -->
 
+## v5.10.3 (2025-08-24)
+
+### Bug Fixes
+
+- Address test failures and PR feedback
+  ([`6bd9d67`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/6bd9d6709acfb584ab30a0a4d6891cabdb6d3ccf))
+
+- Resolve temperature handling issues for O3/custom models
+  ([#245](https://github.com/BeehiveInnovations/zen-mcp-server/pull/245),
+  [`3b4fd88`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/3b4fd88d7e9a3f09fea616a10cb3e9d6c1a0d63b))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`d6e6808`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/d6e6808be525192ab8388c0f01bc1bbd016fc23a))
+
+
 ## v5.10.2 (2025-08-24)
 
 ### Bug Fixes
