@@ -68,6 +68,8 @@ Choose your preferred installation method:
 
 **Prerequisites**: [Install uv first](https://docs.astral.sh/uv/getting-started/installation/)
 
+Choose your AI coding assistant and add the corresponding configuration:
+
 **For Claude Desktop:**
 1. Open Claude Desktop → Settings → Developer → Edit Config
 2. Add this configuration:
@@ -79,7 +81,7 @@ Choose your preferred installation method:
       "command": "sh",
       "args": [
         "-c", 
-        "exec $(which uvx || echo uvx) --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server"
+        "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"
       ],
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
@@ -100,7 +102,7 @@ Create `.mcp.json` in your project root:
       "command": "sh", 
       "args": [
         "-c",
-        "exec $(which uvx || echo uvx) --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server"
+        "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"
       ],
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
@@ -121,7 +123,7 @@ Edit `~/.gemini/settings.json`:
       "command": "sh",
       "args": [
         "-c",
-        "exec $(which uvx || echo uvx) --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server"  
+        "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"  
       ],
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
@@ -130,6 +132,19 @@ Edit `~/.gemini/settings.json`:
     }
   }
 }
+```
+
+**For Codex CLI:**
+Edit `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.zen]
+command = "bash"
+args = ["-c", "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \\\"$p\\\" ] && exec \\\"$p\\\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"]
+
+[mcp_servers.zen.env]
+PATH = "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/bin"
+GEMINI_API_KEY = "your_api_key_here"
 ```
 
 **Benefits of uvx method:**
@@ -221,6 +236,11 @@ CUSTOM_MODEL_NAME=llama3.2                   # Default model name
 ### For Gemini CLI:
 **Note**: While Zen MCP connects to Gemini CLI, tool invocation isn't working correctly yet. See [Gemini CLI Setup](gemini-setup.md) for updates.
 
+### For Codex CLI:
+1. Restart Codex CLI if running
+2. Open a new conversation
+3. Try: `"Use zen to list available models"`
+
 ### Test Commands:
 ```
 "Use zen to list available models"
@@ -228,6 +248,8 @@ CUSTOM_MODEL_NAME=llama3.2                   # Default model name
 "Use zen thinkdeep with gemini pro about scaling strategies"  
 "Debug this error with o3: [paste error]"
 ```
+
+**Note**: Codex CLI provides excellent MCP integration with automatic environment variable configuration when using the setup script.
 
 ## Step 5: Start Using Zen
 

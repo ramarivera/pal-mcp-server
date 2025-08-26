@@ -3,12 +3,13 @@
 [zen_web.webm](https://github.com/user-attachments/assets/851e3911-7f06-47c0-a4ab-a2601236697c)
 
 <div align="center">
-  <b>🤖 <a href="https://www.anthropic.com/claude-code">Claude Code</a> OR <a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a> + [Gemini / OpenAI / Grok / OpenRouter / DIAL / Ollama / Anthropic / Any Model] = Your Ultimate AI Development Team</b>
+  <b>🤖 <a href="https://www.anthropic.com/claude-code">Claude Code</a> OR <a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a> OR <a href="https://github.com/openai/codex">Codex CLI</a> + [Gemini / OpenAI / Grok / OpenRouter / DIAL / Ollama / Anthropic / Any Model] = Your Ultimate AI Development Team</b>
 </div>
 
 <br/>
 
-**AI orchestration for Claude Code** - A Model Context Protocol server that gives your CLI of choice (e.g. [Claude Code](https://www.anthropic.com/claude-code)) access to multiple AI models for enhanced code analysis, problem-solving, and collaborative development.
+**AI orchestration for Claude Code** - A Model Context Protocol server that gives your CLI of choice (e.g. [Claude Code](https://www.anthropic.com/claude-code)) access to multiple AI models for enhanced code analysis, problem-solving, and collaborative development. Zen
+works with Claude Code, Gemini CLI, Codex CLI as well as others.
 
 **True AI collaboration with conversation continuity** - Claude stays in control but gets perspectives from the best AI for each subtask. Context carries forward seamlessly across tools and models, enabling complex workflows like: code reviews with multiple models → automated planning → implementation → pre-commit validation.
 
@@ -90,28 +91,35 @@ For best results, use Claude Code with:
 
 **2. Install** (choose one):
 
-**Option A: Instant Setup with uvx** (recommended)
+**Option A: Clone and Automatic Setup** (recommended)
+```bash
+git clone https://github.com/BeehiveInnovations/zen-mcp-server.git
+cd zen-mcp-server
+
+# Handles everything: setup, config, API keys from system environment. 
+# Auto-configures Claude Desktop, Claude Code, Gemini CLI, Codex CLI
+# Enable / disable additional settings in .env
+./run-server.sh  
+```
+
+**Option B: Instant Setup with [uvx](https://docs.astral.sh/uv/getting-started/installation/)**
 ```json
 // Add to ~/.claude/settings.json or .mcp.json
+// Don't forget to add your API keys under env
 {
   "mcpServers": {
     "zen": {
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/BeehiveInnovations/zen-mcp-server.git", "zen-mcp-server"],
+      "command": "bash",
+      "args": ["-c", "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"],
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
-        "GEMINI_API_KEY": "your-key-here"
+        "GEMINI_API_KEY": "your-key-here",
+        "DISABLED_TOOLS": "analyze,refactor,testgen,secaudit,docgen,tracer",
+        "DEFAULT_MODEL": "auto"
       }
     }
   }
 }
-```
-
-**Option B: Clone and Setup**
-```bash
-git clone https://github.com/BeehiveInnovations/zen-mcp-server.git
-cd zen-mcp-server
-./run-server.sh  # Handles everything: setup, config, API keys
 ```
 
 **3. Start Using!**
@@ -121,7 +129,7 @@ cd zen-mcp-server
 "Plan the migration strategy with zen, get consensus from multiple models"
 ```
 
-👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration, and troubleshooting
+👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex, and troubleshooting
 
 ## Core Tools
 
@@ -188,8 +196,20 @@ DISABLED_TOOLS=
   "mcpServers": {
     "zen": {
       "env": {
-        // Enable analyze by removing it from disabled list
-        "DISABLED_TOOLS": "refactor,testgen,secaudit,docgen,tracer"
+        // Tool configuration
+        "DISABLED_TOOLS": "refactor,testgen,secaudit,docgen,tracer",
+        "DEFAULT_MODEL": "pro",
+        "DEFAULT_THINKING_MODE_THINKDEEP": "high",
+        
+        // API configuration
+        "GEMINI_API_KEY": "your-gemini-key",
+        "OPENAI_API_KEY": "your-openai-key",
+        "OPENROUTER_API_KEY": "your-openrouter-key",
+        
+        // Logging and performance
+        "LOG_LEVEL": "INFO",
+        "CONVERSATION_TIMEOUT_HOURS": "6",
+        "MAX_CONVERSATION_TURNS": "50"
       }
     }
   }
