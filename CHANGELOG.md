@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v5.11.0 (2025-08-26)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`9735469`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/973546990f2c45afa93f1aa6de33ff461ecf1a83))
+
+### Features
+
+- Codex CLI support
+  ([`ce56d16`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ce56d16240ddcc476145a512561efe5c66438f0d))
+
+
 ## v5.10.3 (2025-08-24)
 
 ### Bug Fixes
