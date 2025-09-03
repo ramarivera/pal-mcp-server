@@ -29,7 +29,6 @@ from mcp.types import TextContent
 from config import TEMPERATURE_ANALYTICAL
 from systemprompts import CONSENSUS_PROMPT
 from tools.shared.base_models import WorkflowRequest
-from utils.model_context import ModelContext
 
 from .workflow.base import WorkflowTool
 
@@ -534,10 +533,18 @@ of the evidence, even when it strongly points in one direction.""",
             # Steps 2+ contain summaries/notes that must NEVER be sent to other models
             prompt = self.original_proposal if self.original_proposal else self.initial_prompt
             if request.relevant_files:
+                # Create a model context for token allocation
+                from utils.model_context import ModelContext
+
+                model_context = ModelContext(
+                    model_name=model_name,
+                )
+
                 file_content, _ = self._prepare_file_content_for_prompt(
                     request.relevant_files,
                     None,  # Use None instead of request.continuation_id for blinded consensus
                     "Context files",
+                    model_context=model_context,
                 )
                 if file_content:
                     prompt = f"{prompt}\n\n=== CONTEXT FILES ===\n{file_content}\n=== END CONTEXT ==="
