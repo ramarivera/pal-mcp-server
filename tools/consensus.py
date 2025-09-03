@@ -522,9 +522,15 @@ of the evidence, even when it strongly points in one direction.""",
     async def _consult_model(self, model_config: dict, request) -> dict:
         """Consult a single model and return its response."""
         try:
+            # Import and create ModelContext once at the beginning
+            from utils.model_context import ModelContext
+
             # Get the provider for this model
             model_name = model_config["model"]
             provider = self.get_model_provider(model_name)
+            
+            # Create model context once and reuse for both file processing and temperature validation
+            model_context = ModelContext(model_name=model_name)
 
             # Prepare the prompt with any relevant files
             # Use continuation_id=None for blinded consensus - each model should only see
@@ -533,13 +539,6 @@ of the evidence, even when it strongly points in one direction.""",
             # Steps 2+ contain summaries/notes that must NEVER be sent to other models
             prompt = self.original_proposal if self.original_proposal else self.initial_prompt
             if request.relevant_files:
-                # Create a model context for token allocation
-                from utils.model_context import ModelContext
-
-                model_context = ModelContext(
-                    model_name=model_name,
-                )
-
                 file_content, _ = self._prepare_file_content_for_prompt(
                     request.relevant_files,
                     None,  # Use None instead of request.continuation_id for blinded consensus
@@ -553,9 +552,6 @@ of the evidence, even when it strongly points in one direction.""",
             stance = model_config.get("stance", "neutral")
             stance_prompt = model_config.get("stance_prompt")
             system_prompt = self._get_stance_enhanced_prompt(stance, stance_prompt)
-
-            # Get model context for temperature validation
-            model_context = ModelContext(model_name=model_name)
 
             # Validate temperature against model constraints (respects supports_temperature)
             validated_temperature, temp_warnings = self.validate_and_correct_temperature(
