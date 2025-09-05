@@ -210,6 +210,32 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
                     raise ValueError(f"OpenAI model '{model_name}' is not allowed by restriction policy.")
                 return capabilities
 
+        # Check custom models registry for user-configured OpenAI models
+        try:
+            from .openrouter_registry import OpenRouterModelRegistry
+
+            registry = OpenRouterModelRegistry()
+            config = registry.get_model_config(resolved_name)
+
+            if config and config.provider == ProviderType.OPENAI:
+                # Check if model is allowed by restrictions
+                from utils.model_restrictions import get_restriction_service
+
+                restriction_service = get_restriction_service()
+                if not restriction_service.is_allowed(ProviderType.OPENAI, config.model_name, model_name):
+                    raise ValueError(f"OpenAI model '{model_name}' is not allowed by restriction policy.")
+
+                # Update provider type to ensure consistency
+                config.provider = ProviderType.OPENAI
+                return config
+
+        except Exception as e:
+            # Log but don't fail - registry might not be available
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.debug(f"Could not check custom models registry for '{resolved_name}': {e}")
+
         raise ValueError(f"Unsupported OpenAI model: {model_name}")
 
     def get_provider_type(self) -> ProviderType:
@@ -220,19 +246,39 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
         """Validate if the model name is supported and allowed."""
         resolved_name = self._resolve_model_name(model_name)
 
-        # First check if model is supported
-        if resolved_name not in self.SUPPORTED_MODELS:
-            return False
+        # First check if model is in built-in SUPPORTED_MODELS
+        if resolved_name in self.SUPPORTED_MODELS:
+            # Check if model is allowed by restrictions
+            from utils.model_restrictions import get_restriction_service
 
-        # Then check if model is allowed by restrictions
-        from utils.model_restrictions import get_restriction_service
+            restriction_service = get_restriction_service()
+            if not restriction_service.is_allowed(ProviderType.OPENAI, resolved_name, model_name):
+                logger.debug(f"OpenAI model '{model_name}' -> '{resolved_name}' blocked by restrictions")
+                return False
+            return True
 
-        restriction_service = get_restriction_service()
-        if not restriction_service.is_allowed(ProviderType.OPENAI, resolved_name, model_name):
-            logger.debug(f"OpenAI model '{model_name}' -> '{resolved_name}' blocked by restrictions")
-            return False
+        # Check custom models registry for user-configured OpenAI models
+        try:
+            from .openrouter_registry import OpenRouterModelRegistry
 
-        return True
+            registry = OpenRouterModelRegistry()
+            config = registry.get_model_config(resolved_name)
+
+            if config and config.provider == ProviderType.OPENAI:
+                # Check if model is allowed by restrictions
+                from utils.model_restrictions import get_restriction_service
+
+                restriction_service = get_restriction_service()
+                if not restriction_service.is_allowed(ProviderType.OPENAI, config.model_name, model_name):
+                    logger.debug(f"OpenAI custom model '{model_name}' -> '{resolved_name}' blocked by restrictions")
+                    return False
+                return True
+
+        except Exception as e:
+            # Log but don't fail - registry might not be available
+            logger.debug(f"Could not check custom models registry for '{resolved_name}': {e}")
+
+        return False
 
     def generate_content(
         self,
