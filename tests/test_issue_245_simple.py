@@ -75,9 +75,3 @@ def test_issue_245_custom_openai_temperature_ignored():
                 # Verify the fix: NO temperature should be sent to the API
                 call_kwargs = mock_client.chat.completions.create.call_args[1]
                 assert "temperature" not in call_kwargs, "Fix failed: temperature still being sent!"
-
-                print("✅ Issue #245 is FIXED! Temperature parameter correctly ignored for custom models.")
-
-
-if __name__ == "__main__":
-    test_issue_245_custom_openai_temperature_ignored()
