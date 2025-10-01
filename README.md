@@ -9,7 +9,7 @@
 <br/>
 
 **AI orchestration for Claude Code** - A Model Context Protocol server that gives your CLI of choice (e.g. [Claude Code](https://www.anthropic.com/claude-code)) access to multiple AI models for enhanced code analysis, problem-solving, and collaborative development. Zen
-works with Claude Code, Gemini CLI, Codex CLI as well as others.
+works with Claude Code, Gemini CLI, Codex CLI, and IDE clients like [Cursor](https://cursor.com) and the [Claude Dev extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Anthropic.claude-vscode).
 
 **True AI collaboration with conversation continuity** - Claude stays in control but gets perspectives from the best AI for each subtask. Context carries forward seamlessly across tools and models, enabling complex workflows like: code reviews with multiple models → automated planning → implementation → pre-commit validation.
 
@@ -130,6 +130,7 @@ cd zen-mcp-server
 ```
 
 👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex, and troubleshooting
+👉 **[Cursor & VS Code Setup](docs/getting-started.md#ide-clients)** for IDE integration instructions
 
 ## Core Tools
 

@@ -147,6 +147,33 @@ PATH = "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin:$HOME/.c
 GEMINI_API_KEY = "your_api_key_here"
 ```
 
+#### IDE Clients (Cursor & VS Code)
+
+Zen works in GUI IDEs that speak MCP. The configuration mirrors the CLI examples above—point the client at the `uvx` launcher and set any required environment variables.
+
+**Cursor IDE**
+
+1. Open Cursor → `Settings` (`Cmd+,`/`Ctrl+,`) → **Integrations › Model Context Protocol (MCP)**.
+2. Click **Add MCP Server** and supply the following values:
+   - Command: `sh`
+   - Args: `-c` and `for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x "$p" ] && exec "$p" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1`
+   - Environment (example):
+     - `PATH=/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin`
+     - `GEMINI_API_KEY=your_api_key_here`
+3. Save the configuration—Cursor will launch the MCP server on demand. See the [Cursor MCP guide](https://cursor.com/docs) for screenshots of the UI.
+
+**Visual Studio Code (Claude Dev extension)**
+
+1. Install the [Claude Dev extension](https://marketplace.visualstudio.com/items?itemName=Anthropic.claude-vscode) v0.6.0 or later.
+2. Open the Command Palette (`Cmd+Shift+P`/`Ctrl+Shift+P`) → **Claude: Configure MCP Servers** → **Add server**.
+3. When prompted, use the same values as above:
+   - Command: `sh`
+   - Args: `-c` and the `uvx` bootstrap loop
+   - Environment: add the API keys you need (e.g. `GEMINI_API_KEY`, `OPENAI_API_KEY`)
+4. Save the JSON snippet the extension generates. VS Code will reload the server automatically the next time you interact with Claude.
+
+👉 Pro tip: If you prefer a one-line command, replace the long loop with `uvx --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server`—just make sure `uvx` is on your PATH for every client.
+
 **Benefits of uvx method:**
 - ✅ Zero manual setup required
 - ✅ Always pulls latest version
