@@ -64,7 +64,7 @@
     },
     {
       "model_name": "anthropic/claude-sonnet-4.1",
-      "aliases": ["sonnet4.1"],
+      "aliases": ["claude", "sonnet", "sonnet4.1", "claude-sonnet", "claude-4.1-sonnet", "claude-sonnet-4.1"],
       "context_window": 200000,
       "max_output_tokens": 64000,
       "supports_extended_thinking": false,
