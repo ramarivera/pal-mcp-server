@@ -263,6 +263,7 @@ class TestAutoModeComprehensive:
             "OPENAI_API_KEY": None,
             "XAI_API_KEY": None,
             "OPENROUTER_API_KEY": None,
+            "CUSTOM_API_URL": None,
             "DEFAULT_MODEL": "auto",
         }
 

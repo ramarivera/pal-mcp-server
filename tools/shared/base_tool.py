@@ -1199,17 +1199,48 @@ When recommending searches, be specific about what information you need and why 
         # Get models from enabled providers only (those with valid API keys)
         all_models = ModelProviderRegistry.get_available_model_names()
 
-        # Add OpenRouter models if OpenRouter is configured
+        # Add OpenRouter models and their aliases when OpenRouter is configured
         openrouter_key = os.getenv("OPENROUTER_API_KEY")
         if openrouter_key and openrouter_key != "your_openrouter_api_key_here":
             try:
-                from config import OPENROUTER_MODELS
+                registry = self._get_openrouter_registry()
 
-                all_models.extend(OPENROUTER_MODELS)
-            except ImportError:
-                pass
+                # Include every known alias so MCP enum matches registry capabilities
+                for alias in registry.list_aliases():
+                    config = registry.resolve(alias)
+                    if config and config.is_custom:
+                        # Custom-only models require CUSTOM_API_URL; defer to custom block
+                        continue
+                    if alias not in all_models:
+                        all_models.append(alias)
+            except Exception as exc:  # pragma: no cover - logged for observability
+                import logging
 
-        return sorted(set(all_models))
+                logging.debug(f"Failed to add OpenRouter models to enum: {exc}")
+
+        # Add custom models (and their aliases) when a custom endpoint is available
+        custom_url = os.getenv("CUSTOM_API_URL")
+        if custom_url:
+            try:
+                registry = self._get_openrouter_registry()
+                for alias in registry.list_aliases():
+                    config = registry.resolve(alias)
+                    if config and config.is_custom and alias not in all_models:
+                        all_models.append(alias)
+            except Exception as exc:  # pragma: no cover - logged for observability
+                import logging
+
+                logging.debug(f"Failed to add custom models to enum: {exc}")
+
+        # Remove duplicates while preserving insertion order
+        seen: set[str] = set()
+        unique_models: list[str] = []
+        for model in all_models:
+            if model not in seen:
+                seen.add(model)
+                unique_models.append(model)
+
+        return unique_models
 
     def _resolve_model_context(self, arguments: dict, request) -> tuple[str, Any]:
         """
