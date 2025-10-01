@@ -291,58 +291,28 @@ class TestAutoModeComprehensive:
             # Should have model as required field
             assert "model" in schema["required"]
 
-            # Should include all model options from global config
+            # In auto mode, the schema should now have a description field
+            # instructing users to use the listmodels tool instead of an enum
             model_schema = schema["properties"]["model"]
-            assert "enum" in model_schema
+            assert "type" in model_schema
+            assert model_schema["type"] == "string"
+            assert "description" in model_schema
 
-            available_models = model_schema["enum"]
+            # Check that the description mentions using listmodels tool
+            description = model_schema["description"]
+            assert "listmodels" in description.lower()
+            assert "auto" in description.lower() or "selection" in description.lower()
 
-            # Should include Gemini models
-            assert "flash" in available_models
-            assert "pro" in available_models
-            assert "gemini-2.5-flash" in available_models
-            assert "gemini-2.5-pro" in available_models
+            # Should NOT have enum field anymore - this is the new behavior
+            assert "enum" not in model_schema
 
-            # After the fix, schema only shows models from enabled providers
-            # This prevents model namespace collisions and misleading users
-            # If only Gemini is configured, only Gemini models should appear
-            provider_count = len(
-                [
-                    key
-                    for key in ["GEMINI_API_KEY", "OPENAI_API_KEY", "XAI_API_KEY", "OPENROUTER_API_KEY"]
-                    if os.getenv(key) and os.getenv(key) != f"your_{key.lower()}_here"
-                ]
-            )
+            # After the design change, the system directs users to use listmodels
+            # instead of enumerating all models in the schema
+            # This prevents model namespace collisions and keeps the schema cleaner
 
-            if provider_count == 1 and os.getenv("GEMINI_API_KEY"):
-                # Only Gemini configured - should only show Gemini models
-                non_gemini_models = [
-                    m
-                    for m in available_models
-                    if not m.startswith("gemini")
-                    and m
-                    not in [
-                        "flash",
-                        "pro",
-                        "flash-2.0",
-                        "flash2",
-                        "flashlite",
-                        "flash-lite",
-                        "flash2.5",
-                        "gemini pro",
-                        "gemini-pro",
-                    ]
-                ]
-                assert (
-                    len(non_gemini_models) == 0
-                ), f"Found non-Gemini models when only Gemini configured: {non_gemini_models}"
-            else:
-                # Multiple providers or OpenRouter - should include various models
-                # Only check if models are available if their providers might be configured
-                if os.getenv("OPENAI_API_KEY") or os.getenv("OPENROUTER_API_KEY"):
-                    assert any("o3" in m or "o4" in m for m in available_models), "No OpenAI models found"
-                if os.getenv("XAI_API_KEY") or os.getenv("OPENROUTER_API_KEY"):
-                    assert any("grok" in m for m in available_models), "No XAI models found"
+            # With the new design change, we no longer enumerate models in the schema
+            # The listmodels tool should be used to discover available models
+            # This test now validates the schema structure rather than model enumeration
 
     def test_auto_mode_schema_with_all_providers(self):
         """Test that auto mode schema includes models from all available providers."""
@@ -380,21 +350,21 @@ class TestAutoModeComprehensive:
             tool = AnalyzeTool()
             schema = tool.get_input_schema()
 
+            # In auto mode with multiple providers, should still use the new schema format
             model_schema = schema["properties"]["model"]
-            available_models = model_schema["enum"]
+            assert "type" in model_schema
+            assert model_schema["type"] == "string"
+            assert "description" in model_schema
 
-            # Should include models from all providers
-            # Gemini models
-            assert "flash" in available_models
-            assert "pro" in available_models
+            # Check that the description mentions using listmodels tool
+            description = model_schema["description"]
+            assert "listmodels" in description.lower()
 
-            # OpenAI models
-            assert "o3" in available_models
-            assert "o4-mini" in available_models
+            # Should NOT have enum field - uses listmodels tool instead
+            assert "enum" not in model_schema
 
-            # XAI models
-            assert "grok" in available_models
-            assert "grok-3" in available_models
+            # With multiple providers configured, the listmodels tool
+            # would show models from all providers when called
 
     @pytest.mark.asyncio
     async def test_auto_mode_model_parameter_required_error(self):

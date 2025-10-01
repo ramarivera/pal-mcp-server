@@ -130,9 +130,7 @@ class TestModelEnumeration:
         models = tool._get_available_models()
 
         for alias in ("local-llama", "llama3.2"):
-            assert (
-                alias not in models
-            ), f"Custom model alias '{alias}' should remain hidden without CUSTOM_API_URL"
+            assert alias not in models, f"Custom model alias '{alias}' should remain hidden without CUSTOM_API_URL"
 
     def test_no_duplicates_with_overlapping_providers(self):
         """Test that models aren't duplicated when multiple providers offer the same model."""

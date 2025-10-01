@@ -58,6 +58,7 @@ class SchemaBuilder:
         required_fields: list[str] = None,
         model_field_schema: dict[str, Any] = None,
         auto_mode: bool = False,
+        require_model: bool = False,
     ) -> dict[str, Any]:
         """
         Build complete schema for simple tools.
@@ -88,8 +89,8 @@ class SchemaBuilder:
             properties.update(tool_specific_fields)
 
         # Build required fields list
-        required = required_fields or []
-        if auto_mode and "model" not in required:
+        required = list(required_fields) if required_fields else []
+        if (auto_mode or require_model) and "model" not in required:
             required.append("model")
 
         # Build the complete schema

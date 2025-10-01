@@ -87,6 +87,10 @@ class ChatTool(SimpleTool):
         the same schema generation approach while still benefiting from SimpleTool
         convenience methods.
         """
+        required_fields = ["prompt"]
+        if self.is_effective_auto_mode():
+            required_fields.append("model")
+
         schema = {
             "type": "object",
             "properties": {
@@ -121,7 +125,7 @@ class ChatTool(SimpleTool):
                     "description": COMMON_FIELD_DESCRIPTIONS["continuation_id"],
                 },
             },
-            "required": ["prompt"] + (["model"] if self.is_effective_auto_mode() else []),
+            "required": required_fields,
         }
 
         return schema

@@ -84,15 +84,14 @@ class TestChatTool:
         assert schema["type"] == "string"
         assert "description" in schema
 
-        # In auto mode, should have enum. In normal mode, should have model descriptions
+        # Description should route callers to listmodels, regardless of mode
+        assert "listmodels" in schema["description"]
         if self.tool.is_effective_auto_mode():
-            assert "enum" in schema
-            assert len(schema["enum"]) > 0
-            assert "IMPORTANT:" in schema["description"]
+            assert "auto model selection" in schema["description"]
         else:
-            # Normal mode - should have model descriptions in description
-            assert "Model to use" in schema["description"]
-            assert "Native models:" in schema["description"]
+            import config
+
+            assert f"'{config.DEFAULT_MODEL}'" in schema["description"]
 
     @pytest.mark.asyncio
     async def test_prompt_preparation(self):

@@ -148,9 +148,10 @@ class SimpleTool(BaseTool):
         Returns:
             Complete JSON schema for the tool
         """
+        required_fields = list(self.get_required_fields())
         return SchemaBuilder.build_schema(
             tool_specific_fields=self.get_tool_fields(),
-            required_fields=self.get_required_fields(),
+            required_fields=required_fields,
             model_field_schema=self.get_model_field_schema(),
             auto_mode=self.is_effective_auto_mode(),
         )

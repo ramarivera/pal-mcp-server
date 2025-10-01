@@ -465,7 +465,7 @@ class TestSchemaGeneration:
                     tool = ThinkDeepTool()
                     schema = tool.get_input_schema()
 
-                    # Model should NOT be required
+                    # Model should remain optional when DEFAULT_MODEL is available
                     assert "model" not in schema["required"]
 
 

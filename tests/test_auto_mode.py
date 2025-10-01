@@ -92,9 +92,9 @@ class TestAutoMode:
 
             # Model field should have detailed descriptions
             model_schema = schema["properties"]["model"]
-            assert "enum" in model_schema
-            assert "flash" in model_schema["enum"]
-            assert "select the most suitable model" in model_schema["description"]
+            assert "enum" not in model_schema
+            assert "auto model selection" in model_schema["description"].lower()
+            assert "listmodels" in model_schema["description"]
 
         finally:
             # Restore
@@ -111,14 +111,14 @@ class TestAutoMode:
         tool = ChatTool()
         schema = tool.get_input_schema()
 
-        # Model should not be required
+        # Model should not be required when default model is configured
         assert "model" not in schema["required"]
 
         # Model field should have simpler description
         model_schema = schema["properties"]["model"]
         assert "enum" not in model_schema
-        assert "Native models:" in model_schema["description"]
-        assert "Defaults to" in model_schema["description"]
+        assert "listmodels" in model_schema["description"]
+        assert "default model" in model_schema["description"].lower()
 
     @pytest.mark.asyncio
     async def test_auto_mode_requires_model_parameter(self):
@@ -287,19 +287,10 @@ class TestAutoMode:
             importlib.reload(config)
 
             schema = tool.get_model_field_schema()
-            assert "enum" in schema
-            # Test that some basic models are available (those that should be available with dummy keys)
-            available_models = schema["enum"]
-            # Check for models that should be available with basic provider setup
-            expected_basic_models = ["flash", "pro"]  # Gemini models from conftest.py
-            for model in expected_basic_models:
-                if model not in available_models:
-                    print(f"Missing expected model: {model}")
-                    print(f"Available models: {available_models}")
-            assert any(
-                model in available_models for model in expected_basic_models
-            ), f"None of {expected_basic_models} found in {available_models}"
-            assert "select the most suitable model" in schema["description"]
+            assert "enum" not in schema
+            assert schema["type"] == "string"
+            assert "auto model selection" in schema["description"]
+            assert "listmodels" in schema["description"]
 
             # Test normal mode
             os.environ["DEFAULT_MODEL"] = "pro"
@@ -307,10 +298,9 @@ class TestAutoMode:
 
             schema = tool.get_model_field_schema()
             assert "enum" not in schema
-            # Check for the new schema format
-            assert "Model to use." in schema["description"]
+            assert schema["type"] == "string"
             assert "'pro'" in schema["description"]
-            assert "Defaults to" in schema["description"]
+            assert "listmodels" in schema["description"]
 
         finally:
             # Restore
