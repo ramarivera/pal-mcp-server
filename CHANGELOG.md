@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v5.14.0 (2025-10-01)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`c0f822f`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/c0f822ffa23292d668f7b5dd3cb62e3f23fb29af))
+
+### Features
+
+- Add Claude Sonnet 4.5 and update alias configuration
+  ([`95c4822`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/95c4822af2dc55f59c0e4ed9454673d6ca964731))
+
+### Testing
+
+- Update tests to match new Claude Sonnet 4.5 alias configuration
+  ([`7efb409`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/7efb4094d4eb7db006340d3d9240b9113ac25cd3))
+
+
 ## v5.13.0 (2025-10-01)
 
 ### Bug Fixes
