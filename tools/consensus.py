@@ -37,45 +37,23 @@ logger = logging.getLogger(__name__)
 # Tool-specific field descriptions for consensus workflow
 CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS = {
     "step": (
-        "The core question for consensus. Step 1: Provide the EXACT proposal for all models to evaluate. "
-        "CRITICAL: This text is sent to all models and must be a clear question, not a self-referential statement "
-        "(e.g., use 'Evaluate...' not 'I will evaluate...'). Steps 2+: Internal notes on the last model's response; this is NOT sent to other models."
+        "Consensus prompt. Step 1: write the exact proposal/question every model will see (use 'Evaluate…', not meta commentary). "
+        "Steps 2+: capture internal notes about the latest model response—these notes are NOT sent to other models."
     ),
-    "step_number": (
-        "The index of the current step in the consensus workflow, beginning at 1. Step 1 is your analysis, "
-        "steps 2+ are for processing individual model responses."
-    ),
-    "total_steps": (
-        "Total number of steps needed. This equals the number of models to consult. "
-        "Step 1 includes your analysis + first model consultation on return of the call. Final step includes "
-        "last model consultation + synthesis."
-    ),
-    "next_step_required": ("Set to true if more models need to be consulted. False when ready for final synthesis."),
+    "step_number": "Current step index (starts at 1). Step 1 is your analysis; steps 2+ handle each model response.",
+    "total_steps": "Total steps = number of models consulted plus the final synthesis step.",
+    "next_step_required": "True if more model consultations remain; set false when ready to synthesize.",
     "findings": (
-        "Your analysis of the consensus topic. Step 1: Your independent, comprehensive analysis of the proposal. "
-        "CRITICAL: This is for the final synthesis and is NOT sent to the other models. "
-        "Steps 2+: A summary of the key points from the most recent model's response."
+        "Step 1: your independent analysis for later synthesis (not shared with other models). Steps 2+: summarize the newest model response."
     ),
-    "relevant_files": (
-        "Files that are relevant to the consensus analysis. Include files that help understand the proposal, "
-        "provide context, or contain implementation details."
-    ),
+    "relevant_files": "Optional supporting files that help the consensus analysis. Must be absolute full, non-abbreviated paths.",
     "models": (
-        "List of model configurations to consult. Each can have a model name, stance (for/against/neutral), "
-        "and optional custom stance prompt. The same model can be used multiple times with different stances, "
-        "but each model + stance combination must be unique. "
-        "Example: [{'model': 'o3', 'stance': 'for'}, {'model': 'o3', 'stance': 'against'}, "
-        "{'model': 'flash', 'stance': 'neutral'}]"
+        "List of models to consult. Each entry may include model, stance (for/against/neutral), and stance_prompt. "
+        "Each (model, stance) pair must be unique, e.g. [{'model':'o3','stance':'for'}, {'model':'o3','stance':'against'}]."
     ),
-    "current_model_index": (
-        "Internal tracking of which model is being consulted (0-based index). Used to determine which model "
-        "to call next."
-    ),
-    "model_responses": ("Accumulated responses from models consulted so far. Internal field for tracking progress."),
-    "images": (
-        "Optional list of image paths or base64 data URLs for visual context. Useful for UI/UX discussions, "
-        "architecture diagrams, mockups, or any visual references that help inform the consensus analysis."
-    ),
+    "current_model_index": "0-based index of the next model to consult (managed internally).",
+    "model_responses": "Internal log of responses gathered so far.",
+    "images": "Optional absolute image paths or base64 references that add helpful visual context.",
 }
 
 
