@@ -11,6 +11,8 @@ from urllib.parse import urlparse
 
 from openai import OpenAI
 
+from utils.image_utils import validate_image
+
 from .base import ModelProvider
 from .shared import (
     ModelCapabilities,
@@ -830,12 +832,12 @@ class OpenAICompatibleProvider(ModelProvider):
         try:
             if image_path.startswith("data:"):
                 # Validate the data URL
-                self.validate_image(image_path)
+                validate_image(image_path)
                 # Handle data URL: data:image/png;base64,iVBORw0...
                 return {"type": "image_url", "image_url": {"url": image_path}}
             else:
                 # Use base class validation
-                image_bytes, mime_type = self.validate_image(image_path)
+                image_bytes, mime_type = validate_image(image_path)
 
                 # Read and encode the image
                 import base64

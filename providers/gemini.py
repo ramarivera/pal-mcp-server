@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 from google import genai
 from google.genai import types
 
+from utils.image_utils import validate_image
+
 from .base import ModelProvider
 from .shared import ModelCapabilities, ModelResponse, ProviderType, TemperatureConstraint
 
@@ -529,7 +531,7 @@ class GeminiModelProvider(ModelProvider):
         """Process an image for Gemini API."""
         try:
             # Use base class validation
-            image_bytes, mime_type = self.validate_image(image_path)
+            image_bytes, mime_type = validate_image(image_path)
 
             # For data URLs, extract the base64 data directly
             if image_path.startswith("data:"):
