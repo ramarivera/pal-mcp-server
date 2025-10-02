@@ -151,7 +151,7 @@ class TestOpenRouterAutoMode:
         os.environ["DEFAULT_MODEL"] = "auto"
 
         mock_registry = Mock()
-        mock_registry.list_models.return_value = [
+        model_names = [
             "google/gemini-2.5-flash",
             "google/gemini-2.5-pro",
             "openai/o3",
@@ -159,6 +159,18 @@ class TestOpenRouterAutoMode:
             "anthropic/claude-opus-4.1",
             "anthropic/claude-sonnet-4.1",
         ]
+        mock_registry.list_models.return_value = model_names
+
+        # Mock resolve to return a ModelCapabilities-like object for each model
+        def mock_resolve(model_name):
+            if model_name in model_names:
+                mock_config = Mock()
+                mock_config.is_custom = False
+                mock_config.aliases = []  # Empty list of aliases
+                return mock_config
+            return None
+
+        mock_registry.resolve.side_effect = mock_resolve
 
         ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
 
@@ -171,8 +183,7 @@ class TestOpenRouterAutoMode:
         assert len(available_models) > 0, "Should find OpenRouter models in auto mode"
         assert all(provider_type == ProviderType.OPENROUTER for provider_type in available_models.values())
 
-        expected_models = mock_registry.list_models.return_value
-        for model in expected_models:
+        for model in model_names:
             assert model in available_models, f"Model {model} should be available"
 
     @pytest.mark.no_mock_provider

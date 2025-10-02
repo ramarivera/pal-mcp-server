@@ -151,11 +151,16 @@ class TestSupportedModelsAliases:
         assert "o3-2025-04-16" in dial_models
         assert "o3" in dial_models
 
-    def test_list_all_known_models_includes_aliases(self):
-        """Test that list_all_known_models returns all models and aliases in lowercase."""
+    def test_list_models_all_known_variant_includes_aliases(self):
+        """Unified list_models should support lowercase, alias-inclusive listings."""
         # Test Gemini
         gemini_provider = GeminiModelProvider("test-key")
-        gemini_all = gemini_provider.list_all_known_models()
+        gemini_all = gemini_provider.list_models(
+            respect_restrictions=False,
+            include_aliases=True,
+            lowercase=True,
+            unique=True,
+        )
         assert "gemini-2.5-flash" in gemini_all
         assert "flash" in gemini_all
         assert "gemini-2.5-pro" in gemini_all
@@ -165,7 +170,12 @@ class TestSupportedModelsAliases:
 
         # Test OpenAI
         openai_provider = OpenAIModelProvider("test-key")
-        openai_all = openai_provider.list_all_known_models()
+        openai_all = openai_provider.list_models(
+            respect_restrictions=False,
+            include_aliases=True,
+            lowercase=True,
+            unique=True,
+        )
         assert "o4-mini" in openai_all
         assert "mini" in openai_all
         assert "o3-mini" in openai_all

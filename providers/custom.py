@@ -32,11 +32,20 @@ _TEMP_UNSUPPORTED_KEYWORDS = [
 class CustomProvider(OpenAICompatibleProvider):
     """Adapter for self-hosted or local OpenAI-compatible endpoints.
 
-    The provider reuses the :mod:`providers.shared` registry to surface
-    user-defined aliases and capability metadata.  It also normalises
-    Ollama-style version tags (``model:latest``) and enforces the same
-    restriction policies used by cloud providers, ensuring consistent
-    behaviour regardless of where the model is hosted.
+    Role
+        Provide a uniform bridge between the MCP server and user-managed
+        OpenAI-compatible services (Ollama, vLLM, LM Studio, bespoke gateways).
+        By subclassing :class:`OpenAICompatibleProvider` it inherits request and
+        token handling, while the custom registry exposes locally defined model
+        metadata.
+
+    Notable behaviour
+        * Uses :class:`OpenRouterModelRegistry` to load model definitions and
+          aliases so custom deployments share the same metadata pipeline as
+          OpenRouter itself.
+        * Normalises version-tagged model names (``model:latest``) and applies
+          restriction policies just like cloud providers, ensuring consistent
+          behaviour across environments.
     """
 
     FRIENDLY_NAME = "Custom API"

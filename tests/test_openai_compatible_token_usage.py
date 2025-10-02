@@ -26,10 +26,7 @@ class TestOpenAICompatibleTokenUsage(unittest.TestCase):
             def validate_model_name(self, model_name):
                 return True
 
-            def list_models(self, respect_restrictions=True):
-                return ["test-model"]
-
-            def list_all_known_models(self):
+            def list_models(self, **kwargs):
                 return ["test-model"]
 
         self.provider = TestProvider("test-key")

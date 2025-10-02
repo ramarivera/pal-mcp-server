@@ -17,12 +17,21 @@ from .shared import (
 
 
 class OpenRouterModelRegistry:
-    """Loads and validates the OpenRouter/custom model catalogue.
+    """In-memory view of OpenRouter and custom model metadata.
 
-    The registry parses ``conf/custom_models.json`` (or an override supplied via
-    environment variable), builds case-insensitive alias maps, and exposes
-    :class:`~providers.shared.ModelCapabilities` objects used by several
-    providers.
+    Role
+        Parse the packaged ``conf/custom_models.json`` (or user-specified
+        overrides), construct alias and capability maps, and serve those
+        structures to providers that rely on OpenRouter semantics (both the
+        OpenRouter provider itself and the Custom provider).
+
+    Key duties
+        * Load :class:`ModelCapabilities` definitions from configuration files
+        * Maintain a case-insensitive alias → canonical name map for fast
+          resolution
+        * Provide helpers to list models, list aliases, and resolve an arbitrary
+          name to its capability object without repeatedly touching the file
+          system.
     """
 
     def __init__(self, config_path: Optional[str] = None):

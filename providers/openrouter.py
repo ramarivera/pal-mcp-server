@@ -17,9 +17,19 @@ from .shared import (
 class OpenRouterProvider(OpenAICompatibleProvider):
     """Client for OpenRouter's multi-model aggregation service.
 
-    OpenRouter surfaces dozens of upstream vendors.  This provider layers alias
-    resolution, restriction-aware filtering, and sensible capability defaults
-    on top of the generic OpenAI-compatible plumbing.
+    Role
+        Surface OpenRouter’s dynamic catalogue through the same interface as
+        native providers so tools can reference OpenRouter models and aliases
+        without special cases.
+
+    Characteristics
+        * Pulls live model definitions from :class:`OpenRouterModelRegistry`
+          (aliases, provider-specific metadata, capability hints)
+        * Applies alias-aware restriction checks before exposing models to the
+          registry or tooling
+        * Reuses :class:`OpenAICompatibleProvider` infrastructure for request
+          execution so OpenRouter endpoints behave like standard OpenAI-style
+          APIs.
     """
 
     FRIENDLY_NAME = "OpenRouter"
@@ -208,75 +218,56 @@ class OpenRouterProvider(OpenAICompatibleProvider):
         """
         return False
 
-    def list_models(self, respect_restrictions: bool = True) -> list[str]:
-        """Return a list of model names supported by this provider.
+    def list_models(
+        self,
+        *,
+        respect_restrictions: bool = True,
+        include_aliases: bool = True,
+        lowercase: bool = False,
+        unique: bool = False,
+    ) -> list[str]:
+        """Return formatted OpenRouter model names, respecting alias-aware restrictions."""
 
-        Args:
-            respect_restrictions: Whether to apply provider-specific restriction logic.
+        if not self._registry:
+            return []
 
-        Returns:
-            List of model names available from this provider
-        """
         from utils.model_restrictions import get_restriction_service
 
         restriction_service = get_restriction_service() if respect_restrictions else None
-        models = []
+        allowed_configs: dict[str, ModelCapabilities] = {}
 
-        if self._registry:
-            for model_name in self._registry.list_models():
-                # =====================================================================================
-                # CRITICAL ALIAS-AWARE RESTRICTION CHECKING (Fixed Issue #98)
-                # =====================================================================================
-                # Previously, restrictions only checked full model names (e.g., "google/gemini-2.5-pro")
-                # but users specify aliases in OPENROUTER_ALLOWED_MODELS (e.g., "pro").
-                # This caused "no models available" error even with valid restrictions.
-                #
-                # Fix: Check both model name AND all aliases against restrictions
-                # TEST COVERAGE: tests/test_provider_routing_bugs.py::TestOpenRouterAliasRestrictions
-                # =====================================================================================
-                if restriction_service:
-                    # Get model config to check aliases as well
-                    model_config = self._registry.resolve(model_name)
-                    allowed = False
+        for model_name in self._registry.list_models():
+            config = self._registry.resolve(model_name)
+            if not config:
+                continue
 
-                    # Check if model name itself is allowed
-                    if restriction_service.is_allowed(self.get_provider_type(), model_name):
-                        allowed = True
+            if restriction_service:
+                allowed = restriction_service.is_allowed(self.get_provider_type(), model_name)
 
-                    # CRITICAL: Also check aliases - this fixes the alias restriction bug
-                    if not allowed and model_config and model_config.aliases:
-                        for alias in model_config.aliases:
-                            if restriction_service.is_allowed(self.get_provider_type(), alias):
-                                allowed = True
-                                break
+                if not allowed and config.aliases:
+                    for alias in config.aliases:
+                        if restriction_service.is_allowed(self.get_provider_type(), alias):
+                            allowed = True
+                            break
 
-                    if not allowed:
-                        continue
+                if not allowed:
+                    continue
 
-                models.append(model_name)
+            allowed_configs[model_name] = config
 
-        return models
+        if not allowed_configs:
+            return []
 
-    def list_all_known_models(self) -> list[str]:
-        """Return all model names known by this provider, including alias targets.
+        # When restrictions are in place, don't include aliases to avoid confusion
+        # Only return the canonical model names that are actually allowed
+        actual_include_aliases = include_aliases and not respect_restrictions
 
-        Returns:
-            List of all model names and alias targets known by this provider
-        """
-        all_models = set()
-
-        if self._registry:
-            # Get all models and aliases from the registry
-            all_models.update(model.lower() for model in self._registry.list_models())
-            all_models.update(alias.lower() for alias in self._registry.list_aliases())
-
-            # For each alias, also add its target
-            for alias in self._registry.list_aliases():
-                config = self._registry.resolve(alias)
-                if config:
-                    all_models.add(config.model_name.lower())
-
-        return list(all_models)
+        return ModelCapabilities.collect_model_names(
+            allowed_configs,
+            include_aliases=actual_include_aliases,
+            lowercase=lowercase,
+            unique=unique,
+        )
 
     def get_model_configurations(self) -> dict[str, ModelCapabilities]:
         """Get model configurations from the registry.

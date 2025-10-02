@@ -11,24 +11,46 @@ __all__ = ["ModelCapabilities"]
 
 @dataclass
 class ModelCapabilities:
-    """Static capabilities and constraints for a provider-managed model."""
+    """Static description of what a model can do within a provider.
+
+    Role
+        Acts as the canonical record for everything the server needs to know
+        about a model—its provider, token limits, feature switches, aliases,
+        and temperature rules. Providers populate these objects so tools and
+        higher-level services can rely on a consistent schema.
+
+    Typical usage
+        * Provider subclasses declare `MODEL_CAPABILITIES` maps containing these
+          objects (for example ``OpenAIModelProvider``)
+        * Helper utilities (e.g. restriction validation, alias expansion) read
+          these objects to build model lists for tooling and policy enforcement
+        * Tool selection logic inspects attributes such as
+          ``supports_extended_thinking`` or ``context_window`` to choose an
+          appropriate model for a task.
+    """
 
     provider: ProviderType
     model_name: str
     friendly_name: str
-    context_window: int
-    max_output_tokens: int
+    description: str = ""
+    aliases: list[str] = field(default_factory=list)
+
+    # Capacity limits / resource budgets
+    context_window: int = 0
+    max_output_tokens: int = 0
+    max_thinking_tokens: int = 0
+
+    # Capability flags
     supports_extended_thinking: bool = False
     supports_system_prompts: bool = True
     supports_streaming: bool = True
     supports_function_calling: bool = False
     supports_images: bool = False
-    max_image_size_mb: float = 0.0
-    supports_temperature: bool = True
-    description: str = ""
-    aliases: list[str] = field(default_factory=list)
     supports_json_mode: bool = False
-    max_thinking_tokens: int = 0
+    supports_temperature: bool = True
+
+    # Additional attributes
+    max_image_size_mb: float = 0.0
     is_custom: bool = False
     temperature_constraint: TemperatureConstraint = field(
         default_factory=lambda: RangeTemperatureConstraint(0.0, 2.0, 0.3)
@@ -56,3 +78,45 @@ class ModelCapabilities:
             for base_model, capabilities in model_configs.items()
             if capabilities.aliases
         }
+
+    @staticmethod
+    def collect_model_names(
+        model_configs: dict[str, "ModelCapabilities"],
+        *,
+        include_aliases: bool = True,
+        lowercase: bool = False,
+        unique: bool = False,
+    ) -> list[str]:
+        """Build an ordered list of model names and aliases.
+
+        Args:
+            model_configs: Mapping of canonical model names to capabilities.
+            include_aliases: When True, include aliases for each model.
+            lowercase: When True, normalize names to lowercase.
+            unique: When True, ensure each returned name appears once (after formatting).
+
+        Returns:
+            Ordered list of model names (and optionally aliases) formatted per options.
+        """
+
+        formatted_names: list[str] = []
+        seen: set[str] | None = set() if unique else None
+
+        def append_name(name: str) -> None:
+            formatted = name.lower() if lowercase else name
+
+            if seen is not None:
+                if formatted in seen:
+                    return
+                seen.add(formatted)
+
+            formatted_names.append(formatted)
+
+        for base_model, capabilities in model_configs.items():
+            append_name(base_model)
+
+            if include_aliases and capabilities.aliases:
+                for alias in capabilities.aliases:
+                    append_name(alias)
+
+        return formatted_names

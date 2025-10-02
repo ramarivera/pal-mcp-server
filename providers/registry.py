@@ -12,11 +12,22 @@ if TYPE_CHECKING:
 
 
 class ModelProviderRegistry:
-    """Singleton that caches provider instances and coordinates priority order.
+    """Central catalogue of provider implementations used by the MCP server.
 
-    Responsibilities include resolving API keys from the environment, lazily
-    instantiating providers, and choosing the best provider for a model based
-    on restriction policies and provider priority.
+    Role
+        Holds the mapping between :class:`ProviderType` values and concrete
+        :class:`ModelProvider` subclasses/factories.  At runtime the registry
+        is responsible for instantiating providers, caching them for reuse, and
+        mediating lookup of providers and model names in provider priority
+        order.
+
+    Core responsibilities
+        * Resolve API keys and other runtime configuration for each provider
+        * Lazily create provider instances so unused backends incur no cost
+        * Expose convenience methods for enumerating available models and
+          locating which provider can service a requested model name or alias
+        * Honour the project-wide provider priority policy so namespaces (or
+          alias collisions) are resolved deterministically.
     """
 
     _instance = None

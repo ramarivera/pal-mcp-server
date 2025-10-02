@@ -142,7 +142,7 @@ class TestModelRestrictionService:
                 "o3-mini": {"context_window": 200000},
                 "o4-mini": {"context_window": 200000},
             }
-            mock_provider.list_all_known_models.return_value = ["o3", "o3-mini", "o4-mini"]
+            mock_provider.list_models.return_value = ["o3", "o3-mini", "o4-mini"]
 
             provider_instances = {ProviderType.OPENAI: mock_provider}
             service.validate_against_known_models(provider_instances)
@@ -447,7 +447,13 @@ class TestRegistryIntegration:
         }
         mock_openai.get_provider_type.return_value = ProviderType.OPENAI
 
-        def openai_list_models(respect_restrictions=True):
+        def openai_list_models(
+            *,
+            respect_restrictions: bool = True,
+            include_aliases: bool = True,
+            lowercase: bool = False,
+            unique: bool = False,
+        ):
             from utils.model_restrictions import get_restriction_service
 
             restriction_service = get_restriction_service() if respect_restrictions else None
@@ -457,15 +463,26 @@ class TestRegistryIntegration:
                     target_model = config
                     if restriction_service and not restriction_service.is_allowed(ProviderType.OPENAI, target_model):
                         continue
-                    models.append(model_name)
+                    if include_aliases:
+                        models.append(model_name)
                 else:
                     if restriction_service and not restriction_service.is_allowed(ProviderType.OPENAI, model_name):
                         continue
                     models.append(model_name)
+            if lowercase:
+                models = [m.lower() for m in models]
+            if unique:
+                seen = set()
+                ordered = []
+                for name in models:
+                    if name in seen:
+                        continue
+                    seen.add(name)
+                    ordered.append(name)
+                models = ordered
             return models
 
-        mock_openai.list_models = openai_list_models
-        mock_openai.list_all_known_models.return_value = ["o3", "o3-mini"]
+        mock_openai.list_models = MagicMock(side_effect=openai_list_models)
 
         mock_gemini = MagicMock()
         mock_gemini.MODEL_CAPABILITIES = {
@@ -474,7 +491,13 @@ class TestRegistryIntegration:
         }
         mock_gemini.get_provider_type.return_value = ProviderType.GOOGLE
 
-        def gemini_list_models(respect_restrictions=True):
+        def gemini_list_models(
+            *,
+            respect_restrictions: bool = True,
+            include_aliases: bool = True,
+            lowercase: bool = False,
+            unique: bool = False,
+        ):
             from utils.model_restrictions import get_restriction_service
 
             restriction_service = get_restriction_service() if respect_restrictions else None
@@ -484,18 +507,26 @@ class TestRegistryIntegration:
                     target_model = config
                     if restriction_service and not restriction_service.is_allowed(ProviderType.GOOGLE, target_model):
                         continue
-                    models.append(model_name)
+                    if include_aliases:
+                        models.append(model_name)
                 else:
                     if restriction_service and not restriction_service.is_allowed(ProviderType.GOOGLE, model_name):
                         continue
                     models.append(model_name)
+            if lowercase:
+                models = [m.lower() for m in models]
+            if unique:
+                seen = set()
+                ordered = []
+                for name in models:
+                    if name in seen:
+                        continue
+                    seen.add(name)
+                    ordered.append(name)
+                models = ordered
             return models
 
-        mock_gemini.list_models = gemini_list_models
-        mock_gemini.list_all_known_models.return_value = [
-            "gemini-2.5-pro",
-            "gemini-2.5-flash",
-        ]
+        mock_gemini.list_models = MagicMock(side_effect=gemini_list_models)
 
         def get_provider_side_effect(provider_type):
             if provider_type == ProviderType.OPENAI:
@@ -615,7 +646,13 @@ class TestAutoModeWithRestrictions:
         }
         mock_openai.get_provider_type.return_value = ProviderType.OPENAI
 
-        def openai_list_models(respect_restrictions=True):
+        def openai_list_models(
+            *,
+            respect_restrictions: bool = True,
+            include_aliases: bool = True,
+            lowercase: bool = False,
+            unique: bool = False,
+        ):
             from utils.model_restrictions import get_restriction_service
 
             restriction_service = get_restriction_service() if respect_restrictions else None
@@ -625,15 +662,26 @@ class TestAutoModeWithRestrictions:
                     target_model = config
                     if restriction_service and not restriction_service.is_allowed(ProviderType.OPENAI, target_model):
                         continue
-                    models.append(model_name)
+                    if include_aliases:
+                        models.append(model_name)
                 else:
                     if restriction_service and not restriction_service.is_allowed(ProviderType.OPENAI, model_name):
                         continue
                     models.append(model_name)
+            if lowercase:
+                models = [m.lower() for m in models]
+            if unique:
+                seen = set()
+                ordered = []
+                for name in models:
+                    if name in seen:
+                        continue
+                    seen.add(name)
+                    ordered.append(name)
+                models = ordered
             return models
 
-        mock_openai.list_models = openai_list_models
-        mock_openai.list_all_known_models.return_value = ["o3", "o3-mini", "o4-mini"]
+        mock_openai.list_models = MagicMock(side_effect=openai_list_models)
 
         # Add get_preferred_model method to mock to match new implementation
         def get_preferred_model(category, allowed_models):

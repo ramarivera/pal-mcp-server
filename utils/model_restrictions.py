@@ -30,13 +30,20 @@ logger = logging.getLogger(__name__)
 
 
 class ModelRestrictionService:
-    """
-    Centralized service for managing model usage restrictions.
+    """Central authority for environment-driven model allowlists.
 
-    This service:
-    1. Loads restrictions from environment variables at startup
-    2. Validates restrictions against known models
-    3. Provides a simple interface to check if a model is allowed
+    Role
+        Interpret ``*_ALLOWED_MODELS`` environment variables, keep their
+        entries normalised (lowercase), and answer whether a provider/model
+        pairing is permitted.
+
+    Responsibilities
+        * Parse, cache, and expose per-provider restriction sets
+        * Validate configuration by cross-checking each entry against the
+          provider’s alias-aware model list
+        * Offer helper methods such as ``is_allowed`` and ``filter_models`` to
+          enforce policy everywhere model names appear (tool selection, CLI
+          commands, etc.).
     """
 
     # Environment variable names
@@ -94,9 +101,14 @@ class ModelRestrictionService:
 
             # Get all supported models using the clean polymorphic interface
             try:
-                # Use list_all_known_models to get both aliases and their targets
-                all_models = provider.list_all_known_models()
-                supported_models = {model.lower() for model in all_models}
+                # Gather canonical models and aliases with consistent formatting
+                all_models = provider.list_models(
+                    respect_restrictions=False,
+                    include_aliases=True,
+                    lowercase=True,
+                    unique=True,
+                )
+                supported_models = set(all_models)
             except Exception as e:
                 logger.debug(f"Could not get model list from {provider_type.value} provider: {e}")
                 supported_models = set()
