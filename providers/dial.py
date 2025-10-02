@@ -6,22 +6,24 @@ import threading
 import time
 from typing import Optional
 
-from .base import (
+from .openai_compatible import OpenAICompatibleProvider
+from .shared import (
     ModelCapabilities,
     ModelResponse,
     ProviderType,
     create_temperature_constraint,
 )
-from .openai_compatible import OpenAICompatibleProvider
 
 logger = logging.getLogger(__name__)
 
 
 class DIALModelProvider(OpenAICompatibleProvider):
-    """DIAL provider using OpenAI-compatible API.
+    """Client for the DIAL (Data & AI Layer) aggregation service.
 
-    DIAL provides access to various AI models through a unified API interface.
-    Supports GPT, Claude, Gemini, and other models via DIAL deployments.
+    DIAL exposes several third-party models behind a single OpenAI-compatible
+    endpoint.  This provider wraps the service, publishes capability metadata
+    for the known deployments, and centralises retry/backoff settings tailored
+    to DIAL's latency characteristics.
     """
 
     FRIENDLY_NAME = "DIAL"

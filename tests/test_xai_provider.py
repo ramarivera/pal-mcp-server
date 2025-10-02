@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from providers.base import ProviderType
+from providers.shared import ProviderType
 from providers.xai import XAIModelProvider
 
 
@@ -265,7 +265,7 @@ class TestXAIProvider:
         assert "grok-3-fast" in provider.SUPPORTED_MODELS
 
         # Check model configs have required fields
-        from providers.base import ModelCapabilities
+        from providers.shared import ModelCapabilities
 
         grok4_config = provider.SUPPORTED_MODELS["grok-4"]
         assert isinstance(grok4_config, ModelCapabilities)

@@ -185,7 +185,7 @@ class TestSupportedModelsAliases:
         for provider in providers:
             for model_name, config in provider.SUPPORTED_MODELS.items():
                 # All values must be ModelCapabilities objects, not strings or dicts
-                from providers.base import ModelCapabilities
+                from providers.shared import ModelCapabilities
 
                 assert isinstance(config, ModelCapabilities), (
                     f"{provider.__class__.__name__}.SUPPORTED_MODELS['{model_name}'] "

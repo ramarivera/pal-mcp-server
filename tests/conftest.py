@@ -34,9 +34,9 @@ if sys.platform == "win32":
 
 # Register providers for all tests
 from providers import ModelProviderRegistry  # noqa: E402
-from providers.base import ProviderType  # noqa: E402
 from providers.gemini import GeminiModelProvider  # noqa: E402
 from providers.openai_provider import OpenAIModelProvider  # noqa: E402
+from providers.shared import ProviderType  # noqa: E402
 from providers.xai import XAIModelProvider  # noqa: E402
 
 # Register providers at test startup
@@ -109,7 +109,7 @@ def mock_provider_availability(request, monkeypatch):
             return
 
     # Ensure providers are registered (in case other tests cleared the registry)
-    from providers.base import ProviderType
+    from providers.shared import ProviderType
 
     registry = ModelProviderRegistry()
 
@@ -197,3 +197,19 @@ def mock_provider_availability(request, monkeypatch):
         return False
 
     monkeypatch.setattr(BaseTool, "is_effective_auto_mode", mock_is_effective_auto_mode)
+
+
+@pytest.fixture(autouse=True)
+def clear_model_restriction_env(monkeypatch):
+    """Ensure per-test isolation from user-defined model restriction env vars."""
+
+    restriction_vars = [
+        "OPENAI_ALLOWED_MODELS",
+        "GOOGLE_ALLOWED_MODELS",
+        "XAI_ALLOWED_MODELS",
+        "OPENROUTER_ALLOWED_MODELS",
+        "DIAL_ALLOWED_MODELS",
+    ]
+
+    for var in restriction_vars:
+        monkeypatch.delenv(var, raising=False)

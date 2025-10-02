@@ -412,12 +412,12 @@ def configure_providers():
         value = os.getenv(key)
         logger.debug(f"  {key}: {'[PRESENT]' if value else '[MISSING]'}")
     from providers import ModelProviderRegistry
-    from providers.base import ProviderType
     from providers.custom import CustomProvider
     from providers.dial import DIALModelProvider
     from providers.gemini import GeminiModelProvider
     from providers.openai_provider import OpenAIModelProvider
     from providers.openrouter import OpenRouterProvider
+    from providers.shared import ProviderType
     from providers.xai import XAIModelProvider
     from utils.model_restrictions import get_restriction_service
 

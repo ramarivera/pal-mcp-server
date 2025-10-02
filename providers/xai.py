@@ -6,19 +6,23 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
-from .base import (
+from .openai_compatible import OpenAICompatibleProvider
+from .shared import (
     ModelCapabilities,
     ModelResponse,
     ProviderType,
     create_temperature_constraint,
 )
-from .openai_compatible import OpenAICompatibleProvider
 
 logger = logging.getLogger(__name__)
 
 
 class XAIModelProvider(OpenAICompatibleProvider):
-    """X.AI GROK API provider (api.x.ai)."""
+    """Integration for X.AI's GROK models exposed over an OpenAI-style API.
+
+    Publishes capability metadata for the officially supported deployments and
+    maps tool-category preferences to the appropriate GROK model.
+    """
 
     FRIENDLY_NAME = "X.AI"
 

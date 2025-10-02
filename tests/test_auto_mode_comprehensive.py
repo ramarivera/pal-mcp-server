@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from providers.base import ProviderType
 from providers.registry import ModelProviderRegistry
+from providers.shared import ProviderType
 from tools.analyze import AnalyzeTool
 from tools.chat import ChatTool
 from tools.debug import DebugIssueTool

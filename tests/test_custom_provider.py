@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from providers import ModelProviderRegistry
-from providers.base import ProviderType
 from providers.custom import CustomProvider
+from providers.shared import ProviderType
 
 
 class TestCustomProvider:

@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from providers.base import ProviderType
 from providers.dial import DIALModelProvider
+from providers.shared import ProviderType
 
 
 class TestDIALProvider:

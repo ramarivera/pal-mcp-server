@@ -86,7 +86,7 @@ class TestCustomOpenAITemperatureParameterFix:
                 mock_registry_class.return_value = mock_registry
 
                 # Mock get_model_config to return our test model
-                from providers.base import ModelCapabilities, ProviderType, create_temperature_constraint
+                from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
 
                 test_capabilities = ModelCapabilities(
                     provider=ProviderType.OPENAI,
@@ -170,7 +170,7 @@ class TestCustomOpenAITemperatureParameterFix:
             mock_registry_class.return_value = mock_registry
 
             # Mock get_model_config to return a model that supports temperature
-            from providers.base import ModelCapabilities, ProviderType, create_temperature_constraint
+            from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
 
             test_capabilities = ModelCapabilities(
                 provider=ProviderType.OPENAI,
@@ -227,7 +227,7 @@ class TestCustomOpenAITemperatureParameterFix:
             mock_registry = Mock()
             mock_registry_class.return_value = mock_registry
 
-            from providers.base import ModelCapabilities, ProviderType, create_temperature_constraint
+            from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
 
             test_capabilities = ModelCapabilities(
                 provider=ProviderType.OPENAI,

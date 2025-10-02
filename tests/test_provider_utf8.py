@@ -10,9 +10,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from providers.base import ProviderType
 from providers.gemini import GeminiModelProvider
 from providers.openai_provider import OpenAIModelProvider
+from providers.shared import ProviderType
 
 
 class TestProviderUTF8Encoding(unittest.TestCase):
@@ -177,7 +177,7 @@ class TestProviderUTF8Encoding(unittest.TestCase):
 
     def test_model_response_utf8_serialization(self):
         """Test UTF-8 serialization of model responses."""
-        from providers.base import ModelResponse
+        from providers.shared import ModelResponse
 
         response = ModelResponse(
             content="Development successful! Code generated successfully. 🎉✅",

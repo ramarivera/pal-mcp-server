@@ -6,19 +6,24 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
-from .base import (
+from .openai_compatible import OpenAICompatibleProvider
+from .shared import (
     ModelCapabilities,
     ModelResponse,
     ProviderType,
     create_temperature_constraint,
 )
-from .openai_compatible import OpenAICompatibleProvider
 
 logger = logging.getLogger(__name__)
 
 
 class OpenAIModelProvider(OpenAICompatibleProvider):
-    """Official OpenAI API provider (api.openai.com)."""
+    """Implementation that talks to api.openai.com using rich model metadata.
+
+    In addition to the built-in catalogue, the provider can surface models
+    defined in ``conf/custom_models.json`` (for organisations running their own
+    OpenAI-compatible gateways) while still respecting restriction policies.
+    """
 
     # Model configurations using ModelCapabilities objects
     SUPPORTED_MODELS = {

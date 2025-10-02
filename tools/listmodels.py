@@ -79,9 +79,9 @@ class ListModelsTool(BaseTool):
         Returns:
             Formatted list of models by provider
         """
-        from providers.base import ProviderType
         from providers.openrouter_registry import OpenRouterModelRegistry
         from providers.registry import ModelProviderRegistry
+        from providers.shared import ProviderType
 
         output_lines = ["# Available AI Models\n"]
 
@@ -162,8 +162,8 @@ class ListModelsTool(BaseTool):
 
             try:
                 # Get OpenRouter provider from registry to properly apply restrictions
-                from providers.base import ProviderType
                 from providers.registry import ModelProviderRegistry
+                from providers.shared import ProviderType
 
                 provider = ModelProviderRegistry.get_provider(ProviderType.OPENROUTER)
                 if provider:

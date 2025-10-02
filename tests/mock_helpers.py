@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock
 
-from providers.base import ModelCapabilities, ProviderType, RangeTemperatureConstraint
+from providers.shared import ModelCapabilities, ProviderType, RangeTemperatureConstraint
 
 
 def create_mock_provider(model_name="gemini-2.5-flash", context_window=1_048_576):

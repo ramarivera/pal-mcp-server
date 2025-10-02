@@ -6,8 +6,8 @@ import tempfile
 
 import pytest
 
-from providers.base import ModelCapabilities, ProviderType
 from providers.openrouter_registry import OpenRouterModelRegistry
+from providers.shared import ModelCapabilities, ProviderType
 
 
 class TestOpenRouterModelRegistry:
@@ -213,7 +213,7 @@ class TestOpenRouterModelRegistry:
 
     def test_model_with_all_capabilities(self):
         """Test model with all capability flags."""
-        from providers.base import create_temperature_constraint
+        from providers.shared import create_temperature_constraint
 
         caps = ModelCapabilities(
             provider=ProviderType.OPENROUTER,

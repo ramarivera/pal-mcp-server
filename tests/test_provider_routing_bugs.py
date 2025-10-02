@@ -13,8 +13,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from providers.base import ProviderType
 from providers.registry import ModelProviderRegistry
+from providers.shared import ProviderType
 from tools.chat import ChatTool
 from tools.shared.base_models import ToolRequest
 

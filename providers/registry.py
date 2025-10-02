@@ -4,14 +4,20 @@ import logging
 import os
 from typing import TYPE_CHECKING, Optional
 
-from .base import ModelProvider, ProviderType
+from .base import ModelProvider
+from .shared import ProviderType
 
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 
 class ModelProviderRegistry:
-    """Registry for managing model providers."""
+    """Singleton that caches provider instances and coordinates priority order.
+
+    Responsibilities include resolving API keys from the environment, lazily
+    instantiating providers, and choosing the best provider for a model based
+    on restriction policies and provider priority.
+    """
 
     _instance = None
 

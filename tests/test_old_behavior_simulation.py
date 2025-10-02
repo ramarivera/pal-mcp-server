@@ -10,7 +10,7 @@ They prove that our fix was necessary and actually addresses real problems.
 
 from unittest.mock import MagicMock, patch
 
-from providers.base import ProviderType
+from providers.shared import ProviderType
 from utils.model_restrictions import ModelRestrictionService
 
 

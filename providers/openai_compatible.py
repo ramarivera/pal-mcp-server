@@ -11,21 +11,21 @@ from urllib.parse import urlparse
 
 from openai import OpenAI
 
-from .base import (
+from .base import ModelProvider
+from .shared import (
     ModelCapabilities,
-    ModelProvider,
     ModelResponse,
     ProviderType,
 )
 
 
 class OpenAICompatibleProvider(ModelProvider):
-    """Base class for any provider using an OpenAI-compatible API.
+    """Shared implementation for OpenAI API lookalikes.
 
-    This includes:
-    - Direct OpenAI API
-    - OpenRouter
-    - Any other OpenAI-compatible endpoint
+    The class owns HTTP client configuration (timeouts, proxy hardening,
+    custom headers) and normalises the OpenAI SDK responses into
+    :class:`~providers.shared.ModelResponse`.  Concrete subclasses only need to
+    provide capability metadata and any provider-specific request tweaks.
     """
 
     DEFAULT_HEADERS = {}

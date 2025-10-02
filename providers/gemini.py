@@ -11,13 +11,24 @@ if TYPE_CHECKING:
 from google import genai
 from google.genai import types
 
-from .base import ModelCapabilities, ModelProvider, ModelResponse, ProviderType, create_temperature_constraint
+from .base import ModelProvider
+from .shared import (
+    ModelCapabilities,
+    ModelResponse,
+    ProviderType,
+    create_temperature_constraint,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class GeminiModelProvider(ModelProvider):
-    """Google Gemini model provider implementation."""
+    """First-party Gemini integration built on the official Google SDK.
+
+    The provider advertises detailed thinking-mode budgets, handles optional
+    custom endpoints, and performs image pre-processing before forwarding a
+    request to the Gemini APIs.
+    """
 
     # Model configurations using ModelCapabilities objects
     SUPPORTED_MODELS = {

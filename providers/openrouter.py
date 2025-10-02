@@ -4,21 +4,22 @@ import logging
 import os
 from typing import Optional
 
-from .base import (
+from .openai_compatible import OpenAICompatibleProvider
+from .openrouter_registry import OpenRouterModelRegistry
+from .shared import (
     ModelCapabilities,
     ModelResponse,
     ProviderType,
     RangeTemperatureConstraint,
 )
-from .openai_compatible import OpenAICompatibleProvider
-from .openrouter_registry import OpenRouterModelRegistry
 
 
 class OpenRouterProvider(OpenAICompatibleProvider):
-    """OpenRouter unified API provider.
+    """Client for OpenRouter's multi-model aggregation service.
 
-    OpenRouter provides access to multiple AI models through a single API endpoint.
-    See https://openrouter.ai for available models and pricing.
+    OpenRouter surfaces dozens of upstream vendors.  This provider layers alias
+    resolution, restriction-aware filtering, and sensible capability defaults
+    on top of the generic OpenAI-compatible plumbing.
     """
 
     FRIENDLY_NAME = "OpenRouter"

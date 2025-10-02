@@ -14,9 +14,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from providers.base import ProviderType
 from providers.gemini import GeminiModelProvider
 from providers.openai_provider import OpenAIModelProvider
+from providers.shared import ProviderType
 from utils.model_restrictions import ModelRestrictionService
 
 

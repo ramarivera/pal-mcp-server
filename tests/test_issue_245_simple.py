@@ -41,7 +41,7 @@ def test_issue_245_custom_openai_temperature_ignored():
                 mock_registry = Mock()
                 mock_registry_class.return_value = mock_registry
 
-                from providers.base import ModelCapabilities, ProviderType, create_temperature_constraint
+                from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
 
                 # This is what the user configured in their custom_models.json
                 custom_config = ModelCapabilities(

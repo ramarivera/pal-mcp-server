@@ -5,8 +5,9 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 
-from providers.base import ModelProvider, ProviderType
+from providers.base import ModelProvider
 from providers.registry import ModelProviderRegistry
+from providers.shared import ProviderType
 from tools.listmodels import ListModelsTool
 
 

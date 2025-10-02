@@ -214,7 +214,7 @@ class TestModelEnumeration:
 
         # Rebuild the provider registry with OpenRouter registered
         ModelProviderRegistry._instance = None
-        from providers.base import ProviderType
+        from providers.shared import ProviderType
 
         ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
 

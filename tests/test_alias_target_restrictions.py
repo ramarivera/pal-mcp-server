@@ -8,9 +8,9 @@ both alias names and their target models, preventing policy bypass vulnerabiliti
 import os
 from unittest.mock import patch
 
-from providers.base import ProviderType
 from providers.gemini import GeminiModelProvider
 from providers.openai_provider import OpenAIModelProvider
+from providers.shared import ProviderType
 from utils.model_restrictions import ModelRestrictionService
 
 

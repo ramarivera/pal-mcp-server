@@ -9,7 +9,7 @@ from typing import Optional
 # Import handled via importlib.resources.files() calls directly
 from utils.file_utils import read_json_file
 
-from .base import (
+from .shared import (
     ModelCapabilities,
     ProviderType,
     create_temperature_constraint,
@@ -17,7 +17,13 @@ from .base import (
 
 
 class OpenRouterModelRegistry:
-    """Registry for managing OpenRouter model configurations and aliases."""
+    """Loads and validates the OpenRouter/custom model catalogue.
+
+    The registry parses ``conf/custom_models.json`` (or an override supplied via
+    environment variable), builds case-insensitive alias maps, and exposes
+    :class:`~providers.shared.ModelCapabilities` objects used by several
+    providers.
+    """
 
     def __init__(self, config_path: Optional[str] = None):
         """Initialize the registry.
@@ -261,6 +267,11 @@ class OpenRouterModelRegistry:
             ModelCapabilities if found, None otherwise
         """
         # Registry now returns ModelCapabilities directly
+        return self.resolve(name_or_alias)
+
+    def get_model_config(self, name_or_alias: str) -> Optional[ModelCapabilities]:
+        """Backward-compatible wrapper used by providers and older tests."""
+
         return self.resolve(name_or_alias)
 
     def list_models(self) -> list[str]:

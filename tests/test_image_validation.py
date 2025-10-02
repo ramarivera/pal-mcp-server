@@ -8,7 +8,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from providers.base import ModelCapabilities, ModelProvider, ModelResponse, ProviderType
+from providers.base import ModelProvider
+from providers.shared import ModelCapabilities, ModelResponse, ProviderType
 
 
 class MinimalTestProvider(ModelProvider):

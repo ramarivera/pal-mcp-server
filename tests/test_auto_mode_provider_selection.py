@@ -4,8 +4,8 @@ import os
 
 import pytest
 
-from providers.base import ProviderType
 from providers.registry import ModelProviderRegistry
+from providers.shared import ProviderType
 from tools.models import ToolModelCategory
 
 

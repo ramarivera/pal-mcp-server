@@ -9,8 +9,8 @@ This test specifically targets the bug where:
 
 from unittest.mock import Mock, patch
 
-from providers.base import ProviderType
 from providers.openrouter import OpenRouterProvider
+from providers.shared import ProviderType
 from tools.consensus import ConsensusTool
 
 
