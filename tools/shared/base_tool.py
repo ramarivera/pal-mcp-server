@@ -288,6 +288,42 @@ class BaseTool(ABC):
 
         return unique_models
 
+    def _format_available_models_list(self) -> str:
+        """Return a human-friendly list of available models or guidance when none found."""
+
+        available_models = self._get_available_models()
+        if not available_models:
+            return "No models detected. Configure provider credentials or set DEFAULT_MODEL to a valid option."
+        return ", ".join(available_models)
+
+    def _build_model_unavailable_message(self, model_name: str) -> str:
+        """Compose a consistent error message for unavailable model scenarios."""
+
+        tool_category = self.get_model_category()
+        suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
+        available_models_text = self._format_available_models_list()
+
+        return (
+            f"Model '{model_name}' is not available with current API keys. "
+            f"Available models: {available_models_text}. "
+            f"Suggested model for {self.get_name()}: '{suggested_model}' "
+            f"(category: {tool_category.value}). Select the strongest reasoning model that fits the task."
+        )
+
+    def _build_auto_mode_required_message(self) -> str:
+        """Compose the auto-mode prompt when an explicit model selection is required."""
+
+        tool_category = self.get_model_category()
+        suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
+        available_models_text = self._format_available_models_list()
+
+        return (
+            "Model parameter is required in auto mode. "
+            f"Available models: {available_models_text}. "
+            f"Suggested model for {self.get_name()}: '{suggested_model}' "
+            f"(category: {tool_category.value}). Select the strongest reasoning model that fits the task."
+        )
+
     def get_model_field_schema(self) -> dict[str, Any]:
         """
         Generate the model field schema based on auto mode configuration.
@@ -467,8 +503,7 @@ class BaseTool(ABC):
             provider = ModelProviderRegistry.get_provider_for_model(model_name)
             if not provider:
                 logger.error(f"No provider found for model '{model_name}' in {self.name} tool")
-                available_models = ModelProviderRegistry.get_available_models()
-                raise ValueError(f"Model '{model_name}' is not available. Available models: {available_models}")
+                raise ValueError(self._build_model_unavailable_message(model_name))
 
             return provider
         except Exception as e:
@@ -1127,29 +1162,11 @@ When recommending searches, be specific about what information you need and why 
 
             # For tests: Check if we should require model selection (auto mode)
             if self._should_require_model_selection(model_name):
-                # Get suggested model based on tool category
-                from providers.registry import ModelProviderRegistry
-
-                tool_category = self.get_model_category()
-                suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-
                 # Build error message based on why selection is required
                 if model_name.lower() == "auto":
-                    error_message = (
-                        f"Model parameter is required in auto mode. "
-                        f"Suggested model for {self.get_name()}: '{suggested_model}' "
-                        f"(category: {tool_category.value})"
-                    )
+                    error_message = self._build_auto_mode_required_message()
                 else:
-                    # Model was specified but not available
-                    available_models = self._get_available_models()
-
-                    error_message = (
-                        f"Model '{model_name}' is not available with current API keys. "
-                        f"Available models: {', '.join(available_models)}. "
-                        f"Suggested model for {self.get_name()}: '{suggested_model}' "
-                        f"(category: {tool_category.value})"
-                    )
+                    error_message = self._build_model_unavailable_message(model_name)
                 raise ValueError(error_message)
 
             # Create model context for tests
@@ -1237,7 +1254,7 @@ When recommending searches, be specific about what information you need and why 
                 # Generic error response for any unavailable model
                 return {
                     "status": "error",
-                    "content": f"Model '{model_context}' is not available. {str(e)}",
+                    "content": self._build_model_unavailable_message(str(model_context)),
                     "content_type": "text",
                     "metadata": {
                         "error_type": "validation_error",
@@ -1264,7 +1281,7 @@ When recommending searches, be specific about what information you need and why 
             model_name = getattr(model_context, "model_name", "unknown")
             return {
                 "status": "error",
-                "content": f"Model '{model_name}' is not available. {str(e)}",
+                "content": self._build_model_unavailable_message(model_name),
                 "content_type": "text",
                 "metadata": {
                     "error_type": "validation_error",

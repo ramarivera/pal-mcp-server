@@ -36,12 +36,16 @@ class TestCustomProvider:
                 CustomProvider(api_key="test-key")
 
     def test_validate_model_names_always_true(self):
-        """Test CustomProvider accepts any model name."""
+        """Test CustomProvider validates model names correctly."""
         provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
 
+        # Known model should validate
         assert provider.validate_model_name("llama3.2")
-        assert provider.validate_model_name("unknown-model")
-        assert provider.validate_model_name("anything")
+
+        # For custom provider, unknown models return False when not in registry
+        # This is expected behavior - custom models need to be declared in custom_models.json
+        assert not provider.validate_model_name("unknown-model")
+        assert not provider.validate_model_name("anything")
 
     def test_get_capabilities_from_registry(self):
         """Test get_capabilities returns registry capabilities when available."""
@@ -71,17 +75,12 @@ class TestCustomProvider:
                 os.environ["OPENROUTER_ALLOWED_MODELS"] = original_env
 
     def test_get_capabilities_generic_fallback(self):
-        """Test get_capabilities returns generic capabilities for unknown models."""
+        """Test get_capabilities raises error for unknown models not in registry."""
         provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
 
-        capabilities = provider.get_capabilities("unknown-model-xyz")
-
-        assert capabilities.provider == ProviderType.CUSTOM
-        assert capabilities.model_name == "unknown-model-xyz"
-        assert capabilities.context_window == 32_768  # Conservative default
-        assert not capabilities.supports_extended_thinking
-        assert capabilities.supports_system_prompts
-        assert capabilities.supports_streaming
+        # Unknown models should raise ValueError when not in registry
+        with pytest.raises(ValueError, match="Unsupported model 'unknown-model-xyz' for provider custom"):
+            provider.get_capabilities("unknown-model-xyz")
 
     def test_model_alias_resolution(self):
         """Test model alias resolution works correctly."""
@@ -100,8 +99,12 @@ class TestCustomProvider:
         """Custom provider generic capabilities default to no thinking mode."""
         provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
 
+        # llama3.2 is a known model that should work
         assert not provider.get_capabilities("llama3.2").supports_extended_thinking
-        assert not provider.get_capabilities("any-model").supports_extended_thinking
+
+        # Unknown models should raise error
+        with pytest.raises(ValueError, match="Unsupported model 'any-model' for provider custom"):
+            provider.get_capabilities("any-model")
 
     @patch("providers.custom.OpenAICompatibleProvider.generate_content")
     def test_generate_content_with_alias_resolution(self, mock_generate):

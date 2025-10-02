@@ -42,12 +42,15 @@ class TestOpenRouterProvider:
         """Test model validation."""
         provider = OpenRouterProvider(api_key="test-key")
 
-        # Should accept any model - OpenRouter handles validation
-        assert provider.validate_model_name("gpt-4") is True
-        assert provider.validate_model_name("claude-4-opus") is True
-        assert provider.validate_model_name("any-model-name") is True
-        assert provider.validate_model_name("GPT-4") is True
-        assert provider.validate_model_name("unknown-model") is True
+        # OpenRouter accepts models with provider prefixes or known models
+        assert provider.validate_model_name("openai/gpt-4") is True
+        assert provider.validate_model_name("anthropic/claude-3-opus") is True
+        assert provider.validate_model_name("google/any-model-name") is True
+        assert provider.validate_model_name("groq/llama-3.1-8b") is True
+
+        # Unknown models without provider prefix are rejected
+        assert provider.validate_model_name("gpt-4") is False
+        assert provider.validate_model_name("unknown-model") is False
 
     def test_get_capabilities(self):
         """Test capability generation."""
@@ -59,10 +62,14 @@ class TestOpenRouterProvider:
         assert caps.model_name == "openai/o3"  # Resolved name
         assert caps.friendly_name == "OpenRouter (openai/o3)"
 
-        # Test with a model not in registry - should get generic capabilities
-        caps = provider.get_capabilities("unknown-model")
+        # Test with a model not in registry - should raise error
+        with pytest.raises(ValueError, match="Unsupported model 'unknown-model' for provider openrouter"):
+            provider.get_capabilities("unknown-model")
+
+        # Test with model that has provider prefix - should get generic capabilities
+        caps = provider.get_capabilities("provider/unknown-model")
         assert caps.provider == ProviderType.OPENROUTER
-        assert caps.model_name == "unknown-model"
+        assert caps.model_name == "provider/unknown-model"
         assert caps.context_window == 32_768  # Safe default
         assert hasattr(caps, "_is_generic") and caps._is_generic is True
 

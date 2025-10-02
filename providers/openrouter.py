@@ -76,25 +76,31 @@ class OpenRouterProvider(OpenAICompatibleProvider):
         if capabilities:
             return capabilities
 
-        logging.debug(
-            f"Using generic capabilities for '{canonical_name}' via OpenRouter. "
-            "Consider adding to custom_models.json for specific capabilities."
-        )
+        base_identifier = canonical_name.split(":", 1)[0]
+        if "/" in base_identifier:
+            logging.debug(
+                "Using generic OpenRouter capabilities for %s (provider/model format detected)", canonical_name
+            )
+            generic = ModelCapabilities(
+                provider=ProviderType.OPENROUTER,
+                model_name=canonical_name,
+                friendly_name=self.FRIENDLY_NAME,
+                context_window=32_768,
+                max_output_tokens=32_768,
+                supports_extended_thinking=False,
+                supports_system_prompts=True,
+                supports_streaming=True,
+                supports_function_calling=False,
+                temperature_constraint=RangeTemperatureConstraint(0.0, 2.0, 1.0),
+            )
+            generic._is_generic = True
+            return generic
 
-        generic = ModelCapabilities(
-            provider=ProviderType.OPENROUTER,
-            model_name=canonical_name,
-            friendly_name=self.FRIENDLY_NAME,
-            context_window=32_768,
-            max_output_tokens=32_768,
-            supports_extended_thinking=False,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=False,
-            temperature_constraint=RangeTemperatureConstraint(0.0, 2.0, 1.0),
+        logging.debug(
+            "Rejecting unknown OpenRouter model '%s' (no provider prefix); requires explicit configuration",
+            canonical_name,
         )
-        generic._is_generic = True
-        return generic
+        return None
 
     # ------------------------------------------------------------------
     # Provider identity
