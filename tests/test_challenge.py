@@ -54,7 +54,6 @@ class TestChallengeTool:
         assert "model" not in properties
         assert "temperature" not in properties
         assert "thinking_mode" not in properties
-        assert "use_websearch" not in properties
         assert "continuation_id" not in properties
 
     def test_request_model_validation(self):

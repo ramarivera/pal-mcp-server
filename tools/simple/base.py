@@ -796,7 +796,7 @@ class SimpleTool(BaseTool):
         self._validate_token_limit(content_to_validate, "Content")
 
         # Add standardized web search guidance
-        websearch_instruction = self.get_websearch_instruction(True, self.get_websearch_guidance())
+        websearch_instruction = self.get_websearch_instruction(self.get_websearch_guidance())
 
         # Combine system prompt with user content
         full_prompt = f"""{system_prompt}{websearch_instruction}

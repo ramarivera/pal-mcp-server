@@ -131,7 +131,6 @@ class TestConsensusTool:
         assert "issues_found" not in schema["properties"]
         assert "temperature" not in schema["properties"]
         assert "thinking_mode" not in schema["properties"]
-        assert "use_websearch" not in schema["properties"]
 
         # Images should be present now
         assert "images" in schema["properties"]

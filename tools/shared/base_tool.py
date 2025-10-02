@@ -1099,19 +1099,16 @@ class BaseTool(ABC):
         )
         return result, actually_processed_files
 
-    def get_websearch_instruction(self, use_websearch: bool, tool_specific: Optional[str] = None) -> str:
+    def get_websearch_instruction(self, tool_specific: Optional[str] = None) -> str:
         """
-        Generate standardized web search instruction based on the use_websearch parameter.
+        Generate standardized web search instruction.
 
         Args:
-            use_websearch: Whether web search is enabled
             tool_specific: Optional tool-specific search guidance
 
         Returns:
-            str: Web search instruction to append to prompt, or empty string
+            str: Web search instruction to append to prompt
         """
-        if not use_websearch:
-            return ""
 
         base_instruction = """
 
