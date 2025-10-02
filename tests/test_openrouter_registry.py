@@ -213,7 +213,7 @@ class TestOpenRouterModelRegistry:
 
     def test_model_with_all_capabilities(self):
         """Test model with all capability flags."""
-        from providers.shared import create_temperature_constraint
+        from providers.shared import TemperatureConstraint
 
         caps = ModelCapabilities(
             provider=ProviderType.OPENROUTER,
@@ -228,7 +228,7 @@ class TestOpenRouterModelRegistry:
             supports_function_calling=True,
             supports_json_mode=True,
             description="Fully featured test model",
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
         )
         assert caps.context_window == 128000
         assert caps.supports_extended_thinking

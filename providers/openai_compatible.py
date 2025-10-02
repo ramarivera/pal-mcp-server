@@ -734,13 +734,6 @@ class OpenAICompatibleProvider(ModelProvider):
         """
         pass
 
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Check if the model supports extended thinking mode.
-
-        Default is False for OpenAI-compatible providers.
-        """
-        return False
-
     def _is_error_retryable(self, error: Exception) -> bool:
         """Determine if an error should be retried based on structured error codes.
 

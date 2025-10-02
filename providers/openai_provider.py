@@ -7,12 +7,7 @@ if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 from .openai_compatible import OpenAICompatibleProvider
-from .shared import (
-    ModelCapabilities,
-    ModelResponse,
-    ProviderType,
-    create_temperature_constraint,
-)
+from .shared import ModelCapabilities, ModelResponse, ProviderType, TemperatureConstraint
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +36,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # GPT-5 supports vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=True,  # Regular models accept temperature parameter
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="GPT-5 (400K context, 128K output) - Advanced model with reasoning support",
             aliases=["gpt5"],
         ),
@@ -59,7 +54,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # GPT-5-mini supports vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support",
             aliases=["gpt5-mini", "gpt5mini", "mini"],
         ),
@@ -77,7 +72,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=20.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks",
             aliases=["gpt5nano", "gpt5-nano", "nano"],
         ),
@@ -95,7 +90,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # O3 models support vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=False,  # O3 models don't accept temperature parameter
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Strong reasoning (200K context) - Logical problems, code generation, systematic analysis",
             aliases=[],
         ),
@@ -113,7 +108,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # O3 models support vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=False,  # O3 models don't accept temperature parameter
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity",
             aliases=["o3mini"],
         ),
@@ -131,7 +126,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # O3 models support vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=False,  # O3 models don't accept temperature parameter
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Professional-grade reasoning (200K context) - EXTREMELY EXPENSIVE: Only for the most complex problems requiring universe-scale complexity analysis OR when the user explicitly asks for this model. Use sparingly for critical architectural decisions or exceptionally complex debugging that other models cannot handle.",
             aliases=["o3pro"],
         ),
@@ -149,7 +144,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # O4 models support vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=False,  # O4 models don't accept temperature parameter
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning",
             aliases=["o4mini"],
         ),
@@ -167,7 +162,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # GPT-4.1 supports vision
             max_image_size_mb=20.0,  # 20MB per OpenAI docs
             supports_temperature=True,  # Regular models accept temperature parameter
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="GPT-4.1 (1M context) - Advanced reasoning model with large context window",
             aliases=["gpt4.1"],
         ),
@@ -302,13 +297,6 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             max_output_tokens=max_output_tokens,
             **kwargs,
         )
-
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Check if the model supports extended thinking mode."""
-        try:
-            return self.get_capabilities(model_name).supports_extended_thinking
-        except ValueError:
-            return False
 
     def get_preferred_model(self, category: "ToolModelCategory", allowed_models: list[str]) -> Optional[str]:
         """Get OpenAI's preferred model for a given category from allowed models.

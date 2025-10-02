@@ -40,7 +40,6 @@ class TestDynamicContextRequests:
 
         mock_provider = create_mock_provider()
         mock_provider.get_provider_type.return_value = Mock(value="google")
-        mock_provider.supports_thinking_mode.return_value = False
         mock_provider.generate_content.return_value = Mock(
             content=clarification_json, usage={}, model_name="gemini-2.5-flash", metadata={}
         )
@@ -122,7 +121,6 @@ class TestDynamicContextRequests:
 
         mock_provider = create_mock_provider()
         mock_provider.get_provider_type.return_value = Mock(value="google")
-        mock_provider.supports_thinking_mode.return_value = False
         mock_provider.generate_content.return_value = Mock(
             content=malformed_json, usage={}, model_name="gemini-2.5-flash", metadata={}
         )
@@ -181,7 +179,6 @@ class TestDynamicContextRequests:
 
         mock_provider = create_mock_provider()
         mock_provider.get_provider_type.return_value = Mock(value="google")
-        mock_provider.supports_thinking_mode.return_value = False
         mock_provider.generate_content.return_value = Mock(
             content=clarification_json, usage={}, model_name="gemini-2.5-flash", metadata={}
         )
@@ -347,7 +344,6 @@ class TestCollaborationWorkflow:
 
         mock_provider = create_mock_provider()
         mock_provider.get_provider_type.return_value = Mock(value="google")
-        mock_provider.supports_thinking_mode.return_value = False
         mock_provider.generate_content.return_value = Mock(
             content=clarification_json, usage={}, model_name="gemini-2.5-flash", metadata={}
         )
@@ -414,7 +410,6 @@ class TestCollaborationWorkflow:
 
         mock_provider = create_mock_provider()
         mock_provider.get_provider_type.return_value = Mock(value="google")
-        mock_provider.supports_thinking_mode.return_value = False
         mock_provider.generate_content.return_value = Mock(
             content=clarification_json, usage={}, model_name="gemini-2.5-flash", metadata={}
         )

@@ -86,7 +86,7 @@ class TestCustomOpenAITemperatureParameterFix:
                 mock_registry_class.return_value = mock_registry
 
                 # Mock get_model_config to return our test model
-                from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
+                from providers.shared import ModelCapabilities, ProviderType, TemperatureConstraint
 
                 test_capabilities = ModelCapabilities(
                     provider=ProviderType.OPENAI,
@@ -102,7 +102,7 @@ class TestCustomOpenAITemperatureParameterFix:
                     supports_images=True,
                     max_image_size_mb=20.0,
                     supports_temperature=False,  # This is the key setting
-                    temperature_constraint=create_temperature_constraint("fixed"),
+                    temperature_constraint=TemperatureConstraint.create("fixed"),
                     description="Custom OpenAI GPT-5 test model",
                 )
 
@@ -170,7 +170,7 @@ class TestCustomOpenAITemperatureParameterFix:
             mock_registry_class.return_value = mock_registry
 
             # Mock get_model_config to return a model that supports temperature
-            from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
+            from providers.shared import ModelCapabilities, ProviderType, TemperatureConstraint
 
             test_capabilities = ModelCapabilities(
                 provider=ProviderType.OPENAI,
@@ -186,7 +186,7 @@ class TestCustomOpenAITemperatureParameterFix:
                 supports_images=True,
                 max_image_size_mb=20.0,
                 supports_temperature=True,  # This model DOES support temperature
-                temperature_constraint=create_temperature_constraint("range"),
+                temperature_constraint=TemperatureConstraint.create("range"),
                 description="Custom OpenAI GPT-4 test model",
             )
 
@@ -227,7 +227,7 @@ class TestCustomOpenAITemperatureParameterFix:
             mock_registry = Mock()
             mock_registry_class.return_value = mock_registry
 
-            from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
+            from providers.shared import ModelCapabilities, ProviderType, TemperatureConstraint
 
             test_capabilities = ModelCapabilities(
                 provider=ProviderType.OPENAI,
@@ -243,7 +243,7 @@ class TestCustomOpenAITemperatureParameterFix:
                 supports_images=True,
                 max_image_size_mb=20.0,
                 supports_temperature=False,
-                temperature_constraint=create_temperature_constraint("fixed"),
+                temperature_constraint=TemperatureConstraint.create("fixed"),
                 description="Custom OpenAI O3 test model",
             )
 

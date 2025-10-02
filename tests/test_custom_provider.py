@@ -99,11 +99,11 @@ class TestCustomProvider:
         assert resolved_local == "llama3.2"
 
     def test_no_thinking_mode_support(self):
-        """Test CustomProvider doesn't support thinking mode."""
+        """Custom provider generic capabilities default to no thinking mode."""
         provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
 
-        assert not provider.supports_thinking_mode("llama3.2")
-        assert not provider.supports_thinking_mode("any-model")
+        assert not provider.get_capabilities("llama3.2").supports_extended_thinking
+        assert not provider.get_capabilities("any-model").supports_extended_thinking
 
     @patch("providers.custom.OpenAICompatibleProvider.generate_content")
     def test_generate_content_with_alias_resolution(self, mock_generate):

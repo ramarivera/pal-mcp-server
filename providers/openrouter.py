@@ -204,20 +204,6 @@ class OpenRouterProvider(OpenAICompatibleProvider):
             **kwargs,
         )
 
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Check if the model supports extended thinking mode.
-
-        Currently, no models via OpenRouter support extended thinking.
-        This may change as new models become available.
-
-        Args:
-            model_name: Model to check
-
-        Returns:
-            False (no OpenRouter models currently support thinking mode)
-        """
-        return False
-
     def list_models(
         self,
         *,

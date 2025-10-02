@@ -7,12 +7,7 @@ if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 from .openai_compatible import OpenAICompatibleProvider
-from .shared import (
-    ModelCapabilities,
-    ModelResponse,
-    ProviderType,
-    create_temperature_constraint,
-)
+from .shared import ModelCapabilities, ModelResponse, ProviderType, TemperatureConstraint
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +37,7 @@ class XAIModelProvider(OpenAICompatibleProvider):
             supports_images=True,  # Multimodal capabilities
             max_image_size_mb=20.0,  # Standard image size limit
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="GROK-4 (256K context) - Frontier multimodal reasoning model with advanced capabilities",
             aliases=["grok", "grok4", "grok-4"],
         ),
@@ -60,7 +55,7 @@ class XAIModelProvider(OpenAICompatibleProvider):
             supports_images=False,  # Assuming GROK is text-only for now
             max_image_size_mb=0.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="GROK-3 (131K context) - Advanced reasoning model from X.AI, excellent for complex analysis",
             aliases=["grok3"],
         ),
@@ -78,7 +73,7 @@ class XAIModelProvider(OpenAICompatibleProvider):
             supports_images=False,  # Assuming GROK is text-only for now
             max_image_size_mb=0.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="GROK-3 Fast (131K context) - Higher performance variant, faster processing but more expensive",
             aliases=["grok3fast", "grokfast", "grok3-fast"],
         ),
@@ -152,14 +147,6 @@ class XAIModelProvider(OpenAICompatibleProvider):
             max_output_tokens=max_output_tokens,
             **kwargs,
         )
-
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Check if the model supports extended thinking mode."""
-        resolved_name = self._resolve_model_name(model_name)
-        capabilities = self.MODEL_CAPABILITIES.get(resolved_name)
-        if capabilities:
-            return capabilities.supports_extended_thinking
-        return False
 
     def get_preferred_model(self, category: "ToolModelCategory", allowed_models: list[str]) -> Optional[str]:
         """Get XAI's preferred model for a given category from allowed models.

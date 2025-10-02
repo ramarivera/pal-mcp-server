@@ -12,7 +12,7 @@ from utils.file_utils import read_json_file
 from .shared import (
     ModelCapabilities,
     ProviderType,
-    create_temperature_constraint,
+    TemperatureConstraint,
 )
 
 
@@ -178,7 +178,7 @@ class OpenRouterModelRegistry:
                 # Create ModelCapabilities directly from JSON data
                 # Handle temperature_constraint conversion
                 temp_constraint_str = model_data.get("temperature_constraint")
-                temp_constraint = create_temperature_constraint(temp_constraint_str or "range")
+                temp_constraint = TemperatureConstraint.create(temp_constraint_str or "range")
 
                 # Set provider-specific defaults based on is_custom flag
                 is_custom = model_data.get("is_custom", False)

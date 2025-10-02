@@ -109,11 +109,6 @@ class ModelProvider(ABC):
             constraint_desc = capabilities.temperature_constraint.get_description()
             raise ValueError(f"Temperature {temperature} is invalid for model {model_name}. {constraint_desc}")
 
-    @abstractmethod
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Check if the model supports extended thinking mode."""
-        pass
-
     def get_model_configurations(self) -> dict[str, ModelCapabilities]:
         """Get model configurations for this provider.
 

@@ -7,12 +7,7 @@ import time
 from typing import Optional
 
 from .openai_compatible import OpenAICompatibleProvider
-from .shared import (
-    ModelCapabilities,
-    ModelResponse,
-    ProviderType,
-    create_temperature_constraint,
-)
+from .shared import ModelCapabilities, ModelResponse, ProviderType, TemperatureConstraint
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +43,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=20.0,
             supports_temperature=False,  # O3 models don't accept temperature
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="OpenAI O3 via DIAL - Strong reasoning model",
             aliases=["o3"],
         ),
@@ -66,7 +61,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=20.0,
             supports_temperature=False,  # O4 models don't accept temperature
-            temperature_constraint=create_temperature_constraint("fixed"),
+            temperature_constraint=TemperatureConstraint.create("fixed"),
             description="OpenAI O4-mini via DIAL - Fast reasoning model",
             aliases=["o4-mini"],
         ),
@@ -84,7 +79,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=5.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Claude Sonnet 4.1 via DIAL - Balanced performance",
             aliases=["sonnet-4.1", "sonnet-4"],
         ),
@@ -102,7 +97,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=5.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Claude Sonnet 4.1 with thinking mode via DIAL",
             aliases=["sonnet-4.1-thinking", "sonnet-4-thinking"],
         ),
@@ -120,7 +115,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=5.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Claude Opus 4.1 via DIAL - Most capable Claude model",
             aliases=["opus-4.1", "opus-4"],
         ),
@@ -138,7 +133,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=5.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Claude Opus 4.1 with thinking mode via DIAL",
             aliases=["opus-4.1-thinking", "opus-4-thinking"],
         ),
@@ -156,7 +151,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=20.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Gemini 2.5 Pro with Google Search via DIAL",
             aliases=["gemini-2.5-pro-search"],
         ),
@@ -174,7 +169,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=20.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Gemini 2.5 Pro via DIAL - Deep reasoning",
             aliases=["gemini-2.5-pro"],
         ),
@@ -192,7 +187,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             supports_images=True,
             max_image_size_mb=20.0,
             supports_temperature=True,
-            temperature_constraint=create_temperature_constraint("range"),
+            temperature_constraint=TemperatureConstraint.create("range"),
             description="Gemini 2.5 Flash via DIAL - Ultra-fast",
             aliases=["gemini-2.5-flash"],
         ),

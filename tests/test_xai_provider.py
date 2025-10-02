@@ -144,21 +144,17 @@ class TestXAIProvider:
         with pytest.raises(ValueError, match="Unsupported X.AI model"):
             provider.get_capabilities("invalid-model")
 
-    def test_thinking_mode_support(self):
-        """Test thinking mode support for X.AI models."""
+    def test_extended_thinking_flags(self):
+        """X.AI capabilities should expose extended thinking support correctly."""
         provider = XAIModelProvider("test-key")
 
-        # Grok-4 supports thinking mode
-        assert provider.supports_thinking_mode("grok-4") is True
-        assert provider.supports_thinking_mode("grok") is True  # Resolves to grok-4
+        thinking_aliases = ["grok-4", "grok", "grok4"]
+        for alias in thinking_aliases:
+            assert provider.get_capabilities(alias).supports_extended_thinking is True
 
-        # Grok-3 models don't support thinking mode
-        assert not provider.supports_thinking_mode("grok-3")
-        assert not provider.supports_thinking_mode("grok-3-fast")
-        assert provider.supports_thinking_mode("grok-4")  # grok-4 supports thinking mode
-        assert provider.supports_thinking_mode("grok")  # resolves to grok-4
-        assert provider.supports_thinking_mode("grok4")  # resolves to grok-4
-        assert not provider.supports_thinking_mode("grokfast")
+        non_thinking_aliases = ["grok-3", "grok-3-fast", "grokfast"]
+        for alias in non_thinking_aliases:
+            assert provider.get_capabilities(alias).supports_extended_thinking is False
 
     def test_provider_type(self):
         """Test provider type identification."""

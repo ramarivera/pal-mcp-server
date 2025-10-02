@@ -284,24 +284,6 @@ class CustomProvider(OpenAICompatibleProvider):
             **kwargs,
         )
 
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Check if the model supports extended thinking mode.
-
-        Args:
-            model_name: Model to check
-
-        Returns:
-            True if model supports thinking mode, False otherwise
-        """
-        # Check if model is in registry
-        config = self._registry.resolve(model_name) if self._registry else None
-        if config and config.is_custom:
-            # Trust the config from custom_models.json
-            return config.supports_extended_thinking
-
-        # Default to False for unknown models
-        return False
-
     def get_model_configurations(self) -> dict[str, ModelCapabilities]:
         """Get model configurations from the registry.
 

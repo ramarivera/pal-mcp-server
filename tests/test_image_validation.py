@@ -43,10 +43,6 @@ class MinimalTestProvider(ModelProvider):
         """Not needed for image validation tests."""
         raise NotImplementedError("Not needed for image validation tests")
 
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        """Not needed for image validation tests."""
-        raise NotImplementedError("Not needed for image validation tests")
-
 
 class TestImageValidation:
     """Test suite for image validation functionality."""

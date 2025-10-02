@@ -15,7 +15,7 @@ Each provider:
 **Option A: Full Provider (`ModelProvider`)**
 - For APIs with unique features or custom authentication
 - Complete control over API calls and response handling
-- Required methods: `generate_content()`, `count_tokens()`, `get_capabilities()`, `validate_model_name()`, `supports_thinking_mode()`, `get_provider_type()`
+- Required methods: `generate_content()`, `count_tokens()`, `get_capabilities()`, `validate_model_name()`, `get_provider_type()`
 
 **Option B: OpenAI-Compatible (`OpenAICompatibleProvider`)**
 - For APIs that follow OpenAI's chat completion format
@@ -130,10 +130,6 @@ class ExampleModelProvider(ModelProvider):
     def validate_model_name(self, model_name: str) -> bool:
         resolved_name = self._resolve_model_name(model_name)
         return resolved_name in self.MODEL_CAPABILITIES
-    
-    def supports_thinking_mode(self, model_name: str) -> bool:
-        capabilities = self.get_capabilities(model_name)
-        return capabilities.supports_extended_thinking
 ```
 
 #### Option B: OpenAI-Compatible Provider (Simplified)

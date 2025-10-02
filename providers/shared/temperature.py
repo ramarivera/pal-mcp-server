@@ -8,7 +8,6 @@ __all__ = [
     "FixedTemperatureConstraint",
     "RangeTemperatureConstraint",
     "DiscreteTemperatureConstraint",
-    "create_temperature_constraint",
 ]
 
 # Common heuristics for determining temperature support when explicit
@@ -102,7 +101,7 @@ class TemperatureConstraint(ABC):
         """
 
         if constraint_hint:
-            constraint = create_temperature_constraint(constraint_hint)
+            constraint = TemperatureConstraint.create(constraint_hint)
             supports_temperature = constraint_hint != "fixed"
             reason = f"constraint hint '{constraint_hint}'"
             return supports_temperature, constraint, reason
@@ -114,6 +113,19 @@ class TemperatureConstraint(ABC):
             constraint = FixedTemperatureConstraint(1.0)
 
         return supports_temperature, constraint, reason
+
+    @staticmethod
+    def create(constraint_type: str) -> "TemperatureConstraint":
+        """Factory that yields the appropriate constraint for a configuration hint."""
+
+        if constraint_type == "fixed":
+            # Fixed temperature models (O3/O4) only support temperature=1.0
+            return FixedTemperatureConstraint(1.0)
+        if constraint_type == "discrete":
+            # For models with specific allowed values - using common OpenAI values as default
+            return DiscreteTemperatureConstraint([0.0, 0.3, 0.7, 1.0, 1.5, 2.0], 0.3)
+        # Default range constraint (for "range" or None)
+        return RangeTemperatureConstraint(0.0, 2.0, 0.3)
 
 
 class FixedTemperatureConstraint(TemperatureConstraint):
@@ -174,22 +186,3 @@ class DiscreteTemperatureConstraint(TemperatureConstraint):
 
     def get_default(self) -> float:
         return self.default_temp
-
-
-def create_temperature_constraint(constraint_type: str) -> TemperatureConstraint:
-    """Factory that yields the appropriate constraint for a model configuration.
-
-    The JSON configuration stored in ``conf/custom_models.json`` references this
-    helper via human-readable strings.  Providers feed those values into this
-    function so that runtime logic can rely on strongly typed constraint
-    objects.
-    """
-
-    if constraint_type == "fixed":
-        # Fixed temperature models (O3/O4) only support temperature=1.0
-        return FixedTemperatureConstraint(1.0)
-    if constraint_type == "discrete":
-        # For models with specific allowed values - using common OpenAI values as default
-        return DiscreteTemperatureConstraint([0.0, 0.3, 0.7, 1.0, 1.5, 2.0], 0.3)
-    # Default range constraint (for "range" or None)
-    return RangeTemperatureConstraint(0.0, 2.0, 0.3)

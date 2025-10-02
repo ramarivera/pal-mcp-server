@@ -8,7 +8,6 @@ from .temperature import (
     FixedTemperatureConstraint,
     RangeTemperatureConstraint,
     TemperatureConstraint,
-    create_temperature_constraint,
 )
 
 __all__ = [
@@ -19,5 +18,4 @@ __all__ = [
     "FixedTemperatureConstraint",
     "RangeTemperatureConstraint",
     "DiscreteTemperatureConstraint",
-    "create_temperature_constraint",
 ]

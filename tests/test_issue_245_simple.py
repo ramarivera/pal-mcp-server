@@ -41,7 +41,7 @@ def test_issue_245_custom_openai_temperature_ignored():
                 mock_registry = Mock()
                 mock_registry_class.return_value = mock_registry
 
-                from providers.shared import ModelCapabilities, ProviderType, create_temperature_constraint
+                from providers.shared import ModelCapabilities, ProviderType, TemperatureConstraint
 
                 # This is what the user configured in their custom_models.json
                 custom_config = ModelCapabilities(
@@ -56,7 +56,7 @@ def test_issue_245_custom_openai_temperature_ignored():
                     supports_streaming=True,
                     supports_function_calling=True,
                     supports_temperature=False,  # User set this to false!
-                    temperature_constraint=create_temperature_constraint("fixed"),
+                    temperature_constraint=TemperatureConstraint.create("fixed"),
                     supports_images=True,
                     max_image_size_mb=20.0,
                     description="Custom OpenAI GPT-5",
