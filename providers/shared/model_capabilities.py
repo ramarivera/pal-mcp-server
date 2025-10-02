@@ -32,3 +32,13 @@ class ModelCapabilities:
     temperature_constraint: TemperatureConstraint = field(
         default_factory=lambda: RangeTemperatureConstraint(0.0, 2.0, 0.3)
     )
+
+    @staticmethod
+    def collect_aliases(model_configs: dict[str, "ModelCapabilities"]) -> dict[str, list[str]]:
+        """Build a mapping of model name to aliases from capability configs."""
+
+        return {
+            base_model: capabilities.aliases
+            for base_model, capabilities in model_configs.items()
+            if capabilities.aliases
+        }

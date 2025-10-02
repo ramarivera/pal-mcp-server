@@ -299,13 +299,3 @@ class OpenRouterProvider(OpenAICompatibleProvider):
                         configs[model_name] = config
 
         return configs
-
-    def get_all_model_aliases(self) -> dict[str, list[str]]:
-        """Get all model aliases from the registry.
-
-        Returns:
-            Dictionary mapping model names to their list of aliases
-        """
-        # Since aliases are now included in the configurations,
-        # we can use the base class implementation
-        return super().get_all_model_aliases()
