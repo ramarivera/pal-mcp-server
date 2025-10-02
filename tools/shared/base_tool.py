@@ -293,7 +293,10 @@ class BaseTool(ABC):
 
         available_models = self._get_available_models()
         if not available_models:
-            return "No models detected. Configure provider credentials or set DEFAULT_MODEL to a valid option."
+            return (
+                "No models detected. Configure provider credentials or set DEFAULT_MODEL to a valid option. "
+                "If the user requested a specific model, respond with this notice instead of substituting another model."
+            )
         return ", ".join(available_models)
 
     def _build_model_unavailable_message(self, model_name: str) -> str:
@@ -307,7 +310,7 @@ class BaseTool(ABC):
             f"Model '{model_name}' is not available with current API keys. "
             f"Available models: {available_models_text}. "
             f"Suggested model for {self.get_name()}: '{suggested_model}' "
-            f"(category: {tool_category.value}). Select the strongest reasoning model that fits the task."
+            f"(category: {tool_category.value}). If the user explicitly requested a model, you MUST use that exact name or report this error back—do not substitute another model."
         )
 
     def _build_auto_mode_required_message(self) -> str:
@@ -321,7 +324,7 @@ class BaseTool(ABC):
             "Model parameter is required in auto mode. "
             f"Available models: {available_models_text}. "
             f"Suggested model for {self.get_name()}: '{suggested_model}' "
-            f"(category: {tool_category.value}). Select the strongest reasoning model that fits the task."
+            f"(category: {tool_category.value}). When the user names a model, relay that exact name—never swap in another option."
         )
 
     def get_model_field_schema(self) -> dict[str, Any]:
@@ -340,8 +343,8 @@ class BaseTool(ABC):
         # Use the centralized effective auto mode check
         if self.is_effective_auto_mode():
             description = (
-                "Currently in auto model selection mode. IMPORTANT: Use the model specified by the user if provided, OR select the most suitable model by calling the "
-                "`listmodels` tool to obtain the full catalog with capabilities, aliases, and context window info."
+                "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. "
+                "If no model is provided, you may call the `listmodels` tool to review options and select an appropriate match."
             )
             return {
                 "type": "string",
@@ -349,8 +352,8 @@ class BaseTool(ABC):
             }
 
         description = (
-            f"The default model is '{DEFAULT_MODEL}'. Override by supplying another supported model name ONLY when requested by the user. "
-            "If needed, use the `listmodels` tool to obtain a full model catalog along with their capability details."
+            f"The default model is '{DEFAULT_MODEL}'. Override only when the user explicitly requests a different model, and use that exact name. "
+            "If the requested model fails validation, surface the server error instead of substituting another model. When unsure, call the `listmodels` tool for details."
         )
 
         return {
