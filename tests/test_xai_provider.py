@@ -141,7 +141,7 @@ class TestXAIProvider:
         """Test error handling for unsupported models."""
         provider = XAIModelProvider("test-key")
 
-        with pytest.raises(ValueError, match="Unsupported X.AI model"):
+        with pytest.raises(ValueError, match="Unsupported model 'invalid-model' for provider xai"):
             provider.get_capabilities("invalid-model")
 
     def test_extended_thinking_flags(self):

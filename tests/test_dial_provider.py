@@ -121,7 +121,7 @@ class TestDIALProvider:
         """Test that get_capabilities raises for invalid models."""
         provider = DIALModelProvider("test-key")
 
-        with pytest.raises(ValueError, match="Unsupported DIAL model"):
+        with pytest.raises(ValueError, match="Unsupported model 'invalid-model' for provider dial"):
             provider.get_capabilities("invalid-model")
 
     @patch("utils.model_restrictions.get_restriction_service")

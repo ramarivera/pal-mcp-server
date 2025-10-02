@@ -105,13 +105,11 @@ class ListModelsTool(BaseTool):
                 output_lines.append("**Status**: Configured and available")
                 output_lines.append("\n**Models**:")
 
-                # Get models from the provider's model configurations
-                for model_name, capabilities in provider.get_model_configurations().items():
-                    # Get description and context from the ModelCapabilities object
+                aliases = []
+                for model_name, capabilities in provider.get_all_model_capabilities().items():
                     description = capabilities.description or "No description available"
                     context_window = capabilities.context_window
 
-                    # Format context window
                     if context_window >= 1_000_000:
                         context_str = f"{context_window // 1_000_000}M context"
                     elif context_window >= 1_000:
@@ -120,31 +118,15 @@ class ListModelsTool(BaseTool):
                         context_str = f"{context_window} context" if context_window > 0 else "unknown context"
 
                     output_lines.append(f"- `{model_name}` - {context_str}")
+                    output_lines.append(f"  - {description}")
 
-                    # Extract key capability from description
-                    if "Ultra-fast" in description:
-                        output_lines.append("  - Fast processing, quick iterations")
-                    elif "Deep reasoning" in description:
-                        output_lines.append("  - Extended reasoning with thinking mode")
-                    elif "Strong reasoning" in description:
-                        output_lines.append("  - Logical problems, systematic analysis")
-                    elif "EXTREMELY EXPENSIVE" in description:
-                        output_lines.append("  - ⚠️ Professional grade (very expensive)")
-                    elif "Advanced reasoning" in description:
-                        output_lines.append("  - Advanced reasoning and complex analysis")
-
-                # Show aliases for this provider
-                aliases = []
-                for model_name, capabilities in provider.get_model_configurations().items():
-                    if capabilities.aliases:
-                        for alias in capabilities.aliases:
-                            # Skip aliases that are the same as the model name to avoid duplicates
-                            if alias != model_name:
-                                aliases.append(f"- `{alias}` → `{model_name}`")
+                    for alias in capabilities.aliases or []:
+                        if alias != model_name:
+                            aliases.append(f"- `{alias}` → `{model_name}`")
 
                 if aliases:
                     output_lines.append("\n**Aliases**:")
-                    output_lines.extend(sorted(aliases))  # Sort for consistent output
+                    output_lines.extend(sorted(aliases))
             else:
                 output_lines.append(f"**Status**: Not configured (set {info['env_key']})")
 

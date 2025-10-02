@@ -54,11 +54,9 @@ class TestCustomProvider:
 
             provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
 
-            # Test with a model that should be in the registry (OpenRouter model)
-            capabilities = provider.get_capabilities("o3")  # o3 is an OpenRouter model
-
-            assert capabilities.provider == ProviderType.OPENROUTER  # o3 is an OpenRouter model (is_custom=false)
-            assert capabilities.context_window > 0
+            # OpenRouter-backed models should be handled by the OpenRouter provider
+            with pytest.raises(ValueError):
+                provider.get_capabilities("o3")
 
             # Test with a custom model (is_custom=true)
             capabilities = provider.get_capabilities("local-llama")
@@ -168,7 +166,13 @@ class TestCustomProviderRegistration:
             return CustomProvider(api_key="", base_url="http://localhost:11434/v1")
 
         with patch.dict(
-            os.environ, {"OPENROUTER_API_KEY": "test-openrouter-key", "CUSTOM_API_PLACEHOLDER": "configured"}
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "test-openrouter-key",
+                "CUSTOM_API_PLACEHOLDER": "configured",
+                "OPENROUTER_ALLOWED_MODELS": "llama,anthropic/claude-opus-4.1",
+            },
+            clear=True,
         ):
             # Register both providers
             ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
@@ -195,18 +199,22 @@ class TestCustomProviderRegistration:
             return CustomProvider(api_key="", base_url="http://localhost:11434/v1")
 
         with patch.dict(
-            os.environ, {"OPENROUTER_API_KEY": "test-openrouter-key", "CUSTOM_API_PLACEHOLDER": "configured"}
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "test-openrouter-key",
+                "CUSTOM_API_PLACEHOLDER": "configured",
+                "OPENROUTER_ALLOWED_MODELS": "",
+            },
+            clear=True,
         ):
-            # Register OpenRouter first (higher priority)
-            ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
-            ModelProviderRegistry.register_provider(ProviderType.CUSTOM, custom_provider_factory)
+            import utils.model_restrictions
 
-            # Test model resolution - OpenRouter should win for shared aliases
-            provider_for_model = ModelProviderRegistry.get_provider_for_model("llama")
+            utils.model_restrictions._restriction_service = None
+            custom_provider = custom_provider_factory()
+            openrouter_provider = OpenRouterProvider(api_key="test-openrouter-key")
 
-            # OpenRouter should be selected first due to registration order
-            assert provider_for_model is not None
-            # The exact provider type depends on which validates the model first
+            assert not custom_provider.validate_model_name("llama")
+            assert openrouter_provider.validate_model_name("llama")
 
 
 class TestConfigureProvidersFunction:

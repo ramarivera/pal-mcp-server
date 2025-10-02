@@ -43,127 +43,36 @@ class ModelProvider(ABC):
         self.api_key = api_key
         self.config = kwargs
 
-    @abstractmethod
-    def get_capabilities(self, model_name: str) -> ModelCapabilities:
-        """Get capabilities for a specific model."""
-        pass
-
-    @abstractmethod
-    def generate_content(
-        self,
-        prompt: str,
-        model_name: str,
-        system_prompt: Optional[str] = None,
-        temperature: float = 0.3,
-        max_output_tokens: Optional[int] = None,
-        **kwargs,
-    ) -> ModelResponse:
-        """Generate content using the model.
-
-        Args:
-            prompt: User prompt to send to the model
-            model_name: Name of the model to use
-            system_prompt: Optional system prompt for model behavior
-            temperature: Sampling temperature (0-2)
-            max_output_tokens: Maximum tokens to generate
-            **kwargs: Provider-specific parameters
-
-        Returns:
-            ModelResponse with generated content and metadata
-        """
-        pass
-
-    def count_tokens(self, text: str, model_name: str) -> int:
-        """Estimate token usage for a piece of text.
-
-        Providers can rely on this shared implementation or override it when
-        they expose a more accurate tokenizer. This default uses a simple
-        character-based heuristic so it works even without provider-specific
-        tooling.
-        """
-
-        resolved_model = self._resolve_model_name(model_name)
-
-        if not text:
-            return 0
-
-        # Rough estimation: ~4 characters per token for English text
-        estimated = max(1, len(text) // 4)
-        logger.debug("Estimating %s tokens for model %s via character heuristic", estimated, resolved_model)
-        return estimated
-
+    # ------------------------------------------------------------------
+    # Provider identity & capability surface
+    # ------------------------------------------------------------------
     @abstractmethod
     def get_provider_type(self) -> ProviderType:
-        """Get the provider type."""
-        pass
+        """Return the concrete provider identity."""
 
-    @abstractmethod
-    def validate_model_name(self, model_name: str) -> bool:
-        """Validate if the model name is supported by this provider."""
-        pass
+    def get_capabilities(self, model_name: str) -> ModelCapabilities:
+        """Resolve capability metadata for a model name.
 
-    def validate_parameters(self, model_name: str, temperature: float, **kwargs) -> None:
-        """Validate model parameters against capabilities.
-
-        Raises:
-            ValueError: If parameters are invalid
+        This centralises the alias resolution → lookup → restriction check
+        pipeline so providers only override the pieces they genuinely need to
+        customise. Subclasses usually only override ``_lookup_capabilities`` to
+        integrate a registry or dynamic source, or ``_finalise_capabilities`` to
+        tweak the returned object.
         """
-        capabilities = self.get_capabilities(model_name)
 
-        # Validate temperature using constraint
-        if not capabilities.temperature_constraint.validate(temperature):
-            constraint_desc = capabilities.temperature_constraint.get_description()
-            raise ValueError(f"Temperature {temperature} is invalid for model {model_name}. {constraint_desc}")
+        resolved_name = self._resolve_model_name(model_name)
+        capabilities = self._lookup_capabilities(resolved_name, model_name)
 
-    def get_model_configurations(self) -> dict[str, ModelCapabilities]:
-        """Get model configurations for this provider.
+        if capabilities is None:
+            self._raise_unsupported_model(model_name)
 
-        This is a hook method that subclasses can override to provide
-        their model configurations from different sources.
+        self._ensure_model_allowed(capabilities, resolved_name, model_name)
+        return self._finalise_capabilities(capabilities, resolved_name, model_name)
 
-        Returns:
-            Dictionary mapping model names to their ModelCapabilities objects
-        """
-        model_map = getattr(self, "MODEL_CAPABILITIES", None)
-        if isinstance(model_map, dict) and model_map:
-            return {k: v for k, v in model_map.items() if isinstance(v, ModelCapabilities)}
+    def get_all_model_capabilities(self) -> dict[str, ModelCapabilities]:
+        """Return the provider's statically declared model capabilities."""
+
         return {}
-
-    def _resolve_model_name(self, model_name: str) -> str:
-        """Resolve model shorthand to full name.
-
-        This implementation uses the hook methods to support different
-        model configuration sources.
-
-        Args:
-            model_name: Model name that may be an alias
-
-        Returns:
-            Resolved model name
-        """
-        # Get model configurations from the hook method
-        model_configs = self.get_model_configurations()
-
-        # First check if it's already a base model name (case-sensitive exact match)
-        if model_name in model_configs:
-            return model_name
-
-        # Check case-insensitively for both base models and aliases
-        model_name_lower = model_name.lower()
-
-        # Check base model names case-insensitively
-        for base_model in model_configs:
-            if base_model.lower() == model_name_lower:
-                return base_model
-
-        # Check aliases from the model configurations
-        alias_map = ModelCapabilities.collect_aliases(model_configs)
-        for base_model, aliases in alias_map.items():
-            if any(alias.lower() == model_name_lower for alias in aliases):
-                return base_model
-
-        # If not found, return as-is
-        return model_name
 
     def list_models(
         self,
@@ -175,7 +84,7 @@ class ModelProvider(ABC):
     ) -> list[str]:
         """Return formatted model names supported by this provider."""
 
-        model_configs = self.get_model_configurations()
+        model_configs = self.get_all_model_capabilities()
         if not model_configs:
             return []
 
@@ -202,36 +111,155 @@ class ModelProvider(ABC):
             unique=unique,
         )
 
-    def close(self):
-        """Clean up any resources held by the provider.
+    # ------------------------------------------------------------------
+    # Request execution
+    # ------------------------------------------------------------------
+    @abstractmethod
+    def generate_content(
+        self,
+        prompt: str,
+        model_name: str,
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.3,
+        max_output_tokens: Optional[int] = None,
+        **kwargs,
+    ) -> ModelResponse:
+        """Generate content using the model."""
 
-        Default implementation does nothing.
-        Subclasses should override if they hold resources that need cleanup.
-        """
-        # Base implementation: no resources to clean up
+    def count_tokens(self, text: str, model_name: str) -> int:
+        """Estimate token usage for a piece of text."""
+
+        resolved_model = self._resolve_model_name(model_name)
+
+        if not text:
+            return 0
+
+        estimated = max(1, len(text) // 4)
+        logger.debug("Estimating %s tokens for model %s via character heuristic", estimated, resolved_model)
+        return estimated
+
+    def close(self) -> None:
+        """Clean up any resources held by the provider."""
+
         return
 
+    # ------------------------------------------------------------------
+    # Validation hooks
+    # ------------------------------------------------------------------
+    def validate_model_name(self, model_name: str) -> bool:
+        """Return ``True`` when the model resolves to an allowed capability."""
+
+        try:
+            self.get_capabilities(model_name)
+        except ValueError:
+            return False
+        return True
+
+    def validate_parameters(self, model_name: str, temperature: float, **kwargs) -> None:
+        """Validate model parameters against capabilities."""
+
+        capabilities = self.get_capabilities(model_name)
+
+        if not capabilities.temperature_constraint.validate(temperature):
+            constraint_desc = capabilities.temperature_constraint.get_description()
+            raise ValueError(f"Temperature {temperature} is invalid for model {model_name}. {constraint_desc}")
+
+    # ------------------------------------------------------------------
+    # Preference / registry hooks
+    # ------------------------------------------------------------------
     def get_preferred_model(self, category: "ToolModelCategory", allowed_models: list[str]) -> Optional[str]:
-        """Get the preferred model from this provider for a given category.
+        """Get the preferred model from this provider for a given category."""
 
-        Args:
-            category: The tool category requiring a model
-            allowed_models: Pre-filtered list of model names that are allowed by restrictions
-
-        Returns:
-            Model name if this provider has a preference, None otherwise
-        """
-        # Default implementation - providers can override with specific logic
         return None
 
     def get_model_registry(self) -> Optional[dict[str, Any]]:
-        """Get the model registry for providers that maintain one.
+        """Return the model registry backing this provider, if any."""
 
-        This is a hook method for providers like CustomProvider that maintain
-        a dynamic model registry.
+        return None
+
+    # ------------------------------------------------------------------
+    # Capability lookup pipeline
+    # ------------------------------------------------------------------
+    def _lookup_capabilities(
+        self,
+        canonical_name: str,
+        requested_name: Optional[str] = None,
+    ) -> Optional[ModelCapabilities]:
+        """Return ``ModelCapabilities`` for the canonical model name."""
+
+        return self.get_all_model_capabilities().get(canonical_name)
+
+    def _ensure_model_allowed(
+        self,
+        capabilities: ModelCapabilities,
+        canonical_name: str,
+        requested_name: str,
+    ) -> None:
+        """Raise ``ValueError`` if the model violates restriction policy."""
+
+        try:
+            from utils.model_restrictions import get_restriction_service
+        except Exception:  # pragma: no cover - only triggered if service import breaks
+            return
+
+        restriction_service = get_restriction_service()
+        if not restriction_service:
+            return
+
+        if restriction_service.is_allowed(self.get_provider_type(), canonical_name, requested_name):
+            return
+
+        raise ValueError(
+            f"{self.get_provider_type().value} model '{canonical_name}' is not allowed by restriction policy."
+        )
+
+    def _finalise_capabilities(
+        self,
+        capabilities: ModelCapabilities,
+        canonical_name: str,
+        requested_name: str,
+    ) -> ModelCapabilities:
+        """Allow subclasses to adjust capability metadata before returning."""
+
+        return capabilities
+
+    def _raise_unsupported_model(self, model_name: str) -> None:
+        """Raise the canonical unsupported-model error."""
+
+        raise ValueError(f"Unsupported model '{model_name}' for provider {self.get_provider_type().value}.")
+
+    def _resolve_model_name(self, model_name: str) -> str:
+        """Resolve model shorthand to full name.
+
+        This implementation uses the hook methods to support different
+        model configuration sources.
+
+        Args:
+            model_name: Model name that may be an alias
 
         Returns:
-            Model registry dict or None if not applicable
+            Resolved model name
         """
-        # Default implementation - most providers don't have a registry
-        return None
+        # Get model configurations from the hook method
+        model_configs = self.get_all_model_capabilities()
+
+        # First check if it's already a base model name (case-sensitive exact match)
+        if model_name in model_configs:
+            return model_name
+
+        # Check case-insensitively for both base models and aliases
+        model_name_lower = model_name.lower()
+
+        # Check base model names case-insensitively
+        for base_model in model_configs:
+            if base_model.lower() == model_name_lower:
+                return base_model
+
+        # Check aliases from the model configurations
+        alias_map = ModelCapabilities.collect_aliases(model_configs)
+        for base_model, aliases in alias_map.items():
+            if any(alias.lower() == model_name_lower for alias in aliases):
+                return base_model
+
+        # If not found, return as-is
+        return model_name

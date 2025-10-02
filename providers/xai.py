@@ -85,45 +85,9 @@ class XAIModelProvider(OpenAICompatibleProvider):
         kwargs.setdefault("base_url", "https://api.x.ai/v1")
         super().__init__(api_key, **kwargs)
 
-    def get_capabilities(self, model_name: str) -> ModelCapabilities:
-        """Get capabilities for a specific X.AI model."""
-        # Resolve shorthand
-        resolved_name = self._resolve_model_name(model_name)
-
-        if resolved_name not in self.MODEL_CAPABILITIES:
-            raise ValueError(f"Unsupported X.AI model: {model_name}")
-
-        # Check if model is allowed by restrictions
-        from utils.model_restrictions import get_restriction_service
-
-        restriction_service = get_restriction_service()
-        if not restriction_service.is_allowed(ProviderType.XAI, resolved_name, model_name):
-            raise ValueError(f"X.AI model '{model_name}' is not allowed by restriction policy.")
-
-        # Return the ModelCapabilities object directly from MODEL_CAPABILITIES
-        return self.MODEL_CAPABILITIES[resolved_name]
-
     def get_provider_type(self) -> ProviderType:
         """Get the provider type."""
         return ProviderType.XAI
-
-    def validate_model_name(self, model_name: str) -> bool:
-        """Validate if the model name is supported and allowed."""
-        resolved_name = self._resolve_model_name(model_name)
-
-        # First check if model is supported
-        if resolved_name not in self.MODEL_CAPABILITIES:
-            return False
-
-        # Then check if model is allowed by restrictions
-        from utils.model_restrictions import get_restriction_service
-
-        restriction_service = get_restriction_service()
-        if not restriction_service.is_allowed(ProviderType.XAI, resolved_name, model_name):
-            logger.debug(f"X.AI model '{model_name}' -> '{resolved_name}' blocked by restrictions")
-            return False
-
-        return True
 
     def generate_content(
         self,

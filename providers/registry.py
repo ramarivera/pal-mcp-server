@@ -64,6 +64,8 @@ class ModelProviderRegistry:
         """
         instance = cls()
         instance._providers[provider_type] = provider_class
+        # Invalidate any cached instance so subsequent lookups use the new registration
+        instance._initialized_providers.pop(provider_type, None)
 
     @classmethod
     def get_provider(cls, provider_type: ProviderType, force_new: bool = False) -> Optional[ModelProvider]:

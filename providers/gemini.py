@@ -131,6 +131,19 @@ class GeminiModelProvider(ModelProvider):
         self._token_counters = {}  # Cache for token counting
         self._base_url = kwargs.get("base_url", None)  # Optional custom endpoint
 
+    # ------------------------------------------------------------------
+    # Capability surface
+    # ------------------------------------------------------------------
+
+    def get_all_model_capabilities(self) -> dict[str, ModelCapabilities]:
+        """Return statically defined Gemini capabilities."""
+
+        return dict(self.MODEL_CAPABILITIES)
+
+    # ------------------------------------------------------------------
+    # Client access
+    # ------------------------------------------------------------------
+
     @property
     def client(self):
         """Lazy initialization of Gemini client."""
@@ -146,25 +159,9 @@ class GeminiModelProvider(ModelProvider):
                 self._client = genai.Client(api_key=self.api_key)
         return self._client
 
-    def get_capabilities(self, model_name: str) -> ModelCapabilities:
-        """Get capabilities for a specific Gemini model."""
-        # Resolve shorthand
-        resolved_name = self._resolve_model_name(model_name)
-
-        if resolved_name not in self.MODEL_CAPABILITIES:
-            raise ValueError(f"Unsupported Gemini model: {model_name}")
-
-        # Check if model is allowed by restrictions
-        from utils.model_restrictions import get_restriction_service
-
-        restriction_service = get_restriction_service()
-        # IMPORTANT: Parameter order is (provider_type, model_name, original_name)
-        # resolved_name is the canonical model name, model_name is the user input
-        if not restriction_service.is_allowed(ProviderType.GOOGLE, resolved_name, model_name):
-            raise ValueError(f"Gemini model '{resolved_name}' is not allowed by restriction policy.")
-
-        # Return the ModelCapabilities object directly from MODEL_CAPABILITIES
-        return self.MODEL_CAPABILITIES[resolved_name]
+    # ------------------------------------------------------------------
+    # Request execution
+    # ------------------------------------------------------------------
 
     def generate_content(
         self,
@@ -364,26 +361,6 @@ class GeminiModelProvider(ModelProvider):
     def get_provider_type(self) -> ProviderType:
         """Get the provider type."""
         return ProviderType.GOOGLE
-
-    def validate_model_name(self, model_name: str) -> bool:
-        """Validate if the model name is supported and allowed."""
-        resolved_name = self._resolve_model_name(model_name)
-
-        # First check if model is supported
-        if resolved_name not in self.MODEL_CAPABILITIES:
-            return False
-
-        # Then check if model is allowed by restrictions
-        from utils.model_restrictions import get_restriction_service
-
-        restriction_service = get_restriction_service()
-        # IMPORTANT: Parameter order is (provider_type, model_name, original_name)
-        # resolved_name is the canonical model name, model_name is the user input
-        if not restriction_service.is_allowed(ProviderType.GOOGLE, resolved_name, model_name):
-            logger.debug(f"Gemini model '{model_name}' -> '{resolved_name}' blocked by restrictions")
-            return False
-
-        return True
 
     def get_thinking_budget(self, model_name: str, thinking_mode: str) -> int:
         """Get actual thinking token budget for a model and thinking mode."""

@@ -356,15 +356,13 @@ class TestCustomProviderOpenRouterRestrictions:
 
         provider = CustomProvider(base_url="http://test.com/v1")
 
-        # For OpenRouter models, get_capabilities should still work but mark them as OPENROUTER
-        # This tests the capabilities lookup, not validation
-        capabilities = provider.get_capabilities("opus")
-        assert capabilities.provider == ProviderType.OPENROUTER
+        # For OpenRouter models, CustomProvider should defer by raising
+        with pytest.raises(ValueError):
+            provider.get_capabilities("opus")
 
-        # Should raise for disallowed OpenRouter model
-        with pytest.raises(ValueError) as exc_info:
+        # Should raise for disallowed OpenRouter model (still defers)
+        with pytest.raises(ValueError):
             provider.get_capabilities("haiku")
-        assert "not allowed by restriction policy" in str(exc_info.value)
 
         # Should still work for custom models (is_custom=true)
         capabilities = provider.get_capabilities("local-llama")
