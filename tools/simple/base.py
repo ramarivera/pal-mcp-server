@@ -635,7 +635,7 @@ class SimpleTool(BaseTool):
                     return {
                         "continuation_id": continuation_id,
                         "remaining_turns": remaining_turns,
-                        "note": f"Claude can continue this conversation for {remaining_turns} more exchanges.",
+                        "note": f"You can continue this conversation for {remaining_turns} more exchanges.",
                     }
             else:
                 # New conversation - create thread and offer continuation
@@ -659,7 +659,7 @@ class SimpleTool(BaseTool):
                 return {
                     "continuation_id": new_thread_id,
                     "remaining_turns": MAX_CONVERSATION_TURNS - 1,
-                    "note": f"Claude can continue this conversation for {MAX_CONVERSATION_TURNS - 1} more exchanges.",
+                    "note": f"You can continue this conversation for {MAX_CONVERSATION_TURNS - 1} more exchanges.",
                 }
         except Exception:
             return None
@@ -981,5 +981,11 @@ Please provide a thoughtful, comprehensive response:"""
         finally:
             # Restore original guidance method
             self.get_websearch_guidance = original_guidance
+
+        if system_prompt:
+            marker = "\n\n=== USER REQUEST ===\n"
+            if marker in full_prompt:
+                _, user_section = full_prompt.split(marker, 1)
+                return f"=== USER REQUEST ===\n{user_section}"
 
         return full_prompt
