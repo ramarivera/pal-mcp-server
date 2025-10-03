@@ -118,7 +118,7 @@ class BaseTool(ABC):
         """
         Return a detailed description of what this tool does.
 
-        This description is shown to MCP clients (like Claude) to help them
+        This description is shown to MCP clients (like Claude / Codex / Gemini) to help them
         understand when and how to use the tool. It should be comprehensive
         and include trigger phrases.
 

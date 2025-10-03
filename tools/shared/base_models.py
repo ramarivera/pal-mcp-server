@@ -52,7 +52,7 @@ WORKFLOW_FIELD_DESCRIPTIONS = {
     "backtrack_from_step": "Step number to backtrack from if work needs revision",
     "use_assistant_model": (
         "Use assistant model for expert analysis after workflow steps. "
-        "False skips expert analysis, relies solely on Claude's investigation. "
+        "False skips expert analysis, relies solely on your personal investigation. "
         "Defaults to True for comprehensive validation."
     ),
 }

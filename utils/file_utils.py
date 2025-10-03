@@ -797,7 +797,7 @@ def check_total_file_size(files: list[str], model_name: str) -> Optional[dict]:
 
     IMPORTANT: This performs STRICT REJECTION at MCP boundary.
     No partial inclusion - either all files fit or request is rejected.
-    This forces Claude to make better file selection decisions.
+    This forces the CLI to make better file selection decisions.
 
     This function MUST be called with the effective model name (after resolution).
     It should never receive 'auto' or None - model resolution happens earlier.
