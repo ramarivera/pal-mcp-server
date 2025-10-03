@@ -164,3 +164,107 @@ async def test_consensus_multi_model_consultations(monkeypatch):
 
     # Clean up provider registry state after test
     ModelProviderRegistry.reset_for_testing()
+
+
+@pytest.mark.asyncio
+@pytest.mark.no_mock_provider
+async def test_consensus_auto_mode_with_openrouter_and_gemini(monkeypatch):
+    """Ensure continuation flow resolves to real models instead of leaking 'auto'."""
+
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip() or "dummy-key-for-replay"
+    openrouter_key = os.getenv("OPENROUTER_API_KEY", "").strip() or "dummy-key-for-replay"
+
+    with monkeypatch.context() as m:
+        m.setenv("DEFAULT_MODEL", "auto")
+        m.setenv("GEMINI_API_KEY", gemini_key)
+        m.setenv("OPENROUTER_API_KEY", openrouter_key)
+
+        for key in [
+            "OPENAI_API_KEY",
+            "XAI_API_KEY",
+            "DIAL_API_KEY",
+            "CUSTOM_API_KEY",
+            "CUSTOM_API_URL",
+        ]:
+            m.delenv(key, raising=False)
+
+        import importlib
+
+        import config
+
+        m.setattr(config, "DEFAULT_MODEL", "auto")
+
+        import server as server_module
+
+        server = importlib.reload(server_module)
+        m.setattr(server, "DEFAULT_MODEL", "auto", raising=False)
+
+        ModelProviderRegistry.reset_for_testing()
+        from providers.gemini import GeminiModelProvider
+        from providers.openrouter import OpenRouterProvider
+
+        ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
+        ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
+
+        from utils.storage_backend import get_storage_backend
+
+        # Clear conversation storage to avoid cross-test leakage
+        storage = get_storage_backend()
+        storage._store.clear()
+
+        models_to_consult = [
+            {"model": "claude-3-5-flash-20241022", "stance": "neutral"},
+            {"model": "gpt-5-mini", "stance": "neutral"},
+        ]
+
+        step1_args = {
+            "step": "Evaluate framework options.",
+            "step_number": 1,
+            "total_steps": len(models_to_consult),
+            "next_step_required": True,
+            "findings": "Initial analysis requested.",
+            "models": models_to_consult,
+        }
+
+        step1_output = await server.handle_call_tool("consensus", step1_args)
+        assert step1_output and step1_output[0].type == "text"
+        step1_payload = json.loads(step1_output[0].text)
+
+        assert step1_payload["status"] == "analysis_and_first_model_consulted"
+        assert step1_payload["model_consulted"] == "claude-3-5-flash-20241022"
+        assert step1_payload["model_response"]["status"] == "error"
+        assert "claude-3-5-flash-20241022" in step1_payload["model_response"]["error"]
+
+        continuation_offer = step1_payload.get("continuation_offer")
+        assert continuation_offer is not None
+        continuation_id = continuation_offer["continuation_id"]
+
+        step2_args = {
+            "step": "Continue consultation sequence.",
+            "step_number": 2,
+            "total_steps": len(models_to_consult),
+            "next_step_required": False,
+            "findings": "Ready for next model.",
+            "continuation_id": continuation_id,
+            "models": models_to_consult,
+        }
+
+        try:
+            step2_output = await server.handle_call_tool("consensus", step2_args)
+        finally:
+            # Reset provider registry regardless of outcome to avoid cross-test bleed
+            ModelProviderRegistry.reset_for_testing()
+
+    assert step2_output and step2_output[0].type == "text"
+    step2_payload = json.loads(step2_output[0].text)
+
+    serialized = json.dumps(step2_payload)
+    assert "auto" not in serialized.lower(), "Auto model leakage should be resolved"
+    assert "gpt-5-mini" in serialized or "claude-3-5-flash-20241022" in serialized
+
+    # Restore server module to reflect original configuration for other tests
+    import importlib
+
+    import server as server_module
+
+    importlib.reload(server_module)
