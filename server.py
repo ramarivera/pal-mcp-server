@@ -715,9 +715,9 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         Exception: For tool-specific errors or execution failures
 
     Example Conversation Flow:
-        1. Claude calls analyze tool with files → creates new thread
+        1. The CLI calls analyze tool with files → creates new thread
         2. Thread ID returned in continuation offer
-        3. Claude continues with codereview tool + continuation_id → full context preserved
+        3. The CLI continues with codereview tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
     """
     logger.info(f"MCP tool call: {name}")
@@ -912,12 +912,12 @@ final analysis and recommendations."""
         remaining_turns = max_turns - current_turn_count - 1
         return f"""
 
-CONVERSATION CONTINUATION: You can continue this discussion with Claude! ({remaining_turns} exchanges remaining)
+CONVERSATION CONTINUATION: You can continue this discussion with the agent! ({remaining_turns} exchanges remaining)
 
 Feel free to ask clarifying questions or suggest areas for deeper exploration naturally within your response.
 If something needs clarification or you'd benefit from additional context, simply mention it conversationally.
 
-IMPORTANT: When you suggest follow-ups or ask questions, you MUST explicitly instruct Claude to use the continuation_id
+IMPORTANT: When you suggest follow-ups or ask questions, you MUST explicitly instruct the agent to use the continuation_id
 to respond. Use clear, direct language based on urgency:
 
 For optional follow-ups: "Please continue this conversation using the continuation_id from this response if you'd "
@@ -928,14 +928,14 @@ For needed responses: "Please respond using the continuation_id from this respon
 For essential/critical responses: "RESPONSE REQUIRED: Please immediately continue using the continuation_id from "
 "this response. Cannot proceed without your clarification/input."
 
-This ensures Claude knows both HOW to maintain the conversation thread AND whether a response is optional, "
+This ensures the agent knows both HOW to maintain the conversation thread AND whether a response is optional, "
 "needed, or essential.
 
-The tool will automatically provide a continuation_id in the structured response that Claude can use in subsequent
+The tool will automatically provide a continuation_id in the structured response that the agent can use in subsequent
 tool calls to maintain full conversation context across multiple exchanges.
 
 Remember: Only suggest follow-ups when they would genuinely add value to the discussion, and always instruct "
-"Claude to use the continuation_id when you do."""
+"The agent to use the continuation_id when you do."""
 
 
 async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any]:
@@ -1011,7 +1011,7 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
         - Optimized file deduplication minimizes redundant content
 
     Example Usage Flow:
-        1. Claude: "Continue analyzing the security issues" + continuation_id
+        1. CLI: "Continue analyzing the security issues" + continuation_id
         2. reconstruct_thread_context() loads previous analyze conversation
         3. Debug tool receives full context including previous file analysis
         4. Debug tool can reference specific findings from analyze tool
@@ -1035,7 +1035,7 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
         except Exception:
             pass
 
-        # Return error asking Claude to restart conversation with full context
+        # Return error asking CLI to restart conversation with full context
         raise ValueError(
             f"Conversation thread '{continuation_id}' was not found or has expired. "
             f"This may happen if the conversation was created more than 3 hours ago or if the "
@@ -1168,7 +1168,7 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
 @server.list_prompts()
 async def handle_list_prompts() -> list[Prompt]:
     """
-    List all available prompts for Claude Code shortcuts.
+    List all available prompts for CLI Code shortcuts.
 
     This handler returns prompts that enable shortcuts like /zen:thinkdeeper.
     We automatically generate prompts from all tools (1:1 mapping) plus add
@@ -1221,7 +1221,7 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
     Get prompt details and generate the actual prompt text.
 
     This handler is called when a user invokes a prompt (e.g., /zen:thinkdeeper or /zen:chat:gpt5).
-    It generates the appropriate text that Claude will then use to call the
+    It generates the appropriate text that CLI will then use to call the
     underlying tool.
 
     Supports structured prompt names like "chat:gpt5" where:
@@ -1348,7 +1348,7 @@ async def main():
     from config import IS_AUTO_MODE
 
     if IS_AUTO_MODE:
-        logger.info("Model mode: AUTO (Claude will select the best model for each task)")
+        logger.info("Model mode: AUTO (CLI will select the best model for each task)")
     else:
         logger.info(f"Model mode: Fixed model '{DEFAULT_MODEL}'")
 
