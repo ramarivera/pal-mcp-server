@@ -2,9 +2,9 @@
 Base class for workflow MCP tools.
 
 Workflow tools follow a multi-step pattern:
-1. Claude calls tool with work step data
+1. CLI calls tool with work step data
 2. Tool tracks findings and progress
-3. Tool forces Claude to pause and investigate between steps
+3. Tool forces the CLI to pause and investigate between steps
 4. Once work is complete, tool calls external AI model for expert analysis
 5. Tool returns structured response combining investigation + expert analysis
 
@@ -166,7 +166,7 @@ class WorkflowTool(BaseTool, BaseWorkflowMixin):
         """
         Default implementation - workflow tools typically don't need predefined steps.
 
-        The workflow is driven by Claude's investigation process rather than
+        The workflow is driven by the CLI's investigation process rather than
         predefined steps. Override this if your tool needs specific step guidance.
         """
         return []

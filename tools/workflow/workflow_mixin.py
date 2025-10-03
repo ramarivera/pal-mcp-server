@@ -41,7 +41,7 @@ class BaseWorkflowMixin(ABC):
     """
     Abstract base class providing guided workflow functionality for tools.
 
-    This class implements a sophisticated workflow pattern where Claude performs
+    This class implements a sophisticated workflow pattern where the CLI performs
     systematic local work before calling external models for expert analysis.
     Tools can inherit from this class to gain comprehensive workflow capabilities.
 
@@ -52,7 +52,7 @@ class BaseWorkflowMixin(ABC):
     - Fully type-annotated for excellent IDE support
 
     Context-Aware File Embedding:
-    - Intermediate steps: Only reference file names (saves Claude's context)
+    - Intermediate steps: Only reference file names (saves the CLI's context)
     - Final steps: Embed full file content for expert analysis
     - Integrates with existing token budgeting infrastructure
 
@@ -148,7 +148,7 @@ class BaseWorkflowMixin(ABC):
             request: Optional request object for continuation-aware decisions
 
         Returns:
-            List of specific actions Claude should take before calling tool again
+            List of specific actions the CLI should take before calling tool again
         """
         pass
 
@@ -445,11 +445,11 @@ class BaseWorkflowMixin(ABC):
         Handle file context appropriately based on workflow phase.
 
         CONTEXT-AWARE FILE EMBEDDING STRATEGY:
-        1. Intermediate steps + continuation: Only reference file names (save Claude's context)
+        1. Intermediate steps + continuation: Only reference file names (save the CLI's context)
         2. Final step: Embed full file content for expert analysis
         3. Expert analysis: Always embed relevant files with token budgeting
 
-        This prevents wasting Claude's limited context on intermediate steps while ensuring
+        This prevents wasting the CLI's limited context on intermediate steps while ensuring
         the final expert analysis has complete file context.
         """
         continuation_id = self.get_request_continuation_id(request)
@@ -484,7 +484,7 @@ class BaseWorkflowMixin(ABC):
         Determine whether to embed file content based on workflow context.
 
         CORRECT LOGIC:
-        - NEVER embed files when Claude is getting the next step (next_step_required=True)
+        - NEVER embed files when the CLI is getting the next step (next_step_required=True)
         - ONLY embed files when sending to external model (next_step_required=False)
 
         Args:
@@ -566,7 +566,7 @@ class BaseWorkflowMixin(ABC):
     def _reference_workflow_files(self, request: Any) -> None:
         """
         Reference file names without embedding content for intermediate steps.
-        Saves Claude's context while still providing file awareness.
+        Saves the CLI's context while still providing file awareness.
         """
         # Workflow tools use relevant_files, not files
         request_files = self.get_request_relevant_files(request)
@@ -723,7 +723,7 @@ class BaseWorkflowMixin(ABC):
             if not request.next_step_required:
                 response_data = await self.handle_work_completion(response_data, request, arguments)
             else:
-                # Force Claude to work before calling tool again
+                # Force CLI to work before calling tool again
                 response_data = self.handle_work_continuation(response_data, request)
 
             # Allow tools to customize the final response
@@ -817,7 +817,7 @@ class BaseWorkflowMixin(ABC):
             response_data["file_context"] = {
                 "type": "reference_only",
                 "note": reference_note,
-                "context_optimization": "Files referenced but not embedded to preserve Claude's context window",
+                "context_optimization": "Files referenced but not embedded to preserve the context window",
             }
 
         return response_data
@@ -1111,7 +1111,7 @@ class BaseWorkflowMixin(ABC):
                 response_data["file_context"] = {
                     "type": "reference_only",
                     "note": reference_note,
-                    "context_optimization": "Files referenced but not embedded to preserve Claude's context window",
+                    "context_optimization": "Files referenced but not embedded to preserve the context window",
                 }
 
         return response_data
