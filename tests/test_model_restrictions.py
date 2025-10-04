@@ -366,8 +366,8 @@ class TestCustomProviderOpenRouterRestrictions:
         assert not provider.validate_model_name("sonnet")
         assert not provider.validate_model_name("haiku")
 
-        # Should still validate custom models (is_custom=true) regardless of restrictions
-        assert provider.validate_model_name("local-llama")  # This has is_custom=true
+        # Should still validate custom models defined in conf/custom_models.json
+        assert provider.validate_model_name("local-llama")
 
     @patch.dict(os.environ, {"OPENROUTER_ALLOWED_MODELS": "opus", "OPENROUTER_API_KEY": "test-key"})
     def test_custom_provider_openrouter_capabilities_restrictions(self):
@@ -389,7 +389,7 @@ class TestCustomProviderOpenRouterRestrictions:
         with pytest.raises(ValueError):
             provider.get_capabilities("haiku")
 
-        # Should still work for custom models (is_custom=true)
+        # Should still work for custom models
         capabilities = provider.get_capabilities("local-llama")
         assert capabilities.provider == ProviderType.CUSTOM
 

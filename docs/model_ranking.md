@@ -25,7 +25,7 @@ feature_bonus = (
     + (1 if supports_json_mode else 0)
     + (1 if supports_images else 0)
 )
-penalty = 1 if is_custom else 0
+penalty = 1 if provider == CUSTOM else 0
 
 effective_rank = clamp(base + ctx_bonus + output_bonus + feature_bonus - penalty, 0, 100)
 ```

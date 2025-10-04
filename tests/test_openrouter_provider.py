@@ -172,7 +172,7 @@ class TestOpenRouterAutoMode:
         def mock_resolve(model_name):
             if model_name in model_names:
                 mock_config = Mock()
-                mock_config.is_custom = False
+                mock_config.provider = ProviderType.OPENROUTER
                 mock_config.aliases = []  # Empty list of aliases
                 mock_config.get_effective_capability_rank = Mock(return_value=50)  # Add ranking method
                 return mock_config

@@ -64,6 +64,14 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     monkeypatch.setenv("OPENAI_API_KEY", "test-openai")
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter")
     monkeypatch.delenv("XAI_API_KEY", raising=False)
+    # Ensure Azure provider stays disabled regardless of developer workstation env
+    for azure_var in (
+        "AZURE_OPENAI_API_KEY",
+        "AZURE_OPENAI_ENDPOINT",
+        "AZURE_OPENAI_ALLOWED_MODELS",
+        "AZURE_MODELS_CONFIG_PATH",
+    ):
+        monkeypatch.delenv(azure_var, raising=False)
     monkeypatch.setenv("ZEN_MCP_FORCE_ENV_OVERRIDE", "false")
     env_config.reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})
     try:
@@ -103,6 +111,13 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
 
     for var in ("XAI_API_KEY", "CUSTOM_API_URL", "CUSTOM_API_KEY", "DIAL_API_KEY"):
         monkeypatch.delenv(var, raising=False)
+    for azure_var in (
+        "AZURE_OPENAI_API_KEY",
+        "AZURE_OPENAI_ENDPOINT",
+        "AZURE_OPENAI_ALLOWED_MODELS",
+        "AZURE_MODELS_CONFIG_PATH",
+    ):
+        monkeypatch.delenv(azure_var, raising=False)
 
     ModelProviderRegistry.reset_for_testing()
     model_restrictions._restriction_service = None
@@ -136,6 +151,13 @@ def test_error_listing_without_restrictions_shows_full_catalog(monkeypatch, rese
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter")
     monkeypatch.setenv("XAI_API_KEY", "test-xai")
     monkeypatch.setenv("ZEN_MCP_FORCE_ENV_OVERRIDE", "false")
+    for azure_var in (
+        "AZURE_OPENAI_API_KEY",
+        "AZURE_OPENAI_ENDPOINT",
+        "AZURE_OPENAI_ALLOWED_MODELS",
+        "AZURE_MODELS_CONFIG_PATH",
+    ):
+        monkeypatch.delenv(azure_var, raising=False)
     env_config.reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})
     try:
         import dotenv

@@ -103,16 +103,16 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             model_name="o3-mini",
             friendly_name="OpenAI (O3-mini)",
             intelligence_score=12,
-            context_window=200_000,  # 200K tokens
-            max_output_tokens=65536,  # 64K max output tokens
+            context_window=200_000,
+            max_output_tokens=65536,
             supports_extended_thinking=False,
             supports_system_prompts=True,
             supports_streaming=True,
             supports_function_calling=True,
             supports_json_mode=True,
-            supports_images=True,  # O3 models support vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=False,  # O3 models don't accept temperature parameter
+            supports_images=True,
+            max_image_size_mb=20.0,
+            supports_temperature=False,
             temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity",
             aliases=["o3mini"],
@@ -122,16 +122,16 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             model_name="o3-pro",
             friendly_name="OpenAI (O3-Pro)",
             intelligence_score=15,
-            context_window=200_000,  # 200K tokens
-            max_output_tokens=65536,  # 64K max output tokens
+            context_window=200_000,
+            max_output_tokens=65536,
             supports_extended_thinking=False,
             supports_system_prompts=True,
             supports_streaming=True,
             supports_function_calling=True,
             supports_json_mode=True,
-            supports_images=True,  # O3 models support vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=False,  # O3 models don't accept temperature parameter
+            supports_images=True,
+            max_image_size_mb=20.0,
+            supports_temperature=False,
             temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Professional-grade reasoning (200K context) - EXTREMELY EXPENSIVE: Only for the most complex problems requiring universe-scale complexity analysis OR when the user explicitly asks for this model. Use sparingly for critical architectural decisions or exceptionally complex debugging that other models cannot handle.",
             aliases=["o3pro"],
@@ -141,16 +141,15 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             model_name="o4-mini",
             friendly_name="OpenAI (O4-mini)",
             intelligence_score=11,
-            context_window=200_000,  # 200K tokens
-            max_output_tokens=65536,  # 64K max output tokens
+            context_window=200_000,
             supports_extended_thinking=False,
             supports_system_prompts=True,
             supports_streaming=True,
             supports_function_calling=True,
             supports_json_mode=True,
-            supports_images=True,  # O4 models support vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=False,  # O4 models don't accept temperature parameter
+            supports_images=True,
+            max_image_size_mb=20.0,
+            supports_temperature=False,
             temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning",
             aliases=["o4mini"],
@@ -160,16 +159,16 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             model_name="gpt-4.1",
             friendly_name="OpenAI (GPT 4.1)",
             intelligence_score=13,
-            context_window=1_000_000,  # 1M tokens
+            context_window=1_000_000,
             max_output_tokens=32_768,
             supports_extended_thinking=False,
             supports_system_prompts=True,
             supports_streaming=True,
             supports_function_calling=True,
             supports_json_mode=True,
-            supports_images=True,  # GPT-4.1 supports vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=True,  # Regular models accept temperature parameter
+            supports_images=True,
+            max_image_size_mb=20.0,
+            supports_temperature=True,
             temperature_constraint=TemperatureConstraint.create("range"),
             description="GPT-4.1 (1M context) - Advanced reasoning model with large context window",
             aliases=["gpt4.1"],
@@ -178,19 +177,19 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             provider=ProviderType.OPENAI,
             model_name="gpt-5-codex",
             friendly_name="OpenAI (GPT-5 Codex)",
-            intelligence_score=17,  # Higher than GPT-5 for coding tasks
-            context_window=400_000,  # 400K tokens (same as GPT-5)
-            max_output_tokens=128_000,  # 128K output tokens
-            supports_extended_thinking=True,  # Responses API supports reasoning tokens
+            intelligence_score=17,
+            context_window=400_000,
+            max_output_tokens=128_000,
+            supports_extended_thinking=True,
             supports_system_prompts=True,
             supports_streaming=True,
-            supports_function_calling=True,  # Enhanced for agentic software engineering
+            supports_function_calling=True,
             supports_json_mode=True,
-            supports_images=True,  # Screenshots, wireframes, diagrams
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
+            supports_images=True,
+            max_image_size_mb=20.0,
             supports_temperature=True,
             temperature_constraint=TemperatureConstraint.create("range"),
-            description="GPT-5 Codex (400K context) - Uses Responses API for 40-80% cost savings. Specialized for coding, refactoring, and software architecture. 3% better performance on SWE-bench.",
+            description="GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.",
             aliases=["gpt5-codex", "codex", "gpt-5-code", "gpt5-code"],
         ),
     }
@@ -282,7 +281,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
 
         if category == ToolModelCategory.EXTENDED_REASONING:
             # Prefer models with extended thinking support
-            # GPT-5-Codex first for coding tasks (uses Responses API with 40-80% cost savings)
+            # GPT-5-Codex first for coding tasks
             preferred = find_first(["gpt-5-codex", "o3", "o3-pro", "gpt-5"])
             return preferred if preferred else allowed_models[0]
 

@@ -91,8 +91,8 @@ OPENAI_ALLOWED_MODELS=o3,o4-mini
 
 **Important Notes:**
 - Restrictions apply to all usage including auto mode
-- `OPENROUTER_ALLOWED_MODELS` only affects OpenRouter models accessed via custom provider (where `is_custom: false` in custom_models.json)
-- Custom local models (`is_custom: true`) are not affected by any restrictions
+- `OPENROUTER_ALLOWED_MODELS` only affects models defined in `conf/openrouter_models.json`
+- Custom local models (from `conf/custom_models.json`) are not affected by OpenRouter restrictions
 
 ## Thinking Modes
 

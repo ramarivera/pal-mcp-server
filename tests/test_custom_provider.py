@@ -62,9 +62,9 @@ class TestCustomProvider:
             with pytest.raises(ValueError):
                 provider.get_capabilities("o3")
 
-            # Test with a custom model (is_custom=true)
+            # Test with a custom model from the local registry
             capabilities = provider.get_capabilities("local-llama")
-            assert capabilities.provider == ProviderType.CUSTOM  # local-llama has is_custom=true
+            assert capabilities.provider == ProviderType.CUSTOM
             assert capabilities.context_window > 0
 
         finally:

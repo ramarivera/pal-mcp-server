@@ -377,6 +377,7 @@ def configure_providers():
         value = get_env(key)
         logger.debug(f"  {key}: {'[PRESENT]' if value else '[MISSING]'}")
     from providers import ModelProviderRegistry
+    from providers.azure_openai import AzureOpenAIProvider
     from providers.custom import CustomProvider
     from providers.dial import DIALModelProvider
     from providers.gemini import GeminiModelProvider
@@ -410,6 +411,27 @@ def configure_providers():
             logger.debug("OpenAI API key not found in environment")
         else:
             logger.debug("OpenAI API key is placeholder value")
+
+    # Check for Azure OpenAI configuration
+    azure_key = get_env("AZURE_OPENAI_API_KEY")
+    azure_endpoint = get_env("AZURE_OPENAI_ENDPOINT")
+    azure_models_available = False
+    if azure_key and azure_key != "your_azure_openai_key_here" and azure_endpoint:
+        try:
+            from providers.azure_registry import AzureModelRegistry
+
+            azure_registry = AzureModelRegistry()
+            if azure_registry.list_models():
+                valid_providers.append("Azure OpenAI")
+                has_native_apis = True
+                azure_models_available = True
+                logger.info("Azure OpenAI configuration detected")
+            else:
+                logger.warning(
+                    "Azure OpenAI models configuration is empty. Populate conf/azure_models.json or set AZURE_MODELS_CONFIG_PATH."
+                )
+        except Exception as exc:
+            logger.warning(f"Failed to load Azure OpenAI models: {exc}")
 
     # Check for X.AI API key
     xai_key = get_env("XAI_API_KEY")
@@ -468,6 +490,10 @@ def configure_providers():
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
             registered_providers.append(ProviderType.OPENAI.value)
             logger.debug(f"Registered provider: {ProviderType.OPENAI.value}")
+        if azure_models_available:
+            ModelProviderRegistry.register_provider(ProviderType.AZURE, AzureOpenAIProvider)
+            registered_providers.append(ProviderType.AZURE.value)
+            logger.debug(f"Registered provider: {ProviderType.AZURE.value}")
         if xai_key and xai_key != "your_xai_api_key_here":
             ModelProviderRegistry.register_provider(ProviderType.XAI, XAIModelProvider)
             registered_providers.append(ProviderType.XAI.value)

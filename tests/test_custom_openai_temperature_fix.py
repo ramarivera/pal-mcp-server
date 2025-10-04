@@ -34,8 +34,7 @@ class TestCustomOpenAITemperatureParameterFix:
         config_models = [
             {
                 "model_name": "gpt-5-2025-08-07",
-                "provider": "ProviderType.OPENAI",
-                "is_custom": True,
+                "provider": "openai",
                 "context_window": 400000,
                 "max_output_tokens": 128000,
                 "supports_extended_thinking": True,

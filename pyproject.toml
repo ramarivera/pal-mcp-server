@@ -21,7 +21,7 @@ py-modules = ["server", "config"]
 "*" = ["conf/*.json"]
 
 [tool.setuptools.data-files]
-"conf" = ["conf/custom_models.json"]
+"conf" = ["conf/custom_models.json", "conf/openrouter_models.json", "conf/azure_models.json"]
 
 [project.scripts]
 zen-mcp-server = "server:run"

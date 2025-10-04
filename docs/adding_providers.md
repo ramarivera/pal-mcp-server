@@ -9,6 +9,7 @@ Each provider:
 - Defines supported models using `ModelCapabilities` objects
 - Implements the minimal abstract hooks (`get_provider_type()` and `generate_content()`)
 - Gets wired into `configure_providers()` so environment variables control activation
+- Can leverage helper subclasses (e.g., `AzureOpenAIProvider`) when only client wiring differs
 
 ### Intelligence score cheatsheet
 
@@ -30,6 +31,13 @@ features ([details here](model_ranking.md)).
 - Inherits all API handling automatically
 
 ⚠️ **Important**: If you implement a custom `generate_content()`, call `_resolve_model_name()` before invoking the SDK so aliases (e.g. `"gpt"` → `"gpt-4"`) resolve correctly. The shared implementations already do this for you.
+
+**Option C: Azure OpenAI (`AzureOpenAIProvider`)**
+- For Azure-hosted deployments of OpenAI models
+- Reuses the OpenAI-compatible pipeline but swaps in the `AzureOpenAI` client and a deployment mapping (canonical model → deployment ID)
+- Define deployments in [`conf/azure_models.json`](../conf/azure_models.json) (or the file referenced by `AZURE_MODELS_CONFIG_PATH`).
+- Entries follow the [`ModelCapabilities`](../providers/shared/model_capabilities.py) schema and must include a `deployment` identifier.
+  See [Azure OpenAI Configuration](azure_openai.md) for a step-by-step walkthrough.
 
 ## Step-by-Step Guide
 
@@ -226,6 +234,19 @@ DISABLED_TOOLS=debug,tracer
 # Optional (OpenAI-compatible providers): Restrict accessible models
 EXAMPLE_ALLOWED_MODELS=example-model-large,example-model-small
 ```
+
+For Azure OpenAI deployments:
+
+```bash
+AZURE_OPENAI_API_KEY=your_azure_openai_key_here
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+# Models are defined in conf/azure_models.json (or AZURE_MODELS_CONFIG_PATH)
+# AZURE_OPENAI_API_VERSION=2024-02-15-preview
+# AZURE_OPENAI_ALLOWED_MODELS=gpt-4o,gpt-4o-mini
+# AZURE_MODELS_CONFIG_PATH=/absolute/path/to/custom_azure_models.json
+```
+
+You can also define Azure models in [`conf/azure_models.json`](../conf/azure_models.json) (the bundled file is empty so you can copy it safely). Each entry mirrors the `ModelCapabilities` schema and must include a `deployment` field. Set `AZURE_MODELS_CONFIG_PATH` if you maintain a custom copy outside the repository.
 
 **Note**: The `description` field in `ModelCapabilities` helps Claude choose the best model in auto mode.
 

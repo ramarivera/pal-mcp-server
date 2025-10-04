@@ -1,7 +1,6 @@
 """OpenRouter provider implementation."""
 
 import logging
-from typing import Optional
 
 from utils.env import get_env
 
@@ -42,7 +41,7 @@ class OpenRouterProvider(OpenAICompatibleProvider):
     }
 
     # Model registry for managing configurations and aliases
-    _registry: Optional[OpenRouterModelRegistry] = None
+    _registry: OpenRouterModelRegistry | None = None
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize OpenRouter provider.
@@ -70,8 +69,8 @@ class OpenRouterProvider(OpenAICompatibleProvider):
     def _lookup_capabilities(
         self,
         canonical_name: str,
-        requested_name: Optional[str] = None,
-    ) -> Optional[ModelCapabilities]:
+        requested_name: str | None = None,
+    ) -> ModelCapabilities | None:
         """Fetch OpenRouter capabilities from the registry or build a generic fallback."""
 
         capabilities = self._registry.get_capabilities(canonical_name)
@@ -143,7 +142,7 @@ class OpenRouterProvider(OpenAICompatibleProvider):
             # Custom models belong to CustomProvider; skip them here so the two
             # providers don't race over the same registrations (important for tests
             # that stub the registry with minimal objects lacking attrs).
-            if hasattr(config, "is_custom") and config.is_custom is True:
+            if config.provider == ProviderType.CUSTOM:
                 continue
 
             if restriction_service:
@@ -211,7 +210,7 @@ class OpenRouterProvider(OpenAICompatibleProvider):
                 continue
 
             # See note in list_models: respect the CustomProvider boundary.
-            if hasattr(config, "is_custom") and config.is_custom is True:
+            if config.provider == ProviderType.CUSTOM:
                 continue
 
             capabilities[model_name] = config

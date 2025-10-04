@@ -158,6 +158,8 @@ XAI_ALLOWED_MODELS=grok,grok-3-fast
 ```env
 # Override default location of custom_models.json
 CUSTOM_MODELS_CONFIG_PATH=/path/to/your/custom_models.json
+# Override default location of openrouter_models.json
+OPENROUTER_MODELS_CONFIG_PATH=/path/to/your/openrouter_models.json
 ```
 
 **Conversation Settings:**

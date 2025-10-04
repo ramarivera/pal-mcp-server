@@ -3,7 +3,7 @@
 [zen_web.webm](https://github.com/user-attachments/assets/851e3911-7f06-47c0-a4ab-a2601236697c)
 
 <div align="center">
-  <b>🤖 <a href="https://www.anthropic.com/claude-code">Claude Code</a> OR <a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a> OR <a href="https://github.com/openai/codex">Codex CLI</a> + [Gemini / OpenAI / Grok / OpenRouter / DIAL / Ollama / Anthropic / Any Model] = Your Ultimate AI Development Team</b>
+  <b>🤖 <a href="https://www.anthropic.com/claude-code">Claude Code</a> OR <a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a> OR <a href="https://github.com/openai/codex">Codex CLI</a> + [Gemini / OpenAI / Azure / Grok / OpenRouter / DIAL / Ollama / Anthropic / Any Model] = Your Ultimate AI Development Team</b>
 </div>
 
 <br/>
@@ -85,6 +85,7 @@ For best results, use Claude Code with:
 - **[OpenRouter](https://openrouter.ai/)** - Access multiple models with one API
 - **[Gemini](https://makersuite.google.com/app/apikey)** - Google's latest models
 - **[OpenAI](https://platform.openai.com/api-keys)** - O3, GPT-5 series
+- **[Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)** - Enterprise deployments of GPT-4o, GPT-4.1, GPT-5 family
 - **[X.AI](https://console.x.ai/)** - Grok models
 - **[DIAL](https://dialx.ai/)** - Vendor-agnostic model access
 - **[Ollama](https://ollama.ai/)** - Local models (free)
@@ -131,6 +132,10 @@ cd zen-mcp-server
 
 👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex, and troubleshooting  
 👉 **[Cursor & VS Code Setup](docs/getting-started.md#ide-clients)** for IDE integration instructions
+
+## Provider Configuration
+
+Zen activates any provider that has credentials in your `.env`. See `.env.example` for deeper customization.
 
 ## Core Tools
 
@@ -247,7 +252,7 @@ DISABLED_TOOLS=
 - **[Context revival](docs/context-revival.md)** - Continue conversations even after context resets
 
 **Model Support**
-- **Multiple providers** - Gemini, OpenAI, X.AI, OpenRouter, DIAL, Ollama
+- **Multiple providers** - Gemini, OpenAI, Azure, X.AI, OpenRouter, DIAL, Ollama
 - **Latest models** - GPT-5, Gemini 2.5 Pro, O3, Grok-4, local Llama
 - **[Thinking modes](docs/advanced-usage.md#thinking-modes)** - Control reasoning depth vs cost
 - **Vision support** - Analyze images, diagrams, screenshots
@@ -288,6 +293,7 @@ DISABLED_TOOLS=
 - [Tools Reference](docs/tools/) - All tools with examples
 - [Advanced Usage](docs/advanced-usage.md) - Power user features
 - [Configuration](docs/configuration.md) - Environment variables, restrictions
+- [Adding Providers](docs/adding_providers.md) - Provider-specific setup (OpenAI, Azure, custom gateways)
 - [Model Ranking Guide](docs/model_ranking.md) - How intelligence scores drive auto-mode suggestions
 
 **🔧 Setup & Support**
@@ -303,10 +309,12 @@ Apache 2.0 License - see [LICENSE](LICENSE) file for details.
 
 Built with the power of **Multi-Model AI** collaboration 🤝
 - **A**ctual **I**ntelligence by real Humans
-- [MCP (Model Context Protocol)](https://modelcontextprotocol.com) by Anthropic
-- [Claude Code](https://claude.ai/code) - Your AI coding orchestrator
-- [Gemini 2.5 Pro & Flash](https://ai.google.dev/) - Extended thinking & fast analysis
-- [OpenAI O3 & GPT-5](https://openai.com/) - Strong reasoning & latest capabilities
+- [MCP (Model Context Protocol)](https://modelcontextprotocol.com)
+- [Codex CLI](https://developers.openai.com/codex/cli)
+- [Claude Code](https://claude.ai/code)
+- [Gemini](https://ai.google.dev/)
+- [OpenAI](https://openai.com/)
+- [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)
 
 ### Star History
 

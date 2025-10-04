@@ -35,7 +35,12 @@ This guide covers setting up multiple AI model providers including OpenRouter, c
 
 ## Model Aliases
 
-The server uses `conf/custom_models.json` to map convenient aliases to both OpenRouter and custom model names. This unified registry supports both cloud models (via OpenRouter) and local models (via custom endpoints).
+Zen ships two registries:
+
+- `conf/openrouter_models.json` – metadata for models routed through OpenRouter. Override with `OPENROUTER_MODELS_CONFIG_PATH` if you maintain a custom copy.
+- `conf/custom_models.json` – metadata for local or self-hosted OpenAI-compatible endpoints used by the Custom provider. Override with `CUSTOM_MODELS_CONFIG_PATH` if needed.
+
+Copy whichever file you need into your project (or point the corresponding `*_MODELS_CONFIG_PATH` env var at your own copy) and edit it to advertise the models you want.
 
 ### OpenRouter Models (Cloud)
 
@@ -58,7 +63,7 @@ The server uses `conf/custom_models.json` to map convenient aliases to both Open
 |-------|-------------------|------|
 | `local-llama`, `local` | `llama3.2` | Requires `CUSTOM_API_URL` configured |
 
-View the full list in [`conf/custom_models.json`](conf/custom_models.json). 
+View the baseline OpenRouter catalogue in [`conf/openrouter_models.json`](conf/openrouter_models.json) and populate [`conf/custom_models.json`](conf/custom_models.json) with your local models.
 
 To control ordering in auto mode or the `listmodels` summary, adjust the
 [`intelligence_score`](model_ranking.md) for each entry (or rely on the automatic
@@ -152,7 +157,7 @@ CUSTOM_MODEL_NAME=your-loaded-model
 
 ## Using Models
 
-**Using model aliases (from conf/custom_models.json):**
+**Using model aliases (from the registry files):**
 ```
 # OpenRouter models:
 "Use opus for deep analysis"         # → anthropic/claude-opus-4
@@ -185,20 +190,20 @@ CUSTOM_MODEL_NAME=your-loaded-model
 
 The system automatically routes models to the appropriate provider:
 
-1. **Models with `is_custom: true`** → Always routed to Custom API (requires `CUSTOM_API_URL`)
-2. **Models with `is_custom: false` or omitted** → Routed to OpenRouter (requires `OPENROUTER_API_KEY`)
+1. Entries in `conf/custom_models.json` → Always routed through the Custom API (requires `CUSTOM_API_URL`)
+2. Entries in `conf/openrouter_models.json` → Routed through OpenRouter (requires `OPENROUTER_API_KEY`)
 3. **Unknown models** → Fallback logic based on model name patterns
 
 **Provider Priority Order:**
 1. Native APIs (Google, OpenAI) - if API keys are available
-2. Custom endpoints - for models marked with `is_custom: true`  
+2. Custom endpoints - for models declared in `conf/custom_models.json`  
 3. OpenRouter - catch-all for cloud models
 
 This ensures clean separation between local and cloud models while maintaining flexibility for unknown models.
 
 ## Model Configuration
 
-The server uses `conf/custom_models.json` to define model aliases and capabilities. You can:
+These JSON files define model aliases and capabilities. You can:
 
 1. **Use the default configuration** - Includes popular models with convenient aliases
 2. **Customize the configuration** - Add your own models and aliases
@@ -206,7 +211,7 @@ The server uses `conf/custom_models.json` to define model aliases and capabiliti
 
 ### Adding Custom Models
 
-Edit `conf/custom_models.json` to add new models. The configuration supports both OpenRouter (cloud) and custom endpoint (local) models.
+Edit `conf/openrouter_models.json` to tweak OpenRouter behaviour or `conf/custom_models.json` to add local models. Each entry maps directly onto [`ModelCapabilities`](../providers/shared/model_capabilities.py).
 
 #### Adding an OpenRouter Model
 
@@ -232,7 +237,6 @@ Edit `conf/custom_models.json` to add new models. The configuration supports bot
   "supports_extended_thinking": false,
   "supports_json_mode": false,
   "supports_function_calling": false,
-  "is_custom": true,
   "description": "My custom Ollama/vLLM model"
 }
 ```
@@ -244,10 +248,9 @@ Edit `conf/custom_models.json` to add new models. The configuration supports bot
 - `supports_extended_thinking`: Whether the model has extended reasoning capabilities
 - `supports_json_mode`: Whether the model can guarantee valid JSON output
 - `supports_function_calling`: Whether the model supports function/tool calling
-- `is_custom`: **Set to `true` for models that should ONLY work with custom endpoints** (Ollama, vLLM, etc.)
 - `description`: Human-readable description of the model
 
-**Important:** Always set `is_custom: true` for local models. This ensures they're only used when `CUSTOM_API_URL` is configured and prevents conflicts with OpenRouter.
+**Important:** Keep OpenRouter and Custom models in their respective files so that requests are routed correctly.
 
 ## Available Models
 

@@ -1,15 +1,16 @@
 {
   "_README": {
-    "description": "Model metadata for local/self-hosted OpenAI-compatible endpoints (Custom provider).",
-    "documentation": "https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/docs/custom_models.md",
-    "usage": "Each entry will be advertised by the Custom provider. Aliases are case-insensitive.",
+    "description": "Model metadata for Azure OpenAI / Azure AI Foundry-backed provider. The `models` definition can be copied from openrouter_models.json / custom_models.json",
+    "documentation": "https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/docs/azure_models.md",
+    "usage": "Models listed here are exposed through Azure AI Foundry. Aliases are case-insensitive.",
     "field_notes": "Matches providers/shared/model_capabilities.py.",
     "field_descriptions": {
-      "model_name": "The model identifier e.g., 'llama3.2'",
+      "model_name": "The model identifier e.g., 'gpt-4'",
+      "deployment": "Azure model deployment name",
       "aliases": "Array of short names users can type instead of the full model name",
       "context_window": "Total number of tokens the model can process (input + output combined)",
       "max_output_tokens": "Maximum number of tokens the model can generate in a single response",
-      "supports_extended_thinking": "Whether the model supports extended reasoning tokens",
+      "supports_extended_thinking": "Whether the model supports extended reasoning tokens (currently none do via OpenRouter or custom APIs)",
       "supports_json_mode": "Whether the model can guarantee valid JSON output",
       "supports_function_calling": "Whether the model supports function/tool calling",
       "supports_images": "Whether the model can process images/visual input",
@@ -20,22 +21,25 @@
       "intelligence_score": "1-20 human rating used as the primary signal for auto-mode model ordering"
     }
   },
-  "models": [
+  "_example_models": [
     {
-      "model_name": "llama3.2",
+      "model_name": "gpt-4",
+      "deployment": "gpt-4",
       "aliases": [
-        "local-llama",
-        "ollama-llama"
+        "gpt4"
       ],
       "context_window": 128000,
-      "max_output_tokens": 64000,
+      "max_output_tokens": 16384,
       "supports_extended_thinking": false,
-      "supports_json_mode": false,
+      "supports_json_mode": true,
       "supports_function_calling": false,
       "supports_images": false,
       "max_image_size_mb": 0.0,
-      "description": "Local Llama 3.2 model via custom endpoint (Ollama/vLLM) - 128K context window (text-only)",
-      "intelligence_score": 6
+      "supports_temperature": false,
+      "temperature_constraint": "fixed",
+      "description": "GPT-4 (128K context, 16K output)",
+      "intelligence_score": 10
     }
-  ]
+  ],
+  "models": []
 }

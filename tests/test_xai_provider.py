@@ -166,8 +166,10 @@ class TestXAIProvider:
         """Test model restrictions functionality."""
         # Clear cached restriction service
         import utils.model_restrictions
+        from providers.registry import ModelProviderRegistry
 
         utils.model_restrictions._restriction_service = None
+        ModelProviderRegistry.reset_for_testing()
 
         provider = XAIModelProvider("test-key")
 
@@ -187,8 +189,10 @@ class TestXAIProvider:
         """Test multiple models in restrictions."""
         # Clear cached restriction service
         import utils.model_restrictions
+        from providers.registry import ModelProviderRegistry
 
         utils.model_restrictions._restriction_service = None
+        ModelProviderRegistry.reset_for_testing()
 
         provider = XAIModelProvider("test-key")
 

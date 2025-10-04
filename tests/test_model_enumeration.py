@@ -181,7 +181,7 @@ class TestModelEnumeration:
         # Configure environment with OpenRouter access only
         self._setup_environment({"OPENROUTER_API_KEY": "test-openrouter-key"})
 
-        # Create a temporary custom model config with a free variant
+        # Create a temporary OpenRouter model config with a free variant
         custom_config = {
             "models": [
                 {
@@ -199,9 +199,9 @@ class TestModelEnumeration:
             ]
         }
 
-        config_path = tmp_path / "custom_models.json"
+        config_path = tmp_path / "openrouter_models.json"
         config_path.write_text(json.dumps(custom_config), encoding="utf-8")
-        monkeypatch.setenv("CUSTOM_MODELS_CONFIG_PATH", str(config_path))
+        monkeypatch.setenv("OPENROUTER_MODELS_CONFIG_PATH", str(config_path))
 
         # Reset cached registries so the temporary config is loaded
         from tools.shared.base_tool import BaseTool

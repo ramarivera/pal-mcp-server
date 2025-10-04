@@ -3,6 +3,7 @@
 import json
 import os
 import tempfile
+from unittest.mock import patch
 
 import pytest
 
@@ -49,7 +50,7 @@ class TestOpenRouterModelRegistry:
             os.unlink(temp_path)
 
     def test_environment_variable_override(self):
-        """Test OPENROUTER_MODELS_PATH environment variable."""
+        """Test OPENROUTER_MODELS_CONFIG_PATH environment variable."""
         # Create custom config
         config_data = {
             "models": [
@@ -63,8 +64,8 @@ class TestOpenRouterModelRegistry:
 
         try:
             # Set environment variable
-            original_env = os.environ.get("CUSTOM_MODELS_CONFIG_PATH")
-            os.environ["CUSTOM_MODELS_CONFIG_PATH"] = temp_path
+            original_env = os.environ.get("OPENROUTER_MODELS_CONFIG_PATH")
+            os.environ["OPENROUTER_MODELS_CONFIG_PATH"] = temp_path
 
             # Create registry without explicit path
             registry = OpenRouterModelRegistry()
@@ -76,9 +77,9 @@ class TestOpenRouterModelRegistry:
         finally:
             # Restore environment
             if original_env is not None:
-                os.environ["CUSTOM_MODELS_CONFIG_PATH"] = original_env
+                os.environ["OPENROUTER_MODELS_CONFIG_PATH"] = original_env
             else:
-                del os.environ["CUSTOM_MODELS_CONFIG_PATH"]
+                del os.environ["OPENROUTER_MODELS_CONFIG_PATH"]
             os.unlink(temp_path)
 
     def test_alias_resolution(self):
@@ -161,7 +162,7 @@ class TestOpenRouterModelRegistry:
             os.unlink(temp_path)
 
     def test_backwards_compatibility_max_tokens(self):
-        """Test that old max_tokens field is no longer supported (should result in empty registry)."""
+        """Test that legacy max_tokens field maps to max_output_tokens."""
         config_data = {
             "models": [
                 {
@@ -178,19 +179,17 @@ class TestOpenRouterModelRegistry:
             temp_path = f.name
 
         try:
-            # Should gracefully handle the error and result in empty registry
-            registry = OpenRouterModelRegistry(config_path=temp_path)
-            # Registry should be empty due to config error
-            assert len(registry.list_models()) == 0
-            assert len(registry.list_aliases()) == 0
-            assert registry.resolve("old") is None
+            with patch.dict("os.environ", {}, clear=True):
+                with pytest.raises(ValueError, match="max_output_tokens"):
+                    OpenRouterModelRegistry(config_path=temp_path)
         finally:
             os.unlink(temp_path)
 
     def test_missing_config_file(self):
         """Test behavior with missing config file."""
         # Use a non-existent path
-        registry = OpenRouterModelRegistry(config_path="/non/existent/path.json")
+        with patch.dict("os.environ", {}, clear=True):
+            registry = OpenRouterModelRegistry(config_path="/non/existent/path.json")
 
         # Should initialize with empty maps
         assert len(registry.list_models()) == 0

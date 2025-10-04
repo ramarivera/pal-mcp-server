@@ -11,6 +11,8 @@ from typing import Any, Optional
 
 from mcp.types import TextContent
 
+from providers.custom_registry import CustomEndpointModelRegistry
+from providers.openrouter_registry import OpenRouterModelRegistry
 from tools.models import ToolModelCategory, ToolOutput
 from tools.shared.base_models import ToolRequest
 from tools.shared.base_tool import BaseTool
@@ -80,7 +82,6 @@ class ListModelsTool(BaseTool):
         Returns:
             Formatted list of models by provider
         """
-        from providers.openrouter_registry import OpenRouterModelRegistry
         from providers.registry import ModelProviderRegistry
         from providers.shared import ProviderType
         from utils.model_restrictions import get_restriction_service
@@ -99,6 +100,7 @@ class ListModelsTool(BaseTool):
         provider_info = {
             ProviderType.GOOGLE: {"name": "Google Gemini", "env_key": "GEMINI_API_KEY"},
             ProviderType.OPENAI: {"name": "OpenAI", "env_key": "OPENAI_API_KEY"},
+            ProviderType.AZURE: {"name": "Azure OpenAI", "env_key": "AZURE_OPENAI_API_KEY"},
             ProviderType.XAI: {"name": "X.AI (Grok)", "env_key": "XAI_API_KEY"},
             ProviderType.DIAL: {"name": "AI DIAL", "env_key": "DIAL_API_KEY"},
         }
@@ -317,12 +319,12 @@ class ListModelsTool(BaseTool):
             output_lines.append("**Description**: Local models via Ollama, vLLM, LM Studio, etc.")
 
             try:
-                registry = OpenRouterModelRegistry()
+                registry = CustomEndpointModelRegistry()
                 custom_models = []
 
                 for alias in registry.list_aliases():
                     config = registry.resolve(alias)
-                    if config and config.is_custom:
+                    if config:
                         custom_models.append((alias, config))
 
                 if custom_models:

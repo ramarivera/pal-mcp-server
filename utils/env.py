@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
+from contextlib import contextmanager
 from pathlib import Path
 
 try:
@@ -86,3 +87,25 @@ def get_all_env() -> dict[str, str | None]:
     """Expose the loaded .env mapping for diagnostics/logging."""
 
     return dict(_DOTENV_VALUES)
+
+
+@contextmanager
+def suppress_env_vars(*names: str):
+    """Temporarily remove environment variables during the context.
+
+    Args:
+        names: Environment variable names to remove. Empty or falsy names are ignored.
+    """
+
+    removed: dict[str, str] = {}
+    try:
+        for name in names:
+            if not name:
+                continue
+            if name in os.environ:
+                removed[name] = os.environ[name]
+                del os.environ[name]
+        yield
+    finally:
+        for name, value in removed.items():
+            os.environ[name] = value

@@ -1,10 +1,10 @@
 """Custom API provider implementation."""
 
 import logging
-from typing import Optional
 
 from utils.env import get_env
 
+from .custom_registry import CustomEndpointModelRegistry
 from .openai_compatible import OpenAICompatibleProvider
 from .openrouter_registry import OpenRouterModelRegistry
 from .shared import ModelCapabilities, ProviderType
@@ -31,8 +31,8 @@ class CustomProvider(OpenAICompatibleProvider):
 
     FRIENDLY_NAME = "Custom API"
 
-    # Model registry for managing configurations and aliases (shared with OpenRouter)
-    _registry: Optional[OpenRouterModelRegistry] = None
+    # Model registry for managing configurations and aliases
+    _registry: CustomEndpointModelRegistry | None = None
 
     def __init__(self, api_key: str = "", base_url: str = "", **kwargs):
         """Initialize Custom provider for local/self-hosted models.
@@ -78,9 +78,9 @@ class CustomProvider(OpenAICompatibleProvider):
 
         super().__init__(api_key, base_url=base_url, **kwargs)
 
-        # Initialize model registry (shared with OpenRouter for consistent aliases)
+        # Initialize model registry
         if CustomProvider._registry is None:
-            CustomProvider._registry = OpenRouterModelRegistry()
+            CustomProvider._registry = CustomEndpointModelRegistry()
             # Log loaded models and aliases only on first load
             models = self._registry.list_models()
             aliases = self._registry.list_aliases()
@@ -92,8 +92,8 @@ class CustomProvider(OpenAICompatibleProvider):
     def _lookup_capabilities(
         self,
         canonical_name: str,
-        requested_name: Optional[str] = None,
-    ) -> Optional[ModelCapabilities]:
+        requested_name: str | None = None,
+    ) -> ModelCapabilities | None:
         """Return capabilities for models explicitly marked as custom."""
 
         builtin = super()._lookup_capabilities(canonical_name, requested_name)
@@ -101,12 +101,12 @@ class CustomProvider(OpenAICompatibleProvider):
             return builtin
 
         registry_entry = self._registry.resolve(canonical_name)
-        if registry_entry and getattr(registry_entry, "is_custom", False):
+        if registry_entry:
             registry_entry.provider = ProviderType.CUSTOM
             return registry_entry
 
         logging.debug(
-            "Custom provider cannot resolve model '%s'; ensure it is declared with 'is_custom': true in custom_models.json",
+            "Custom provider cannot resolve model '%s'; ensure it is declared in custom_models.json",
             canonical_name,
         )
         return None
@@ -151,6 +151,15 @@ class CustomProvider(OpenAICompatibleProvider):
             return base_model
 
         logging.debug(f"Model '{model_name}' not found in registry, using as-is")
+        # Attempt to resolve via OpenRouter registry so aliases still map cleanly
+        openrouter_registry = OpenRouterModelRegistry()
+        openrouter_config = openrouter_registry.resolve(model_name)
+        if openrouter_config:
+            resolved = openrouter_config.model_name
+            self._alias_cache[cache_key] = resolved
+            self._alias_cache.setdefault(resolved.lower(), resolved)
+            return resolved
+
         self._alias_cache[cache_key] = model_name
         return model_name
 
@@ -160,9 +169,9 @@ class CustomProvider(OpenAICompatibleProvider):
         if not self._registry:
             return {}
 
-        capabilities: dict[str, ModelCapabilities] = {}
-        for model_name in self._registry.list_models():
-            config = self._registry.resolve(model_name)
-            if config and getattr(config, "is_custom", False):
-                capabilities[model_name] = config
+        capabilities = {}
+        for model in self._registry.list_models():
+            config = self._registry.resolve(model)
+            if config:
+                capabilities[model] = config
         return capabilities

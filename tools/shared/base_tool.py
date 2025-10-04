@@ -82,6 +82,7 @@ class BaseTool(ABC):
 
     # Class-level cache for OpenRouter registry to avoid multiple loads
     _openrouter_registry_cache = None
+    _custom_registry_cache = None
 
     @classmethod
     def _get_openrouter_registry(cls):
@@ -93,6 +94,16 @@ class BaseTool(ABC):
             BaseTool._openrouter_registry_cache = OpenRouterModelRegistry()
             logger.debug("Created cached OpenRouter registry instance")
         return BaseTool._openrouter_registry_cache
+
+    @classmethod
+    def _get_custom_registry(cls):
+        """Get cached custom-endpoint registry instance."""
+        if BaseTool._custom_registry_cache is None:
+            from providers.custom_registry import CustomEndpointModelRegistry
+
+            BaseTool._custom_registry_cache = CustomEndpointModelRegistry()
+            logger.debug("Created cached Custom registry instance")
+        return BaseTool._custom_registry_cache
 
     def __init__(self):
         # Cache tool metadata at initialization to avoid repeated calls
@@ -266,14 +277,10 @@ class BaseTool(ABC):
         custom_url = get_env("CUSTOM_API_URL")
         if custom_url:
             try:
-                registry = self._get_openrouter_registry()
-                # Find all custom models (is_custom=true)
+                registry = self._get_custom_registry()
                 for alias in registry.list_aliases():
-                    config = registry.resolve(alias)
-                    # Check if this is a custom model that requires custom endpoints
-                    if config and config.is_custom:
-                        if alias not in all_models:
-                            all_models.append(alias)
+                    if alias not in all_models:
+                        all_models.append(alias)
             except Exception as e:
                 import logging
 
@@ -1282,12 +1289,7 @@ When recommending searches, be specific about what information you need and why 
             try:
                 registry = self._get_openrouter_registry()
 
-                # Include every known alias so MCP enum matches registry capabilities
                 for alias in registry.list_aliases():
-                    config = registry.resolve(alias)
-                    if config and config.is_custom:
-                        # Custom-only models require CUSTOM_API_URL; defer to custom block
-                        continue
                     if alias not in all_models:
                         all_models.append(alias)
             except Exception as exc:  # pragma: no cover - logged for observability
@@ -1299,10 +1301,9 @@ When recommending searches, be specific about what information you need and why 
         custom_url = get_env("CUSTOM_API_URL")
         if custom_url:
             try:
-                registry = self._get_openrouter_registry()
+                registry = self._get_custom_registry()
                 for alias in registry.list_aliases():
-                    config = registry.resolve(alias)
-                    if config and config.is_custom and alias not in all_models:
+                    if alias not in all_models:
                         all_models.append(alias)
             except Exception as exc:  # pragma: no cover - logged for observability
                 import logging
