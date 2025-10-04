@@ -152,30 +152,6 @@ cd zen-mcp-server
 }
 ```
 
-**For Qwen Code CLI:**
-Edit `~/.qwen/settings.json` and register Zen as an MCP server:
-
-```json
-{
-  "mcpServers": {
-    "zen": {
-      "command": "bash",
-      "args": [
-        "-c",
-        "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"
-      ],
-      "cwd": "/path/to/zen-mcp-server",
-      "env": {
-        "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
-        "GEMINI_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
-```
-
-Update the `env` block with the API keys you use (Gemini, OpenAI, OpenRouter, etc.).
-
 **3. Start Using!**
 ```
 "Use zen to analyze this code for security issues with gemini pro"
