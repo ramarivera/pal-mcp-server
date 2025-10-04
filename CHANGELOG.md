@@ -2,6 +2,41 @@
 
 <!-- version list -->
 
+## v5.22.0 (2025-10-04)
+
+### Bug Fixes
+
+- CI test
+  ([`bc93b53`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/bc93b5343bbd8657b95ab47c00a2cb99a68a009f))
+
+- Listmodels to always honor restricted models
+  ([`4015e91`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/4015e917ed32ae374ec6493b74993fcb34f4a971))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`054e34e`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/054e34e31ca5bee5a11c0e3e6537f58e8897c79c))
+
+- Sync version to config.py [skip ci]
+  ([`c0334d7`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/c0334d77922f1b05e3fd755851da112567fb9ae6))
+
+### Features
+
+- Centralized environment handling, ensures ZEN_MCP_FORCE_ENV_OVERRIDE is honored correctly
+  ([`2c534ac`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/2c534ac06e4c6078b96781dfb55c5759b982afe8))
+
+### Refactoring
+
+- Don't retry on 429
+  ([`d184024`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/d18402482087f52b7bd07755c9304ed00ed20592))
+
+- Improved retry logic and moved core logic to base class
+  ([`f955100`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/f955100f3a82973ccd987607e1d8a1bbe07828c8))
+
+- Removed subclass override when the base class should be resolving the model name
+  ([`06d7701`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/06d7701cc3ee09732ab713fa9c7c004199154483))
+
+
 ## v5.21.0 (2025-10-03)
 
 ### Chores
