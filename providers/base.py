@@ -60,16 +60,19 @@ class ModelProvider(ABC):
         customise. Subclasses usually only override ``_lookup_capabilities`` to
         integrate a registry or dynamic source, or ``_finalise_capabilities`` to
         tweak the returned object.
+
+        Args:
+            model_name: Canonical model name or its alias
         """
 
-        resolved_name = self._resolve_model_name(model_name)
-        capabilities = self._lookup_capabilities(resolved_name, model_name)
+        resolved_model_name = self._resolve_model_name(model_name)
+        capabilities = self._lookup_capabilities(resolved_model_name, model_name)
 
         if capabilities is None:
             self._raise_unsupported_model(model_name)
 
-        self._ensure_model_allowed(capabilities, resolved_name, model_name)
-        return self._finalise_capabilities(capabilities, resolved_name, model_name)
+        self._ensure_model_allowed(capabilities, resolved_model_name, model_name)
+        return self._finalise_capabilities(capabilities, resolved_model_name, model_name)
 
     def get_all_model_capabilities(self) -> dict[str, ModelCapabilities]:
         """Return statically declared capabilities when available."""
@@ -150,7 +153,38 @@ class ModelProvider(ABC):
         max_output_tokens: Optional[int] = None,
         **kwargs,
     ) -> ModelResponse:
-        """Generate content using the model."""
+        """Generate content using the model.
+
+        This is the core method that all providers must implement to generate responses
+        from their models. Providers should handle model-specific capabilities and
+        constraints appropriately.
+
+        Args:
+            prompt: The main user prompt/query to send to the model
+            model_name: Canonical model name or its alias that the provider supports
+            system_prompt: Optional system instructions to prepend to the prompt for
+                          establishing context, behavior, or role
+            temperature: Controls randomness in generation (0.0=deterministic, 1.0=creative),
+                        default 0.3. Some models may not support temperature control
+            max_output_tokens: Optional maximum number of tokens to generate in the response.
+                              If not specified, uses the model's default limit
+            **kwargs: Additional provider-specific parameters that vary by implementation
+                     (e.g., thinking_mode for Gemini, top_p for OpenAI, images for vision models)
+
+        Returns:
+            ModelResponse: Standardized response object containing:
+                - content: The generated text response
+                - usage: Token usage statistics (input/output/total)
+                - model_name: The model that was actually used
+                - friendly_name: Human-readable provider/model identifier
+                - provider: The ProviderType enum value
+                - metadata: Provider-specific metadata (finish_reason, safety info, etc.)
+
+        Raises:
+            ValueError: If the model is not supported, parameters are invalid,
+                       or the model is restricted by policy
+            RuntimeError: If the API call fails after retries
+        """
 
     def count_tokens(self, text: str, model_name: str) -> int:
         """Estimate token usage for a piece of text."""
@@ -276,7 +310,12 @@ class ModelProvider(ABC):
     # Validation hooks
     # ------------------------------------------------------------------
     def validate_model_name(self, model_name: str) -> bool:
-        """Return ``True`` when the model resolves to an allowed capability."""
+        """
+        Return ``True`` when the model resolves to an allowed capability.
+
+        Args:
+            model_name: Canonical model name or its alias
+        """
 
         try:
             self.get_capabilities(model_name)
@@ -285,7 +324,12 @@ class ModelProvider(ABC):
         return True
 
     def validate_parameters(self, model_name: str, temperature: float, **kwargs) -> None:
-        """Validate model parameters against capabilities."""
+        """
+        Validate model parameters against capabilities.
+
+        Args:
+            model_name: Canonical model name or its alias
+        """
 
         capabilities = self.get_capabilities(model_name)
 
@@ -364,7 +408,7 @@ class ModelProvider(ABC):
         model configuration sources.
 
         Args:
-            model_name: Model name that may be an alias
+            model_name: Canonical model name or its alias
 
         Returns:
             Resolved model name

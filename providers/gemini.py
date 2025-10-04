@@ -172,11 +172,27 @@ class GeminiModelProvider(ModelProvider):
         images: Optional[list[str]] = None,
         **kwargs,
     ) -> ModelResponse:
-        """Generate content using Gemini model."""
+        """
+        Generate content using Gemini model.
+
+        Args:
+            prompt: The main user prompt/query to send to the model
+            model_name: Canonical model name or its alias (e.g., "gemini-2.5-pro", "flash", "pro")
+            system_prompt: Optional system instructions to prepend to the prompt for context/behavior
+            temperature: Controls randomness in generation (0.0=deterministic, 1.0=creative), default 0.3
+            max_output_tokens: Optional maximum number of tokens to generate in the response
+            thinking_mode: Thinking budget level for models that support it ("minimal", "low", "medium", "high", "max"), default "medium"
+            images: Optional list of image paths or data URLs to include with the prompt (for vision models)
+            **kwargs: Additional keyword arguments (reserved for future use)
+
+        Returns:
+            ModelResponse: Contains the generated content, token usage stats, model metadata, and safety information
+        """
         # Validate parameters and fetch capabilities
-        resolved_name = self._resolve_model_name(model_name)
         self.validate_parameters(model_name, temperature)
         capabilities = self.get_capabilities(model_name)
+
+        resolved_model_name = self._resolve_model_name(model_name)
 
         # Prepare content parts (text and potentially images)
         parts = []
@@ -201,7 +217,7 @@ class GeminiModelProvider(ModelProvider):
                     # Continue with other images and text
                     continue
         elif images and not capabilities.supports_images:
-            logger.warning(f"Model {resolved_name} does not support images, ignoring {len(images)} image(s)")
+            logger.warning(f"Model {resolved_model_name} does not support images, ignoring {len(images)} image(s)")
 
         # Create contents structure
         contents = [{"parts": parts}]
@@ -219,7 +235,7 @@ class GeminiModelProvider(ModelProvider):
         # Add thinking configuration for models that support it
         if capabilities.supports_extended_thinking and thinking_mode in self.THINKING_BUDGETS:
             # Get model's max thinking tokens and calculate actual budget
-            model_config = self.MODEL_CAPABILITIES.get(resolved_name)
+            model_config = self.MODEL_CAPABILITIES.get(resolved_model_name)
             if model_config and model_config.max_thinking_tokens > 0:
                 max_thinking_tokens = model_config.max_thinking_tokens
                 actual_thinking_budget = int(max_thinking_tokens * self.THINKING_BUDGETS[thinking_mode])
@@ -233,7 +249,7 @@ class GeminiModelProvider(ModelProvider):
         def _attempt() -> ModelResponse:
             attempt_counter["value"] += 1
             response = self.client.models.generate_content(
-                model=resolved_name,
+                model=resolved_model_name,
                 contents=contents,
                 config=generation_config,
             )
@@ -308,7 +324,7 @@ class GeminiModelProvider(ModelProvider):
             return ModelResponse(
                 content=response.text,
                 usage=usage,
-                model_name=resolved_name,
+                model_name=resolved_model_name,
                 friendly_name="Gemini",
                 provider=ProviderType.GOOGLE,
                 metadata={
@@ -324,12 +340,12 @@ class GeminiModelProvider(ModelProvider):
                 operation=_attempt,
                 max_attempts=max_retries,
                 delays=retry_delays,
-                log_prefix=f"Gemini API ({resolved_name})",
+                log_prefix=f"Gemini API ({resolved_model_name})",
             )
         except Exception as exc:
             attempts = max(attempt_counter["value"], 1)
             error_msg = (
-                f"Gemini API error for model {resolved_name} after {attempts} attempt"
+                f"Gemini API error for model {resolved_model_name} after {attempts} attempt"
                 f"{'s' if attempts > 1 else ''}: {exc}"
             )
             raise RuntimeError(error_msg) from exc

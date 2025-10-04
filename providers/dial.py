@@ -333,15 +333,17 @@ class DIALModelProvider(OpenAICompatibleProvider):
         /openai/deployments/{deployment}/chat/completions
 
         Args:
-            prompt: User prompt
-            model_name: Model name or alias
-            system_prompt: Optional system prompt
-            temperature: Sampling temperature
-            max_output_tokens: Maximum tokens to generate
-            **kwargs: Additional provider-specific parameters
+            prompt: The main user prompt/query to send to the model
+            model_name: Model name or alias (e.g., "o3", "sonnet-4.1", "gemini-2.5-pro")
+            system_prompt: Optional system instructions to prepend to the prompt for context/behavior
+            temperature: Sampling temperature for randomness (0.0=deterministic, 1.0=creative), default 0.3
+                        Note: O3/O4 models don't support temperature and will ignore this parameter
+            max_output_tokens: Optional maximum number of tokens to generate in the response
+            images: Optional list of image paths or data URLs to include with the prompt (for vision-capable models)
+            **kwargs: Additional OpenAI-compatible parameters (top_p, frequency_penalty, presence_penalty, seed, stop)
 
         Returns:
-            ModelResponse with generated content and metadata
+            ModelResponse: Contains the generated content, token usage stats, model metadata, and finish reason
         """
         # Validate model name against allow-list
         if not self.validate_model_name(model_name):
@@ -381,6 +383,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
         completion_params = {
             "model": resolved_model,
             "messages": messages,
+            "stream": False,
         }
 
         # Determine temperature support from capabilities
@@ -397,7 +400,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
         # Add additional parameters
         for key, value in kwargs.items():
             if key in ["top_p", "frequency_penalty", "presence_penalty", "seed", "stop", "stream"]:
-                if not supports_temperature and key in ["top_p", "frequency_penalty", "presence_penalty"]:
+                if not supports_temperature and key in ["top_p", "frequency_penalty", "presence_penalty", "stream"]:
                     continue
                 completion_params[key] = value
 
@@ -437,9 +440,9 @@ class DIALModelProvider(OpenAICompatibleProvider):
         except Exception as exc:
             attempts = max(attempt_counter["value"], 1)
             if attempts == 1:
-                raise ValueError(f"DIAL API error for model {model_name}: {exc}") from exc
+                raise ValueError(f"DIAL API error for model {resolved_model}: {exc}") from exc
 
-            raise ValueError(f"DIAL API error for model {model_name} after {attempts} attempts: {exc}") from exc
+            raise ValueError(f"DIAL API error for model {resolved_model} after {attempts} attempts: {exc}") from exc
 
     def close(self) -> None:
         """Clean up HTTP clients when provider is closed."""

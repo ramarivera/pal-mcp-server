@@ -6,7 +6,7 @@ from typing import Optional
 
 from .openai_compatible import OpenAICompatibleProvider
 from .openrouter_registry import OpenRouterModelRegistry
-from .shared import ModelCapabilities, ModelResponse, ProviderType
+from .shared import ModelCapabilities, ProviderType
 
 
 class CustomProvider(OpenAICompatibleProvider):
@@ -112,49 +112,6 @@ class CustomProvider(OpenAICompatibleProvider):
         """Identify this provider for restriction and logging logic."""
 
         return ProviderType.CUSTOM
-
-    # ------------------------------------------------------------------
-    # Validation
-    # ------------------------------------------------------------------
-
-    # ------------------------------------------------------------------
-    # Request execution
-    # ------------------------------------------------------------------
-
-    def generate_content(
-        self,
-        prompt: str,
-        model_name: str,
-        system_prompt: Optional[str] = None,
-        temperature: float = 0.3,
-        max_output_tokens: Optional[int] = None,
-        **kwargs,
-    ) -> ModelResponse:
-        """Generate content using the custom API.
-
-        Args:
-            prompt: User prompt to send to the model
-            model_name: Name of the model to use
-            system_prompt: Optional system prompt for model behavior
-            temperature: Sampling temperature
-            max_output_tokens: Maximum tokens to generate
-            **kwargs: Additional provider-specific parameters
-
-        Returns:
-            ModelResponse with generated content and metadata
-        """
-        # Resolve model alias to actual model name
-        resolved_model = self._resolve_model_name(model_name)
-
-        # Call parent method with resolved model name
-        return super().generate_content(
-            prompt=prompt,
-            model_name=resolved_model,
-            system_prompt=system_prompt,
-            temperature=temperature,
-            max_output_tokens=max_output_tokens,
-            **kwargs,
-        )
 
     # ------------------------------------------------------------------
     # Registry helpers

@@ -27,8 +27,10 @@ class TestModelResolutionBug:
         provider = OpenRouterProvider("test_key")
 
         # Test alias resolution
-        resolved = provider._resolve_model_name("gemini")
-        assert resolved == "google/gemini-2.5-pro", f"Expected 'google/gemini-2.5-pro', got '{resolved}'"
+        resolved_model_name = provider._resolve_model_name("gemini")
+        assert (
+            resolved_model_name == "google/gemini-2.5-pro"
+        ), f"Expected 'google/gemini-2.5-pro', got '{resolved_model_name}'"
 
         # Test that it also works with 'pro' alias
         resolved_pro = provider._resolve_model_name("pro")

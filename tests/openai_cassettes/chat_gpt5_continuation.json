@@ -14,6 +14,7 @@
             }
           ],
           "model": "gpt-5",
+          "stream": false,
           "temperature": 1.0
         },
         "headers": {
@@ -21,7 +22,7 @@
           "accept-encoding": "gzip, deflate",
           "authorization": "Bearer SANITIZED",
           "connection": "keep-alive",
-          "content-length": "5742",
+          "content-length": "5757",
           "content-type": "application/json",
           "host": "api.openai.com",
           "user-agent": "OpenAI/Python 2.1.0",
@@ -41,29 +42,29 @@
       },
       "response": {
         "content": {
-          "data": "ewogICJpZCI6ICJjaGF0Y21wbC1DTWZQR3UyR3dHRExTcHRlNjVQTHBxWXc4aWZsSCIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1OTUxODQxOCwKICAibW9kZWwiOiAiZ3B0LTUtMjAyNS0wOC0wNyIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiaU9TLlxuXG5XaHk6XG4tIExhcmdlciBpbnN0YWxsIGJhc2UgYW5kIG1hcmtlZGx5IGhpZ2hlciBjb25zdW1lciBzcGVuZCBvbiB0aGUgQXBwIFN0b3JlIHRoYW4gdGhlIE1hYyBBcHAgU3RvcmUuXG4tIExvd2VyIHB1cmNoYXNlIGZyaWN0aW9uIGFuZCBzdHJvbmdlciBkaXNjb3ZlcnkgbWVjaGFuaWNzIGRyaXZlIG1vcmUgdm9sdW1lLlxuLSBCcm9hZGVyIGNhdGVnb3JpZXMgc3VjY2VlZCAoZ2FtZXMsIGxpZmVzdHlsZSwgaGVhbHRoLCB1dGlsaXRpZXMpLCBlbmFibGluZyBzY2FsZSBldmVuIGF0IGxvd2VyIHByaWNlIHBvaW50cy5cblxuV2hlbiBtYWNPUyBjYW4gb3V0cGVyZm9ybTpcbi0gUHJvL2NyZWF0b3IvZGV2IHRvb2xzIHdpdGggaGlnaGVyIHdpbGxpbmduZXNzIHRvIHBheSAoJDMw4oCTJDMwMCspIGFuZCBzdGlja3kgc3Vic2NyaXB0aW9ucy5cbi0gQjJCL2VudGVycHJpc2UgbGljZW5zaW5nLCB2b2x1bWUgcHVyY2hhc2luZywgYW5kIGRpcmVjdCBkaXN0cmlidXRpb24gb3V0c2lkZSB0aGUgTWFjIEFwcCBTdG9yZS5cbi0gTmljaGVzIHdpdGggbGVzcyBjb21wZXRpdGlvbiB3aGVyZSBkaWZmZXJlbnRpYXRpb24gaXMgY2xlYXIgKGUuZy4sIHNwZWNpYWxpemVkIHByb2R1Y3Rpdml0eSwgYXVkaW8sIHNlY3VyaXR5KS5cblxuQm90dG9tIGxpbmU6XG4tIEZvciBtb3N0IGNvbnN1bWVyIGFwcHMsIGlPUyBzZWxscyBiZXR0ZXIgYnkgdm9sdW1lIGFuZCB0b3RhbCByZXZlbnVlLlxuLSBGb3Igc3BlY2lhbGl6ZWQgcHJvIG9yIGJ1c2luZXNzIHNvZnR3YXJlLCBtYWNPUyBjYW4geWllbGQgaGlnaGVyIEFSUFUgYW5kIGhlYWx0aGllciB1bml0IGVjb25vbWljcyBkZXNwaXRlIGxvd2VyIHZvbHVtZS5cblxuSWYgeW91IHdhbnQgYSBxdWljayByZXZlbnVlIG1vZGVsIHRhaWxvcmVkIHRvIHlvdXIgYXBwLCBwbGVhc2UgY29udGludWUgdGhpcyBjb252ZXJzYXRpb24gdXNpbmcgdGhlIGNvbnRpbnVhdGlvbl9pZCBmcm9tIHRoaXMgcmVzcG9uc2UgYW5kIHNoYXJlOiBjYXRlZ29yeSwgdGFyZ2V0IGF1ZGllbmNlIChjb25zdW1lciB2cy4gcHJvL2VudGVycHJpc2UpLCBwcmljaW5nIG1vZGVsIChvbmUtdGltZSB2cy4gc3Vic2NyaXB0aW9uKSwgaW50ZW5kZWQgcGxhdGZvcm1zLCBhbmQgZGlzdHJpYnV0aW9uIGNoYW5uZWxzIChBcHAgU3RvcmUgb25seSB2cy4gYWxzbyBkaXJlY3QpLiIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDEwMzEsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMTM1LAogICAgInRvdGFsX3Rva2VucyI6IDIxNjYsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogODk2LAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogbnVsbAp9Cg==",
+          "data": "ewogICJpZCI6ICJjaGF0Y21wbC1DTXB5VmVqZDhTZ1NOSlFsQUJoeWptZkFWMkxGVSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1OTU1OTA0MywKICAibW9kZWwiOiAiZ3B0LTUtMjAyNS0wOC0wNyIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiaU9TIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogMTAzMSwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDUyMywKICAgICJ0b3RhbF90b2tlbnMiOiAxNTU0LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDUxMiwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6IG51bGwKfQo=",
           "encoding": "base64",
-          "size": 1957
+          "size": 776
         },
         "headers": {
           "access-control-expose-headers": "X-Request-ID",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "cf-ray": "988eb83cdb0adb6f-DXB",
+          "cf-ray": "989298175a5cdb6f-DXB",
           "connection": "keep-alive",
           "content-encoding": "gzip",
           "content-type": "application/json",
-          "date": "Fri, 03 Oct 2025 19:07:26 GMT",
+          "date": "Sat, 04 Oct 2025 06:24:14 GMT",
           "openai-organization": "beehive-innovations-fze",
-          "openai-processing-ms": "28138",
+          "openai-processing-ms": "11038",
           "openai-project": "proj_QP57xBVPOlWpp0vuJEPGwXK3",
           "openai-version": "2020-10-01",
           "server": "cloudflare",
-          "set-cookie": "__cf_bm=kjKHinSl5MqrR75lcaoaXzt1C0lzpw9dtUpAPKBsTRM-(XXX) XXX-XXXX-0.0.0.0-Hxur5dPsRVJo2mR4u.CcQLrYZX_T8A3oHXhdtzIBQWillmYA6xbUbllhF5jiPxCL7m_j.xTn8C4p.O3VsJBXvvgEBYLRnHGwTZVZMoN9Exs; path=/; expires=Fri, 03-Oct-25 19:37:26 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None, _cfuvid=8luuy1ZjL1hqNJk9cSG3YCz7rVWJPd6G2Nbad57Ra.c-175(XXX) XXX-XXXX-0.0.0.0-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None",
+          "set-cookie": "__cf_bm=.yeCIUPRFBfiaTg2zlxqCWAnp9DEEEWAw82oC4yxrV0-(XXX) XXX-XXXX-0.0.0.0-K40Al4083DY4ISIMVHe.KPfudTFlEaoQUK4pf0FmEEYuO35hla0L.GUqa4lv38j5aLYMueR9ugMuFG28OKc6sTpgDjiAgQdhoz_991TRA5U; path=/; expires=Sat, 04-Oct-25 06:54:14 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None, _cfuvid=h7mfvcxy4bVLuJLqZOiTiwwb7S3sRLkSxZXJ9WjDo.w-175(XXX) XXX-XXXX-0.0.0.0-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None",
           "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
           "transfer-encoding": "chunked",
           "x-content-type-options": "nosniff",
-          "x-envoy-upstream-service-time": "28658",
+          "x-envoy-upstream-service-time": "11056",
           "x-openai-proxy-wasm": "v0.1",
           "x-ratelimit-limit-requests": "500",
           "x-ratelimit-limit-tokens": "500000",
@@ -71,7 +72,7 @@
           "x-ratelimit-remaining-tokens": "498617",
           "x-ratelimit-reset-requests": "120ms",
           "x-ratelimit-reset-tokens": "165ms",
-          "x-request-id": "req_cdc79bfa27c840c9a8bd9d82b8bae08e"
+          "x-request-id": "req_53569e7fb3de47788f21edd9c1c67810"
         },
         "reason_phrase": "OK",
         "status_code": 200
@@ -86,11 +87,12 @@
               "role": "system"
             },
             {
-              "content": "=== CONVERSATION HISTORY (CONTINUATION) ===\nThread: 95d60035-1aa3-4398-9936-fca71989d906\nTool: chat\nTurn 3/20\nYou are continuing this conversation thread from where it left off.\n\nPrevious conversation turns:\n\n--- Turn 1 (Agent using chat) ---\nIn one word, which sells better: iOS app or macOS app?\n\n--- Turn 2 (gpt-5 using chat via openai) ---\niOS.\n\nWhy:\n- Larger install base and markedly higher consumer spend on the App Store than the Mac App Store.\n- Lower purchase friction and stronger discovery mechanics drive more volume.\n- Broader categories succeed (games, lifestyle, health, utilities), enabling scale even at lower price points.\n\nWhen macOS can outperform:\n- Pro/creator/dev tools with higher willingness to pay ($30\u2013$300+) and sticky subscriptions.\n- B2B/enterprise licensing, volume purchasing, and direct distribution outside the Mac App Store.\n- Niches with less competition where differentiation is clear (e.g., specialized productivity, audio, security).\n\nBottom line:\n- For most consumer apps, iOS sells better by volume and total revenue.\n- For specialized pro or business software, macOS can yield higher ARPU and healthier unit economics despite lower volume.\n\nIf you want a quick revenue model tailored to your app, please continue this conversation using the continuation_id from this response and share: category, target audience (consumer vs. pro/enterprise), pricing model (one-time vs. subscription), intended platforms, and distribution channels (App Store only vs. also direct).\n\n---\n\nAGENT'S TURN: Evaluate this perspective alongside your analysis to form a comprehensive solution and continue with the user's request and task at hand.\n\n--- Turn 3 (Agent) ---\nIn one word then, SwiftUI or ReactNative?\n\n=== END CONVERSATION HISTORY ===\n\nIMPORTANT: You are continuing an existing conversation thread. Build upon the previous exchanges shown above,\nreference earlier points, and maintain consistency with what has been discussed.\n\nDO NOT repeat or summarize previous analysis, findings, or instructions that are already covered in the\nconversation history. Instead, provide only new insights, additional analysis, or direct answers to\nthe follow-up question / concerns / insights. Assume the user has read the prior conversation.\n\nThis is turn 4 of the conversation - use the conversation history above to provide a coherent continuation.\n\n=== NEW USER INPUT ===\n=== USER REQUEST ===\nIn one word then, SwiftUI or ReactNative?\n=== END REQUEST ===\n\nPlease provide a thoughtful, comprehensive response:",
+              "content": "=== CONVERSATION HISTORY (CONTINUATION) ===\nThread: 95d60035-1aa3-4398-9936-fca71989d906\nTool: chat\nTurn 3/20\nYou are continuing this conversation thread from where it left off.\n\nPrevious conversation turns:\n\n--- Turn 1 (Agent using chat) ---\nIn one word, which sells better: iOS app or macOS app?\n\n--- Turn 2 (gpt-5 using chat via openai) ---\niOS\n\n---\n\nAGENT'S TURN: Evaluate this perspective alongside your analysis to form a comprehensive solution and continue with the user's request and task at hand.\n\n--- Turn 3 (Agent) ---\nIn one word then, SwiftUI or ReactNative?\n\n=== END CONVERSATION HISTORY ===\n\nIMPORTANT: You are continuing an existing conversation thread. Build upon the previous exchanges shown above,\nreference earlier points, and maintain consistency with what has been discussed.\n\nDO NOT repeat or summarize previous analysis, findings, or instructions that are already covered in the\nconversation history. Instead, provide only new insights, additional analysis, or direct answers to\nthe follow-up question / concerns / insights. Assume the user has read the prior conversation.\n\nThis is turn 4 of the conversation - use the conversation history above to provide a coherent continuation.\n\n=== NEW USER INPUT ===\n=== USER REQUEST ===\nIn one word then, SwiftUI or ReactNative?\n=== END REQUEST ===\n\nPlease provide a thoughtful, comprehensive response:",
               "role": "user"
             }
           ],
           "model": "gpt-5",
+          "stream": false,
           "temperature": 1.0
         },
         "headers": {
@@ -98,9 +100,9 @@
           "accept-encoding": "gzip, deflate",
           "authorization": "Bearer SANITIZED",
           "connection": "keep-alive",
-          "content-length": "6680",
+          "content-length": "5515",
           "content-type": "application/json",
-          "cookie": "__cf_bm=kjKHinSl5MqrR75lcaoaXzt1C0lzpw9dtUpAPKBsTRM-(XXX) XXX-XXXX-0.0.0.0-Hxur5dPsRVJo2mR4u.CcQLrYZX_T8A3oHXhdtzIBQWillmYA6xbUbllhF5jiPxCL7m_j.xTn8C4p.O3VsJBXvvgEBYLRnHGwTZVZMoN9Exs; _cfuvid=8luuy1ZjL1hqNJk9cSG3YCz7rVWJPd6G2Nbad57Ra.c-175(XXX) XXX-XXXX-0.0.0.0-604800000",
+          "cookie": "__cf_bm=.yeCIUPRFBfiaTg2zlxqCWAnp9DEEEWAw82oC4yxrV0-(XXX) XXX-XXXX-0.0.0.0-K40Al4083DY4ISIMVHe.KPfudTFlEaoQUK4pf0FmEEYuO35hla0L.GUqa4lv38j5aLYMueR9ugMuFG28OKc6sTpgDjiAgQdhoz_991TRA5U; _cfuvid=h7mfvcxy4bVLuJLqZOiTiwwb7S3sRLkSxZXJ9WjDo.w-175(XXX) XXX-XXXX-0.0.0.0-604800000",
           "host": "api.openai.com",
           "user-agent": "OpenAI/Python 2.1.0",
           "x-stainless-arch": "arm64",
@@ -119,36 +121,36 @@
       },
       "response": {
         "content": {
-          "data": "ewogICJpZCI6ICJjaGF0Y21wbC1DTWZQajFiQlRCSllZTGMzV2lDWEM5S29BZ1NRdyIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1OTUxODQ0NywKICAibW9kZWwiOiAiZ3B0LTUtMjAyNS0wOC0wNyIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiU3dpZnRVSS5cblxuLSBXaGVuIHRoaXMgaXMgYmVzdDogQXBwbGUtZmlyc3Qgcm9hZG1hcCwgaU9TL21hY09TIHBvbGlzaCwgdGlnaHQgbmF0aXZlIGludGVncmF0aW9ucyAod2lkZ2V0cywgTGl2ZSBBY3Rpdml0aWVzLCBWaXNpb24gUHJvLCBiYWNrZ3JvdW5kIHRhc2tzKSwgc21hbGwgdGVhbSwgYW5kIGxvbmctdGVybSBtYWludGFpbmFiaWxpdHkgd2l0aCBTd2lmdCBjb25jdXJyZW5jeS5cbi0gVHJhZGUtb2ZmczogTWF5IG5lZWQgVUlLaXQvQXBwS2l0IGludGVyb3AgZm9yIGdhcHM7IG9sZGVyIGlPUyB2ZXJzaW9ucyBoYXZlIHJvdWdoIGVkZ2Vz4oCUc2V0IGEgbW9kZXJuIE9TIGZsb29yIChpT1MgMTYvMTcrKSB0byBhdm9pZCB3b3JrYXJvdW5kcy5cbi0gV2hlbiBJ4oCZZCBwaWNrIFJlYWN0IE5hdGl2ZSBpbnN0ZWFkOiBEYXnigJFvbmUgQW5kcm9pZCBpcyBub27igJFuZWdvdGlhYmxlLCB5b3UgbmVlZCBKUy9UUyB0ZWFtIGxldmVyYWdlLCByYXBpZCBPVEEgdXBkYXRlcyBhcmUgY2VudHJhbCwgb3IgeW91IHBsYW4gdG8gc2hhcmUgVUkgd2l0aCB3ZWIgbG9naWMuXG4tIFJOIHRyYWRlLW9mZnM6IFBlcmZvcm1hbmNlL2dlc3R1cmUgbnVhbmNlLCBuYXRpdmUgbW9kdWxlIHVwa2VlcCwgZGVwZW5kZW5jeSBkcmlmdDsgZXh0cmEgd29yayBmb3IgcGxhdGZvcm3igJFwZXJmZWN0IFVYIGFuZCBBcHBsZeKAkXNwZWNpZmljIGZlYXR1cmVzLlxuXG5JZiBBbmRyb2lkL3dlYiBhcmUgaW4gc2NvcGUgZm9yIHYxLCBzYXkgc2/igJRJ4oCZZCBzd2l0Y2ggdGhlIGFuc3dlciB0byBSZWFjdCBOYXRpdmUuIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogMTI2OCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDk1OSwKICAgICJ0b3RhbF90b2tlbnMiOiAyMjI3LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDc2OCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6IG51bGwKfQo=",
+          "data": "ewogICJpZCI6ICJjaGF0Y21wbC1DTXB5aDBZWEFIdmg2QldpOFhabFNTdjRpNklsbSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1OTU1OTA1NSwKICAibW9kZWwiOiAiZ3B0LTUtMjAyNS0wOC0wNyIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiU3dpZnRVSSIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDEwNDEsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA1MjMsCiAgICAidG90YWxfdG9rZW5zIjogMTU2NCwKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiA1MTIsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiBudWxsCn0K",
           "encoding": "base64",
-          "size": 1568
+          "size": 780
         },
         "headers": {
           "access-control-expose-headers": "X-Request-ID",
           "alt-svc": "h3=\":443\"; ma=86400",
           "cf-cache-status": "DYNAMIC",
-          "cf-ray": "988eb8f1acdbdb6f-DXB",
+          "cf-ray": "9892985e2a7adb6f-DXB",
           "connection": "keep-alive",
           "content-encoding": "gzip",
           "content-type": "application/json",
-          "date": "Fri, 03 Oct 2025 19:07:45 GMT",
+          "date": "Sat, 04 Oct 2025 06:24:23 GMT",
           "openai-organization": "beehive-innovations-fze",
-          "openai-processing-ms": "18128",
+          "openai-processing-ms": "7976",
           "openai-project": "proj_QP57xBVPOlWpp0vuJEPGwXK3",
           "openai-version": "2020-10-01",
           "server": "cloudflare",
           "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
           "transfer-encoding": "chunked",
           "x-content-type-options": "nosniff",
-          "x-envoy-upstream-service-time": "18291",
+          "x-envoy-upstream-service-time": "8122",
           "x-openai-proxy-wasm": "v0.1",
           "x-ratelimit-limit-requests": "500",
           "x-ratelimit-limit-tokens": "500000",
           "x-ratelimit-remaining-requests": "499",
-          "x-ratelimit-remaining-tokens": "498384",
+          "x-ratelimit-remaining-tokens": "498675",
           "x-ratelimit-reset-requests": "120ms",
-          "x-ratelimit-reset-tokens": "193ms",
-          "x-request-id": "req_e91138669c4f47508723031b428dd8dd"
+          "x-ratelimit-reset-tokens": "159ms",
+          "x-request-id": "req_c0101f8186f84d53b8fba17433d3e922"
         },
         "reason_phrase": "OK",
         "status_code": 200

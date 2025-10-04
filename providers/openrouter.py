@@ -8,7 +8,6 @@ from .openai_compatible import OpenAICompatibleProvider
 from .openrouter_registry import OpenRouterModelRegistry
 from .shared import (
     ModelCapabilities,
-    ModelResponse,
     ProviderType,
     RangeTemperatureConstraint,
 )
@@ -110,50 +109,6 @@ class OpenRouterProvider(OpenAICompatibleProvider):
     def get_provider_type(self) -> ProviderType:
         """Identify this provider for restrictions and logging."""
         return ProviderType.OPENROUTER
-
-    # ------------------------------------------------------------------
-    # Request execution
-    # ------------------------------------------------------------------
-
-    def generate_content(
-        self,
-        prompt: str,
-        model_name: str,
-        system_prompt: Optional[str] = None,
-        temperature: float = 0.3,
-        max_output_tokens: Optional[int] = None,
-        **kwargs,
-    ) -> ModelResponse:
-        """Generate content using the OpenRouter API.
-
-        Args:
-            prompt: User prompt to send to the model
-            model_name: Name of the model (or alias) to use
-            system_prompt: Optional system prompt for model behavior
-            temperature: Sampling temperature
-            max_output_tokens: Maximum tokens to generate
-            **kwargs: Additional provider-specific parameters
-
-        Returns:
-            ModelResponse with generated content and metadata
-        """
-        # Resolve model alias to actual OpenRouter model name
-        resolved_model = self._resolve_model_name(model_name)
-
-        # Always disable streaming for OpenRouter
-        # MCP doesn't use streaming, and this avoids issues with O3 model access
-        if "stream" not in kwargs:
-            kwargs["stream"] = False
-
-        # Call parent method with resolved model name
-        return super().generate_content(
-            prompt=prompt,
-            model_name=resolved_model,
-            system_prompt=system_prompt,
-            temperature=temperature,
-            max_output_tokens=max_output_tokens,
-            **kwargs,
-        )
 
     # ------------------------------------------------------------------
     # Registry helpers

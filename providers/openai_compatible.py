@@ -462,10 +462,11 @@ class OpenAICompatibleProvider(ModelProvider):
 
         Args:
             prompt: User prompt to send to the model
-            model_name: Name of the model to use
+            model_name: Canonical model name or its alias
             system_prompt: Optional system prompt for model behavior
             temperature: Sampling temperature
             max_output_tokens: Maximum tokens to generate
+            images: Optional list of image paths or data URLs to include with the prompt (for vision models)
             **kwargs: Additional provider-specific parameters
 
         Returns:
@@ -497,6 +498,9 @@ class OpenAICompatibleProvider(ModelProvider):
             # Validate parameters with the effective temperature
             self.validate_parameters(model_name, effective_temperature)
 
+        # Resolve to canonical model name
+        resolved_model = self._resolve_model_name(model_name)
+
         # Prepare messages
         messages = []
         if system_prompt:
@@ -518,7 +522,7 @@ class OpenAICompatibleProvider(ModelProvider):
                     # Continue with other images and text
                     continue
         elif images and (not capabilities or not capabilities.supports_images):
-            logging.warning(f"Model {model_name} does not support images, ignoring {len(images)} image(s)")
+            logging.warning(f"Model {resolved_model} does not support images, ignoring {len(images)} image(s)")
 
         # Add user message
         if len(user_content) == 1:
@@ -529,13 +533,13 @@ class OpenAICompatibleProvider(ModelProvider):
             messages.append({"role": "user", "content": user_content})
 
         # Prepare completion parameters
+        # Always disable streaming for OpenRouter
+        # MCP doesn't use streaming, and this avoids issues with O3 model access
         completion_params = {
-            "model": model_name,
+            "model": resolved_model,
             "messages": messages,
+            "stream": False,
         }
-
-        # Check model capabilities once to determine parameter support
-        resolved_model = self._resolve_model_name(model_name)
 
         # Use the effective temperature we calculated earlier
         supports_sampling = effective_temperature is not None
@@ -553,7 +557,7 @@ class OpenAICompatibleProvider(ModelProvider):
         for key, value in kwargs.items():
             if key in ["top_p", "frequency_penalty", "presence_penalty", "seed", "stop", "stream"]:
                 # Reasoning models (those that don't support temperature) also don't support these parameters
-                if not supports_sampling and key in ["top_p", "frequency_penalty", "presence_penalty"]:
+                if not supports_sampling and key in ["top_p", "frequency_penalty", "presence_penalty", "stream"]:
                     continue  # Skip unsupported parameters for reasoning models
                 completion_params[key] = value
 
@@ -585,7 +589,7 @@ class OpenAICompatibleProvider(ModelProvider):
             return ModelResponse(
                 content=content,
                 usage=usage,
-                model_name=model_name,
+                model_name=resolved_model,
                 friendly_name=self.FRIENDLY_NAME,
                 provider=self.get_provider_type(),
                 metadata={
@@ -601,12 +605,12 @@ class OpenAICompatibleProvider(ModelProvider):
                 operation=_attempt,
                 max_attempts=max_retries,
                 delays=retry_delays,
-                log_prefix=f"{self.FRIENDLY_NAME} API ({model_name})",
+                log_prefix=f"{self.FRIENDLY_NAME} API ({resolved_model})",
             )
         except Exception as exc:
             attempts = max(attempt_counter["value"], 1)
             error_msg = (
-                f"{self.FRIENDLY_NAME} API error for model {model_name} after {attempts} attempt"
+                f"{self.FRIENDLY_NAME} API error for model {resolved_model} after {attempts} attempt"
                 f"{'s' if attempts > 1 else ''}: {exc}"
             )
             logging.error(error_msg)
@@ -618,7 +622,7 @@ class OpenAICompatibleProvider(ModelProvider):
         For proxy providers, this may use generic capabilities.
 
         Args:
-            model_name: Model to validate for
+            model_name: Canonical model name or its alias
             temperature: Temperature to validate
             **kwargs: Additional parameters to validate
         """

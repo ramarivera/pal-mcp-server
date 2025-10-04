@@ -353,10 +353,10 @@ class TestLocaleModelIntegration(unittest.TestCase):
         provider = OpenAIModelProvider(api_key="test")
         model_names = ["gpt-4", "gemini-2.5-flash", "anthropic/claude-opus-4.1", "o3-pro"]
         for model_name in model_names:
-            resolved = provider._resolve_model_name(model_name)
-            self.assertIsInstance(resolved, str)
+            resolved_model_name = provider._resolve_model_name(model_name)
+            self.assertIsInstance(resolved_model_name, str)
             model_data = {
-                "model": resolved,
+                "model": resolved_model_name,
                 "description": f"Model {model_name} - advanced development 🚀",
                 "capabilities": ["generation", "review", "creation"],
             }
