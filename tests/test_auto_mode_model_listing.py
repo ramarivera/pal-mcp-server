@@ -6,6 +6,7 @@ import json
 
 import pytest
 
+import utils.env as env_config
 import utils.model_restrictions as model_restrictions
 from providers.gemini import GeminiModelProvider
 from providers.openai_provider import OpenAIModelProvider
@@ -40,6 +41,7 @@ def reset_registry():
 
     ModelProviderRegistry.reset_for_testing()
     model_restrictions._restriction_service = None
+    env_config.reload_env()
     yield
     ModelProviderRegistry.reset_for_testing()
     model_restrictions._restriction_service = None
@@ -63,6 +65,7 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter")
     monkeypatch.delenv("XAI_API_KEY", raising=False)
     monkeypatch.setenv("ZEN_MCP_FORCE_ENV_OVERRIDE", "false")
+    env_config.reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})
     try:
         import dotenv
 
@@ -133,6 +136,7 @@ def test_error_listing_without_restrictions_shows_full_catalog(monkeypatch, rese
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter")
     monkeypatch.setenv("XAI_API_KEY", "test-xai")
     monkeypatch.setenv("ZEN_MCP_FORCE_ENV_OVERRIDE", "false")
+    env_config.reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})
     try:
         import dotenv
 

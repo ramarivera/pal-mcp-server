@@ -35,6 +35,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch):
 
     with monkeypatch.context() as m:
         m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
+        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
         if env_updates["OPENAI_API_KEY"]:
             m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])
         for key in keys_to_clear:
@@ -105,6 +106,7 @@ async def test_chat_openai_continuation(monkeypatch):
 
     with monkeypatch.context() as m:
         m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
+        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
         if recording_mode:
             m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])
         else:

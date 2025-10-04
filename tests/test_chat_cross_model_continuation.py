@@ -86,6 +86,8 @@ async def test_chat_cross_model_continuation(monkeypatch):
     # Step 1 – Gemini picks a number
     with monkeypatch.context() as m:
         m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
+        m.setenv("GOOGLE_ALLOWED_MODELS", "gemini-2.5-flash")
+        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
         if recording_mode:
             m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])
             m.setenv("GEMINI_API_KEY", env_updates["GEMINI_API_KEY"])
@@ -159,6 +161,8 @@ async def test_chat_cross_model_continuation(monkeypatch):
             m.setenv("GOOGLE_GENAI_CLIENT_MODE", "replay")
 
         m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
+        m.setenv("GOOGLE_ALLOWED_MODELS", "gemini-2.5-flash")
+        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
         m.setenv("GOOGLE_GENAI_REPLAYS_DIRECTORY", str(GEMINI_CASSETTE_DIR))
         m.setenv("GOOGLE_GENAI_REPLAY_ID", GEMINI_REPLAY_ID)
         for key in keys_to_clear:

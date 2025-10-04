@@ -112,24 +112,28 @@ from typing import Any, Optional
 
 from pydantic import BaseModel
 
+from utils.env import get_env
+
 logger = logging.getLogger(__name__)
 
 # Configuration constants
 # Get max conversation turns from environment, default to 20 turns (10 exchanges)
 try:
-    MAX_CONVERSATION_TURNS = int(os.getenv("MAX_CONVERSATION_TURNS", "20"))
+    max_turns_raw = (get_env("MAX_CONVERSATION_TURNS", "50") or "50").strip()
+    MAX_CONVERSATION_TURNS = int(max_turns_raw)
     if MAX_CONVERSATION_TURNS <= 0:
-        logger.warning(f"Invalid MAX_CONVERSATION_TURNS value ({MAX_CONVERSATION_TURNS}), using default of 20 turns")
-        MAX_CONVERSATION_TURNS = 20
+        logger.warning(f"Invalid MAX_CONVERSATION_TURNS value ({MAX_CONVERSATION_TURNS}), using default of 50 turns")
+        MAX_CONVERSATION_TURNS = 50
 except ValueError:
     logger.warning(
-        f"Invalid MAX_CONVERSATION_TURNS value ('{os.getenv('MAX_CONVERSATION_TURNS')}'), using default of 20 turns"
+        f"Invalid MAX_CONVERSATION_TURNS value ('{get_env('MAX_CONVERSATION_TURNS')}'), using default of 50 turns"
     )
-    MAX_CONVERSATION_TURNS = 20
+    MAX_CONVERSATION_TURNS = 50
 
 # Get conversation timeout from environment (in hours), default to 3 hours
 try:
-    CONVERSATION_TIMEOUT_HOURS = int(os.getenv("CONVERSATION_TIMEOUT_HOURS", "3"))
+    timeout_raw = (get_env("CONVERSATION_TIMEOUT_HOURS", "3") or "3").strip()
+    CONVERSATION_TIMEOUT_HOURS = int(timeout_raw)
     if CONVERSATION_TIMEOUT_HOURS <= 0:
         logger.warning(
             f"Invalid CONVERSATION_TIMEOUT_HOURS value ({CONVERSATION_TIMEOUT_HOURS}), using default of 3 hours"
@@ -137,7 +141,7 @@ try:
         CONVERSATION_TIMEOUT_HOURS = 3
 except ValueError:
     logger.warning(
-        f"Invalid CONVERSATION_TIMEOUT_HOURS value ('{os.getenv('CONVERSATION_TIMEOUT_HOURS')}'), using default of 3 hours"
+        f"Invalid CONVERSATION_TIMEOUT_HOURS value ('{get_env('CONVERSATION_TIMEOUT_HOURS')}'), using default of 3 hours"
     )
     CONVERSATION_TIMEOUT_HOURS = 3
 

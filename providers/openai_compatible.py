@@ -3,12 +3,12 @@
 import copy
 import ipaddress
 import logging
-import os
 from typing import Optional
 from urllib.parse import urlparse
 
 from openai import OpenAI
 
+from utils.env import get_env
 from utils.image_utils import validate_image
 
 from .base import ModelProvider
@@ -112,7 +112,7 @@ class OpenAICompatibleProvider(ModelProvider):
         # Get provider-specific allowed models
         provider_type = self.get_provider_type().value.upper()
         env_var = f"{provider_type}_ALLOWED_MODELS"
-        models_str = os.getenv(env_var, "")
+        models_str = get_env(env_var, "") or ""
 
         if models_str:
             # Parse and normalize to lowercase for case-insensitive comparison
@@ -165,10 +165,25 @@ class OpenAICompatibleProvider(ModelProvider):
             logging.info(f"Using extended timeouts for custom endpoint: {self.base_url}")
 
         # Allow override via kwargs or environment variables in future, for now...
-        connect_timeout = kwargs.get("connect_timeout", float(os.getenv("CUSTOM_CONNECT_TIMEOUT", default_connect)))
-        read_timeout = kwargs.get("read_timeout", float(os.getenv("CUSTOM_READ_TIMEOUT", default_read)))
-        write_timeout = kwargs.get("write_timeout", float(os.getenv("CUSTOM_WRITE_TIMEOUT", default_write)))
-        pool_timeout = kwargs.get("pool_timeout", float(os.getenv("CUSTOM_POOL_TIMEOUT", default_pool)))
+        connect_timeout = kwargs.get("connect_timeout")
+        if connect_timeout is None:
+            connect_timeout_raw = get_env("CUSTOM_CONNECT_TIMEOUT")
+            connect_timeout = float(connect_timeout_raw) if connect_timeout_raw is not None else float(default_connect)
+
+        read_timeout = kwargs.get("read_timeout")
+        if read_timeout is None:
+            read_timeout_raw = get_env("CUSTOM_READ_TIMEOUT")
+            read_timeout = float(read_timeout_raw) if read_timeout_raw is not None else float(default_read)
+
+        write_timeout = kwargs.get("write_timeout")
+        if write_timeout is None:
+            write_timeout_raw = get_env("CUSTOM_WRITE_TIMEOUT")
+            write_timeout = float(write_timeout_raw) if write_timeout_raw is not None else float(default_write)
+
+        pool_timeout = kwargs.get("pool_timeout")
+        if pool_timeout is None:
+            pool_timeout_raw = get_env("CUSTOM_POOL_TIMEOUT")
+            pool_timeout = float(pool_timeout_raw) if pool_timeout_raw is not None else float(default_pool)
 
         timeout = httpx.Timeout(connect=connect_timeout, read=read_timeout, write=write_timeout, pool=pool_timeout)
 

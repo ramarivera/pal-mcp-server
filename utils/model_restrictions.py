@@ -21,11 +21,11 @@ Example:
 """
 
 import logging
-import os
 from collections import defaultdict
 from typing import Optional
 
 from providers.shared import ProviderType
+from utils.env import get_env
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class ModelRestrictionService:
     def _load_from_env(self) -> None:
         """Load restrictions from environment variables."""
         for provider_type, env_var in self.ENV_VARS.items():
-            env_value = os.getenv(env_var)
+            env_value = get_env(env_var)
 
             if env_value is None or env_value == "":
                 # Not set or empty - no restrictions (allow all models)

@@ -7,7 +7,6 @@ It shows which providers are configured and what models can be used.
 """
 
 import logging
-import os
 from typing import Any, Optional
 
 from mcp.types import TextContent
@@ -15,6 +14,7 @@ from mcp.types import TextContent
 from tools.models import ToolModelCategory, ToolOutput
 from tools.shared.base_models import ToolRequest
 from tools.shared.base_tool import BaseTool
+from utils.env import get_env
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ class ListModelsTool(BaseTool):
             output_lines.append("")
 
         # Check OpenRouter
-        openrouter_key = os.getenv("OPENROUTER_API_KEY")
+        openrouter_key = get_env("OPENROUTER_API_KEY")
         is_openrouter_configured = openrouter_key and openrouter_key != "your_openrouter_api_key_here"
 
         output_lines.append(f"## OpenRouter {'✅' if is_openrouter_configured else '❌'}")
@@ -307,7 +307,7 @@ class ListModelsTool(BaseTool):
         output_lines.append("")
 
         # Check Custom API
-        custom_url = os.getenv("CUSTOM_API_URL")
+        custom_url = get_env("CUSTOM_API_URL")
 
         output_lines.append(f"## Custom/Local API {'✅' if custom_url else '❌'}")
 

@@ -16,18 +16,26 @@ class TestUvxEnvironmentHandling:
     def test_dotenv_import_success(self):
         """Test that dotenv is imported successfully when available."""
         # Mock successful dotenv import
-        with mock.patch.dict("sys.modules", {"dotenv": mock.MagicMock()}):
-            with mock.patch("dotenv.load_dotenv") as mock_load_dotenv:
-                # Re-import server module to trigger the import logic
-                if "server" in sys.modules:
-                    del sys.modules["server"]
+        mock_load = mock.MagicMock()
+        mock_values = mock.MagicMock(return_value={})
+        fake_dotenv = mock.MagicMock(load_dotenv=mock_load, dotenv_values=mock_values)
 
-                import server  # noqa: F401
+        with mock.patch.dict("sys.modules", {"dotenv": fake_dotenv}):
+            if "utils.env" in sys.modules:
+                del sys.modules["utils.env"]
+            if "server" in sys.modules:
+                del sys.modules["server"]
 
-                # Should have called load_dotenv with the correct path
-                mock_load_dotenv.assert_called_once()
-                call_args = mock_load_dotenv.call_args
-                assert "dotenv_path" in call_args.kwargs
+            import importlib
+
+            import utils.env as env_config
+
+            importlib.reload(env_config)
+            import server  # noqa: F401
+
+            assert mock_load.call_count >= 1
+            _, kwargs = mock_load.call_args
+            assert "dotenv_path" in kwargs
 
     def test_dotenv_import_failure_graceful_handling(self):
         """Test that ImportError for dotenv is handled gracefully (uvx scenario)."""

@@ -1,8 +1,9 @@
 """OpenRouter provider implementation."""
 
 import logging
-import os
 from typing import Optional
+
+from utils.env import get_env
 
 from .openai_compatible import OpenAICompatibleProvider
 from .openrouter_registry import OpenRouterModelRegistry
@@ -35,8 +36,9 @@ class OpenRouterProvider(OpenAICompatibleProvider):
 
     # Custom headers required by OpenRouter
     DEFAULT_HEADERS = {
-        "HTTP-Referer": os.getenv("OPENROUTER_REFERER", "https://github.com/BeehiveInnovations/zen-mcp-server"),
-        "X-Title": os.getenv("OPENROUTER_TITLE", "Zen MCP Server"),
+        "HTTP-Referer": get_env("OPENROUTER_REFERER", "https://github.com/BeehiveInnovations/zen-mcp-server")
+        or "https://github.com/BeehiveInnovations/zen-mcp-server",
+        "X-Title": get_env("OPENROUTER_TITLE", "Zen MCP Server") or "Zen MCP Server",
     }
 
     # Model registry for managing configurations and aliases

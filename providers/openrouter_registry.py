@@ -2,9 +2,10 @@
 
 import importlib.resources
 import logging
-import os
 from pathlib import Path
 from typing import Optional
+
+from utils.env import get_env
 
 # Import handled via importlib.resources.files() calls directly
 from utils.file_utils import read_json_file
@@ -50,7 +51,7 @@ class OpenRouterModelRegistry:
             self.config_path = Path(config_path)
         else:
             # Check environment variable first
-            env_path = os.getenv("CUSTOM_MODELS_CONFIG_PATH")
+            env_path = get_env("CUSTOM_MODELS_CONFIG_PATH")
             if env_path:
                 # Environment variable path
                 self.config_path = Path(env_path)

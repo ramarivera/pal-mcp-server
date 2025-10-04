@@ -1,9 +1,10 @@
 """DIAL (Data & AI Layer) model provider implementation."""
 
 import logging
-import os
 import threading
 from typing import Optional
+
+from utils.env import get_env
 
 from .openai_compatible import OpenAICompatibleProvider
 from .shared import ModelCapabilities, ModelResponse, ProviderType, TemperatureConstraint
@@ -209,7 +210,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
             **kwargs: Additional configuration options
         """
         # Get DIAL API host from environment or kwargs
-        dial_host = kwargs.get("base_url") or os.getenv("DIAL_API_HOST") or "https://core.dialx.ai"
+        dial_host = kwargs.get("base_url") or get_env("DIAL_API_HOST") or "https://core.dialx.ai"
 
         # DIAL uses /openai endpoint for OpenAI-compatible API
         if not dial_host.endswith("/openai"):
@@ -218,7 +219,7 @@ class DIALModelProvider(OpenAICompatibleProvider):
         kwargs["base_url"] = dial_host
 
         # Get API version from environment or use default
-        self.api_version = os.getenv("DIAL_API_VERSION", "2024-12-01-preview")
+        self.api_version = get_env("DIAL_API_VERSION", "2024-12-01-preview") or "2024-12-01-preview"
 
         # Add DIAL-specific headers
         # DIAL uses Api-Key header instead of Authorization: Bearer

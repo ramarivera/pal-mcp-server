@@ -1,8 +1,9 @@
 """Model provider registry for managing available providers."""
 
 import logging
-import os
 from typing import TYPE_CHECKING, Optional
+
+from utils.env import get_env
 
 from .base import ModelProvider
 from .shared import ProviderType
@@ -102,7 +103,7 @@ class ModelProviderRegistry:
                 provider = provider_class(api_key=api_key)
             else:
                 # Regular class - need to handle URL requirement
-                custom_url = os.getenv("CUSTOM_API_URL", "")
+                custom_url = get_env("CUSTOM_API_URL", "") or ""
                 if not custom_url:
                     if api_key:  # Key is set but URL is missing
                         logging.warning("CUSTOM_API_KEY set but CUSTOM_API_URL missing – skipping Custom provider")
@@ -116,7 +117,7 @@ class ModelProviderRegistry:
             # For Gemini, check if custom base URL is configured
             if not api_key:
                 return None
-            gemini_base_url = os.getenv("GEMINI_BASE_URL")
+            gemini_base_url = get_env("GEMINI_BASE_URL")
             provider_kwargs = {"api_key": api_key}
             if gemini_base_url:
                 provider_kwargs["base_url"] = gemini_base_url
@@ -327,7 +328,7 @@ class ModelProviderRegistry:
         if not env_var:
             return None
 
-        return os.getenv(env_var)
+        return get_env(env_var)
 
     @classmethod
     def _get_allowed_models_for_provider(cls, provider: ModelProvider, provider_type: ProviderType) -> list[str]:

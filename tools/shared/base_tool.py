@@ -27,6 +27,7 @@ from utils.conversation_memory import (
     get_conversation_file_list,
     get_thread,
 )
+from utils.env import get_env
 from utils.file_utils import read_file_content, read_files
 
 # Import models from tools.models for compatibility
@@ -248,7 +249,7 @@ class BaseTool(ABC):
         all_models = ModelProviderRegistry.get_available_model_names()
 
         # Add OpenRouter models if OpenRouter is configured
-        openrouter_key = os.getenv("OPENROUTER_API_KEY")
+        openrouter_key = get_env("OPENROUTER_API_KEY")
         if openrouter_key and openrouter_key != "your_openrouter_api_key_here":
             try:
                 registry = self._get_openrouter_registry()
@@ -262,7 +263,7 @@ class BaseTool(ABC):
                 logging.debug(f"Failed to add OpenRouter models to enum: {e}")
 
         # Add custom models if custom API is configured
-        custom_url = os.getenv("CUSTOM_API_URL")
+        custom_url = get_env("CUSTOM_API_URL")
         if custom_url:
             try:
                 registry = self._get_openrouter_registry()
@@ -432,7 +433,7 @@ class BaseTool(ABC):
 
         notes: list[str] = []
         for env_var, label in env_labels.items():
-            raw = os.getenv(env_var)
+            raw = get_env(env_var)
             if not raw:
                 continue
 
@@ -1171,10 +1172,9 @@ When recommending searches, be specific about what information you need and why 
                  no locale set
         """
         # Read LOCALE directly from environment to support dynamic changes
-        # This allows tests to modify os.environ["LOCALE"] and see the changes
-        import os
+        # Tests can monkeypatch LOCALE via the environment helper (or .env when override is enforced)
 
-        locale = os.getenv("LOCALE", "").strip()
+        locale = (get_env("LOCALE", "") or "").strip()
 
         if not locale:
             return ""
@@ -1277,7 +1277,7 @@ When recommending searches, be specific about what information you need and why 
         all_models = ModelProviderRegistry.get_available_model_names()
 
         # Add OpenRouter models and their aliases when OpenRouter is configured
-        openrouter_key = os.getenv("OPENROUTER_API_KEY")
+        openrouter_key = get_env("OPENROUTER_API_KEY")
         if openrouter_key and openrouter_key != "your_openrouter_api_key_here":
             try:
                 registry = self._get_openrouter_registry()
@@ -1296,7 +1296,7 @@ When recommending searches, be specific about what information you need and why 
                 logging.debug(f"Failed to add OpenRouter models to enum: {exc}")
 
         # Add custom models (and their aliases) when a custom endpoint is available
-        custom_url = os.getenv("CUSTOM_API_URL")
+        custom_url = get_env("CUSTOM_API_URL")
         if custom_url:
             try:
                 registry = self._get_openrouter_registry()
