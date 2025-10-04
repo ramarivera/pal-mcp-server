@@ -50,6 +50,7 @@ class ModelCapabilities:
     supports_images: bool = False
     supports_json_mode: bool = False
     supports_temperature: bool = True
+    use_openai_response_api: bool = False
 
     # Additional attributes
     max_image_size_mb: float = 0.0

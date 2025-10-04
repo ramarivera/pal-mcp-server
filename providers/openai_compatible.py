@@ -597,8 +597,16 @@ class OpenAICompatibleProvider(ModelProvider):
                 completion_params[key] = value
 
         # Check if this model needs the Responses API endpoint
-        # Both o3-pro and gpt-5-codex use the new Responses API
-        if resolved_model in ["o3-pro", "gpt-5-codex"]:
+        # Prefer capability metadata; fall back to static map when capabilities unavailable
+        use_responses_api = False
+        if capabilities is not None:
+            use_responses_api = getattr(capabilities, "use_openai_response_api", False)
+        else:
+            static_capabilities = self.get_all_model_capabilities().get(resolved_model)
+            if static_capabilities is not None:
+                use_responses_api = getattr(static_capabilities, "use_openai_response_api", False)
+
+        if use_responses_api:
             # These models require the /v1/responses endpoint for stateful context
             # If it fails, we should not fall back to chat/completions
             return self._generate_with_responses_endpoint(

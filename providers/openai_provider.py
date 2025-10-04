@@ -135,6 +135,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             temperature_constraint=TemperatureConstraint.create("fixed"),
             description="Professional-grade reasoning (200K context) - EXTREMELY EXPENSIVE: Only for the most complex problems requiring universe-scale complexity analysis OR when the user explicitly asks for this model. Use sparingly for critical architectural decisions or exceptionally complex debugging that other models cannot handle.",
             aliases=["o3pro"],
+            use_openai_response_api=True,
         ),
         "o4-mini": ModelCapabilities(
             provider=ProviderType.OPENAI,
@@ -191,6 +192,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             temperature_constraint=TemperatureConstraint.create("range"),
             description="GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.",
             aliases=["gpt5-codex", "codex", "gpt-5-code", "gpt5-code"],
+            use_openai_response_api=True,
         ),
     }
 
