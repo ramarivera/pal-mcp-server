@@ -2,6 +2,47 @@
 
 <!-- version list -->
 
+## v6.0.0 (2025-10-04)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`ae8749a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ae8749ab37bdaa7e225b5219820adeb74ca9a552))
+
+### Documentation
+
+- Updated
+  ([`e91ed2a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/e91ed2a924b1702edf9e1417479ac0dee0ca1553))
+
+### Features
+
+- Azure OpenAI / Azure AI Foundry support. Models should be defined in conf/azure_models.json (or a
+  custom path). See .env.example for environment variables or see readme.
+  https://github.com/BeehiveInnovations/zen-mcp-server/issues/265
+  ([`ff9a07a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ff9a07a37adf7a24aa87c63b3ba9db88bdff467b))
+
+- Breaking change - OpenRouter models are now read from conf/openrouter_models.json while Custom /
+  Self-hosted models are read from conf/custom_models.json
+  ([`ff9a07a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ff9a07a37adf7a24aa87c63b3ba9db88bdff467b))
+
+- OpenAI/compatible models (such as Azure OpenAI) can declare if they use the response API instead
+  via `use_openai_responses_api`
+  ([`3824d13`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/3824d131618683572e9e8fffa6b25ccfabf4cf50))
+
+- OpenRouter / Custom Models / Azure can separately also use custom config paths now (see
+  .env.example )
+  ([`ff9a07a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ff9a07a37adf7a24aa87c63b3ba9db88bdff467b))
+
+### Refactoring
+
+- Breaking change: `is_custom` property has been removed from model_capabilities.py (and thus
+  custom_models.json) given each models are now read from separate configuration files
+  ([`ff9a07a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ff9a07a37adf7a24aa87c63b3ba9db88bdff467b))
+
+- Model registry class made abstract, OpenRouter / Custom Provider / Azure OpenAI now subclass these
+  ([`ff9a07a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ff9a07a37adf7a24aa87c63b3ba9db88bdff467b))
+
+
 ## v5.22.0 (2025-10-04)
 
 ### Bug Fixes
