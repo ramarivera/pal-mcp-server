@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v6.1.0 (2025-10-04)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`18095d7`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/18095d7d398e4bf3d24c57a52c81ac619acb1b89))
+
+### Documentation
+
+- Updated intro
+  ([`aa65394`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/aa6539472c4ddf1c3c1bac446fdee03e75e1cb50))
+
+### Features
+
+- Support for Qwen Code
+  ([`fe9968b`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/fe9968b633d0312b82426e9ebddfe1d6515be3c5))
+
+
 ## v6.0.0 (2025-10-04)
 
 ### Chores
