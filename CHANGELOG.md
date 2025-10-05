@@ -2,6 +2,39 @@
 
 <!-- version list -->
 
+## v7.0.0 (2025-10-05)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`0d46976`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/0d46976a8aa85254e4dbe06f5e71161cd3b13938))
+
+- Sync version to config.py [skip ci]
+  ([`8296bf8`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/8296bf871c39597a904c70e7d98c72fcb4dc5a84))
+
+### Documentation
+
+- Instructions for OpenCode
+  ([`bd66622`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/bd666227c8f7557483f7e24fb8544fc0456600dc))
+
+- Updated intro
+  ([`615873c`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/615873c3db2ecf5ce6475caa3445e1da9a2517bd))
+
+### Features
+
+- Huge update - Link another CLI (such as `gemini` directly from with Claude Code / Codex).
+  https://github.com/BeehiveInnovations/zen-mcp-server/issues/208
+  ([`a2ccb48`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/a2ccb48e9a5080a75dbfd483b5f09fc719c887e5))
+
+### Refactoring
+
+- Fixed test
+  ([`9c99b9b`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/9c99b9b35219f54db8d7be0958d4390a106631ae))
+
+- Include file modification dates too
+  ([`47973e9`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/47973e945efa2cdbdb8f3404d467d7f1abc62b0a))
+
+
 ## v6.1.0 (2025-10-04)
 
 ### Chores
