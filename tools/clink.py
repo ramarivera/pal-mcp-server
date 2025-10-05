@@ -258,11 +258,6 @@ class CLinkTool(SimpleTool):
         finally:
             self._active_system_prompt = ""
 
-    def _merge_metadata(self, base: dict[str, Any] | None, extra: dict[str, Any]) -> dict[str, Any]:
-        merged = dict(base or {})
-        merged.update(extra)
-        return merged
-
     def _build_success_metadata(
         self,
         client: ResolvedCLIClient,
@@ -285,6 +280,11 @@ class CLinkTool(SimpleTool):
         if result.output_file_content and "raw" not in metadata:
             metadata["raw_output_file"] = result.output_file_content
         return metadata
+
+    def _merge_metadata(self, base: dict[str, Any] | None, extra: dict[str, Any]) -> dict[str, Any]:
+        merged = dict(base or {})
+        merged.update(extra)
+        return merged
 
     def _build_error_metadata(self, client: ResolvedCLIClient, exc: CLIAgentError) -> dict[str, Any]:
         """Assemble metadata for failed CLI calls."""

@@ -137,6 +137,18 @@ class BaseCLIAgent:
                 stdout_text = output_file_content
 
         if return_code != 0:
+            recovered = self._recover_from_error(
+                returncode=return_code,
+                stdout=stdout_text,
+                stderr=stderr_text,
+                sanitized_command=sanitized_command,
+                duration_seconds=duration,
+                output_file_content=output_file_content,
+            )
+            if recovered is not None:
+                return recovered
+
+        if return_code != 0:
             raise CLIAgentError(
                 f"CLI '{self.client.name}' exited with status {return_code}",
                 returncode=return_code,
@@ -177,3 +189,25 @@ class BaseCLIAgent:
         env = os.environ.copy()
         env.update(self.client.env)
         return env
+
+    # ------------------------------------------------------------------
+    # Error recovery hooks
+    # ------------------------------------------------------------------
+
+    def _recover_from_error(
+        self,
+        *,
+        returncode: int,
+        stdout: str,
+        stderr: str,
+        sanitized_command: list[str],
+        duration_seconds: float,
+        output_file_content: str | None,
+    ) -> AgentOutput | None:
+        """Hook for subclasses to convert CLI errors into successful outputs.
+
+        Return an AgentOutput to treat the failure as success, or None to signal
+        that normal error handling should proceed.
+        """
+
+        return None
