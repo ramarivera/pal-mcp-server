@@ -20,7 +20,7 @@ The `clink` tool lets you leverage external AI CLIs (like Gemini CLI, etc.) dire
 "Use consensus with pro and gpt5 to decide whether to add dark mode or offline support next"
 [consensus runs, models deliberate, recommendation emerges]
 
-"Continue with clink - implement the recommended feature"
+Use continuation with clink - implement the recommended feature
 ```
 
 Gemini receives the full conversation context from `consensus` including the consensus prompt + replies, understands the chosen feature, technical constraints discussed, and can start implementation immediately. No re-explaining, no context loss - true conversation continuity across tools and models.
@@ -39,17 +39,17 @@ Gemini receives the full conversation context from `consensus` including the con
 
 **Default Role** - General questions, summaries, quick answers
 ```
-"Use clink to ask gemini about the latest React 19 features"
+Use clink to ask gemini about the latest React 19 features
 ```
 
 **Planner Role** - Strategic planning with multi-phase approach
 ```
-"Clink with gemini role='planner' to map out our microservices migration strategy"
+clink with gemini with planner role to map out our microservices migration strategy
 ```
 
 **Code Reviewer Role** - Focused code analysis with severity levels
 ```
-"Use clink role='codereviewer' to review auth.py for security issues"
+Use clink codereviewer role to review auth.py for security issues
 ```
 
 You can make your own custom roles in `conf/cli_clients/` or tweak any of the shipped presets.
