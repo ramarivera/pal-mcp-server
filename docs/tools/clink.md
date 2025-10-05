@@ -114,15 +114,17 @@ Clink configurations live in `conf/cli_clients/`. The default `gemini.json` incl
 {
   "name": "gemini",
   "command": "gemini",
-  "additional_args": ["--telemetry", "false"],
+  "additional_args": ["--telemetry", "false", "--yolo"],
   "roles": {
     "planner": {
       "prompt_path": "systemprompts/clink/gemini_planner.txt",
-      "role_args": ["--experimental-acp"]
+      "role_args": []
     }
   }
 }
 ```
+
+> **Why `--yolo`?** The Gemini CLI currently requires automatic approvals to execute its own tools (for example `run_shell_command`). Without the flag it errors with `Tool "run_shell_command" not found in registry`. See [issue #5382](https://github.com/google-gemini/gemini-cli/issues/5382) for more details.
 
 **Adding new CLIs**: Drop a JSON config into `conf/cli_clients/` and create role prompts in `systemprompts/clink/`.
 
@@ -133,9 +135,7 @@ Clink configurations live in `conf/cli_clients/`. The default `gemini.json` incl
 - **Use `planner`** for: Zen's native planning workflows with step validation
 - **Use `codereview`** for: Zen's structured code review with severity levels
 
-**CAUTION**: `clink` opens additional doors but not without additional risk. Configuration arguments like `--approval-mode yolo` in `conf/cli_clients/gemini.json` bypass safety
-prompts and should only be used when you're certain the operations are safe.
-Review your role configurations carefully before enabling automated execution modes. You can add safeguards and guardrails within role-specific system prompts (in `systemprompts/clink/`) to restrict or guide the external CLI's behavior.
+**CAUTION**: `clink` opens additional doors but not without additional risk. Running Gemini with `--yolo` auto-approves CLI actions (needed for shell edits) and should only be used when you trust the target workspace. Review your role configuration and consider tightening prompts if you need additional guardrails.
 
 ## Setup Requirements
 
