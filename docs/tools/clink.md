@@ -1,8 +1,10 @@
 # Clink Tool - CLI-to-CLI Bridge
 
-**Bring other AI CLIs into your workflow - Gemini (for now), Qwen (soon), Codex (soon), and more work alongside Claude without context switching**
+**Bring other AI CLIs into your workflow – Gemini, Codex (with more coming) – without context switching**
 
 The `clink` tool lets you leverage external AI CLIs (like Gemini CLI, etc.) directly within your current conversation. Instead of switching between terminal windows or losing context, you can ask Gemini to plan a complex migration, review code with specialized prompts, or answer questions - all while staying in your primary Claude Code workflow.
+
+> **CAUTION**: Clink launches real CLI agents with their safety prompts disabled (`--yolo`, `--dangerously-skip-permissions`, `--dangerously-bypass-approvals-and-sandbox`) so they can edit files and run tools autonomously via MCP. If that’s more access than you want, remove those flags—the CLI can still open/read files and report findings, it just won’t auto-apply edits. You can also tighten role prompts or system prompts with stop-words/guardrails, or disable clink entirely. Otherwise, keep the shipped presets confined to workspaces you fully trust.
 
 ## Why Use Clink (CLI + Link)?
 
@@ -50,7 +52,7 @@ Gemini receives the full conversation context from `consensus` including the con
 "Use clink role='codereviewer' to review auth.py for security issues"
 ```
 
-You can make your own custom roles in `conf/cli_clients/gemini.json` or tweak existing ones.
+You can make your own custom roles in `conf/cli_clients/` or tweak any of the shipped presets.
 
 ## Tool Parameters
 
@@ -108,25 +110,19 @@ then codereview to verify the implementation"
 
 ## Configuration
 
-Clink configurations live in `conf/cli_clients/`. The default `gemini.json` includes:
+Clink configurations live in `conf/cli_clients/`. We ship presets for the supported CLIs:
 
-```json
-{
-  "name": "gemini",
-  "command": "gemini",
-  "additional_args": ["--telemetry", "false", "--yolo"],
-  "roles": {
-    "planner": {
-      "prompt_path": "systemprompts/clink/gemini_planner.txt",
-      "role_args": []
-    }
-  }
-}
-```
+- `gemini.json` – runs `gemini --telemetry false --yolo -o json`
+- `claude.json` – runs `claude --print --output-format json --permission-mode bypassPermissions --dangerously-skip-permissions`
+- `codex.json` – runs `codex exec --json --dangerously-bypass-approvals-and-sandbox`
 
-> **Why `--yolo`?** The Gemini CLI currently requires automatic approvals to execute its own tools (for example `run_shell_command`). Without the flag it errors with `Tool "run_shell_command" not found in registry`. See [issue #5382](https://github.com/google-gemini/gemini-cli/issues/5382) for more details.
+> **CAUTION**: These flags intentionally bypass each CLI's safety prompts so they can edit files or launch tools autonomously via MCP. Only enable them in trusted sandboxes and tailor role prompts or CLI configs if you need more guardrails.
 
-**Adding new CLIs**: Drop a JSON config into `conf/cli_clients/` and create role prompts in `systemprompts/clink/`.
+Each preset points to role-specific prompts in `systemprompts/clink/`. Duplicate those files to add more roles or adjust CLI flags.
+
+> **Why `--yolo` for Gemini?** The Gemini CLI currently requires automatic approvals to execute its own tools (for example `run_shell_command`). Without the flag it errors with `Tool "run_shell_command" not found in registry`. See [issue #5382](https://github.com/google-gemini/gemini-cli/issues/5382) for more details.
+
+**Adding new CLIs**: Drop a JSON config into `conf/cli_clients/`, create role prompts in `systemprompts/clink/`, and register a parser/agent if the CLI outputs a new format.
 
 ## When to Use Clink vs Other Tools
 
@@ -135,11 +131,12 @@ Clink configurations live in `conf/cli_clients/`. The default `gemini.json` incl
 - **Use `planner`** for: Zen's native planning workflows with step validation
 - **Use `codereview`** for: Zen's structured code review with severity levels
 
-**CAUTION**: `clink` opens additional doors but not without additional risk. Running Gemini with `--yolo` auto-approves CLI actions (needed for shell edits) and should only be used when you trust the target workspace. Review your role configuration and consider tightening prompts if you need additional guardrails.
-
 ## Setup Requirements
 
-Ensure [gemini](https://github.com/google-gemini/gemini-cli) is installed and configured. 
+Ensure the relevant CLI is installed and configured:
+
+- [Gemini CLI](https://github.com/google-gemini/gemini-cli)
+- [Codex CLI](https://docs.sourcegraph.com/codex)
 
 ## Related Guides
 

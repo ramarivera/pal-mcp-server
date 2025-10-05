@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,9 @@ from tools.shared.base_models import COMMON_FIELD_DESCRIPTIONS
 from tools.simple.base import SchemaBuilder, SimpleTool
 
 logger = logging.getLogger(__name__)
+
+MAX_RESPONSE_CHARS = 20_000
+SUMMARY_PATTERN = re.compile(r"<SUMMARY>(.*?)</SUMMARY>", re.IGNORECASE | re.DOTALL)
 
 
 class CLinkRequest(BaseModel):
@@ -61,7 +65,10 @@ class CLinkTool(SimpleTool):
         self._cli_names = self._registry.list_clients()
         self._role_map: dict[str, list[str]] = {name: self._registry.list_roles(name) for name in self._cli_names}
         self._all_roles: list[str] = sorted({role for roles in self._role_map.values() for role in roles})
-        self._default_cli_name: str | None = self._cli_names[0] if self._cli_names else None
+        if "gemini" in self._cli_names:
+            self._default_cli_name = "gemini"
+        else:
+            self._default_cli_name = self._cli_names[0] if self._cli_names else None
         self._active_system_prompt: str = ""
         super().__init__()
 
@@ -200,6 +207,15 @@ class CLinkTool(SimpleTool):
             )
             return [TextContent(type="text", text=error_output.model_dump_json())]
 
+        metadata = self._build_success_metadata(client_config, role_config, result)
+        metadata = self._prune_metadata(metadata, client_config, reason="normal")
+
+        content, metadata = self._apply_output_limit(
+            client_config,
+            result.parsed.content,
+            metadata,
+        )
+
         model_info = {
             "provider": client_config.name,
             "model_name": result.parsed.metadata.get("model_used"),
@@ -207,16 +223,14 @@ class CLinkTool(SimpleTool):
 
         if continuation_id:
             try:
-                self._record_assistant_turn(continuation_id, result.parsed.content, request, model_info)
+                self._record_assistant_turn(continuation_id, content, request, model_info)
             except Exception:
                 logger.debug("Failed to record assistant turn for continuation %s", continuation_id, exc_info=True)
-
-        metadata = self._build_success_metadata(client_config, role_config, result)
 
         continuation_offer = self._create_continuation_offer(request, model_info)
         if continuation_offer:
             tool_output = self._create_continuation_offer_response(
-                result.parsed.content,
+                content,
                 continuation_offer,
                 request,
                 model_info,
@@ -225,7 +239,7 @@ class CLinkTool(SimpleTool):
         else:
             tool_output = ToolOutput(
                 status="success",
-                content=result.parsed.content,
+                content=content,
                 content_type="text",
                 metadata=metadata,
             )
@@ -285,6 +299,98 @@ class CLinkTool(SimpleTool):
         merged = dict(base or {})
         merged.update(extra)
         return merged
+
+    def _apply_output_limit(
+        self,
+        client: ResolvedCLIClient,
+        content: str,
+        metadata: dict[str, Any],
+    ) -> tuple[str, dict[str, Any]]:
+        if len(content) <= MAX_RESPONSE_CHARS:
+            return content, metadata
+
+        summary = self._extract_summary(content)
+        if summary:
+            summary_text = summary
+            if len(summary_text) > MAX_RESPONSE_CHARS:
+                logger.debug(
+                    "Clink summary from %s exceeded %d chars; truncating summary to fit.",
+                    client.name,
+                    MAX_RESPONSE_CHARS,
+                )
+                summary_text = summary_text[:MAX_RESPONSE_CHARS]
+            summary_metadata = self._prune_metadata(metadata, client, reason="summary")
+            summary_metadata.update(
+                {
+                    "output_summarized": True,
+                    "output_original_length": len(content),
+                    "output_summary_length": len(summary_text),
+                    "output_limit": MAX_RESPONSE_CHARS,
+                }
+            )
+            logger.info(
+                "Clink compressed %s output via <SUMMARY>: original=%d chars, summary=%d chars",
+                client.name,
+                len(content),
+                len(summary_text),
+            )
+            return summary_text, summary_metadata
+
+        truncated_metadata = self._prune_metadata(metadata, client, reason="truncated")
+        truncated_metadata.update(
+            {
+                "output_truncated": True,
+                "output_original_length": len(content),
+                "output_limit": MAX_RESPONSE_CHARS,
+            }
+        )
+
+        excerpt_limit = min(4000, MAX_RESPONSE_CHARS // 2)
+        excerpt = content[:excerpt_limit]
+        truncated_metadata["output_excerpt_length"] = len(excerpt)
+
+        logger.warning(
+            "Clink truncated %s output: original=%d chars exceeds limit=%d; excerpt_length=%d",
+            client.name,
+            len(content),
+            MAX_RESPONSE_CHARS,
+            len(excerpt),
+        )
+
+        message = (
+            f"CLI '{client.name}' produced {len(content)} characters, exceeding the configured clink limit "
+            f"({MAX_RESPONSE_CHARS} characters). The full output was suppressed to stay within MCP response caps. "
+            "Please narrow the request (review fewer files, summarize results) or run the CLI directly for the full log.\n\n"
+            f"--- Begin excerpt ({len(excerpt)} of {len(content)} chars) ---\n{excerpt}\n--- End excerpt ---"
+        )
+
+        return message, truncated_metadata
+
+    def _extract_summary(self, content: str) -> str | None:
+        match = SUMMARY_PATTERN.search(content)
+        if not match:
+            return None
+        summary = match.group(1).strip()
+        return summary or None
+
+    def _prune_metadata(
+        self,
+        metadata: dict[str, Any],
+        client: ResolvedCLIClient,
+        *,
+        reason: str,
+    ) -> dict[str, Any]:
+        cleaned = dict(metadata)
+        events = cleaned.pop("events", None)
+        if events is not None:
+            cleaned[f"events_removed_for_{reason}"] = True
+            logger.debug(
+                "Clink dropped %s events metadata for %s response (%s)",
+                client.name,
+                reason,
+                type(events).__name__,
+            )
+        return cleaned
 
     def _build_error_metadata(self, client: ResolvedCLIClient, exc: CLIAgentError) -> dict[str, Any]:
         """Assemble metadata for failed CLI calls."""

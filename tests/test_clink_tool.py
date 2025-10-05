@@ -5,7 +5,7 @@ import pytest
 from clink import get_registry
 from clink.agents import AgentOutput
 from clink.parsers.base import ParsedCLIResponse
-from tools.clink import CLinkTool
+from tools.clink import MAX_RESPONSE_CHARS, CLinkTool
 
 
 @pytest.mark.asyncio
@@ -55,9 +55,10 @@ async def test_clink_tool_execute(monkeypatch):
 def test_registry_lists_roles():
     registry = get_registry()
     clients = registry.list_clients()
-    assert "gemini" in clients
+    assert {"codex", "gemini"}.issubset(set(clients))
     roles = registry.list_roles("gemini")
     assert "default" in roles
+    assert "default" in registry.list_roles("codex")
 
 
 @pytest.mark.asyncio
@@ -66,7 +67,7 @@ async def test_clink_tool_defaults_to_first_cli(monkeypatch):
 
     async def fake_run(**kwargs):
         return AgentOutput(
-            parsed=ParsedCLIResponse(content="Default CLI response", metadata={}),
+            parsed=ParsedCLIResponse(content="Default CLI response", metadata={"events": ["foo"]}),
             sanitized_command=["gemini"],
             returncode=0,
             stdout='{"response": "Default CLI response"}',
@@ -92,3 +93,87 @@ async def test_clink_tool_defaults_to_first_cli(monkeypatch):
     payload = json.loads(result[0].text)
     metadata = payload.get("metadata", {})
     assert metadata.get("cli_name") == tool._default_cli_name
+    assert metadata.get("events_removed_for_normal") is True
+
+
+@pytest.mark.asyncio
+async def test_clink_tool_truncates_large_output(monkeypatch):
+    tool = CLinkTool()
+
+    summary_section = "<SUMMARY>This is the condensed summary.</SUMMARY>"
+    long_text = "A" * (MAX_RESPONSE_CHARS + 500) + summary_section
+
+    async def fake_run(**kwargs):
+        return AgentOutput(
+            parsed=ParsedCLIResponse(content=long_text, metadata={"events": ["event1", "event2"]}),
+            sanitized_command=["codex"],
+            returncode=0,
+            stdout="{}",
+            stderr="",
+            duration_seconds=0.2,
+            parser_name="codex_jsonl",
+            output_file_content=None,
+        )
+
+    class DummyAgent:
+        async def run(self, **kwargs):
+            return await fake_run(**kwargs)
+
+    monkeypatch.setattr("tools.clink.create_agent", lambda client: DummyAgent())
+
+    arguments = {
+        "prompt": "Summarize",
+        "cli_name": tool._default_cli_name,
+        "files": [],
+        "images": [],
+    }
+
+    result = await tool.execute(arguments)
+    payload = json.loads(result[0].text)
+    assert payload["status"] in {"success", "continuation_available"}
+    assert payload["content"].strip() == "This is the condensed summary."
+    metadata = payload.get("metadata", {})
+    assert metadata.get("output_summarized") is True
+    assert metadata.get("events_removed_for_normal") is True
+    assert metadata.get("output_original_length") == len(long_text)
+
+
+@pytest.mark.asyncio
+async def test_clink_tool_truncates_without_summary(monkeypatch):
+    tool = CLinkTool()
+
+    long_text = "B" * (MAX_RESPONSE_CHARS + 1000)
+
+    async def fake_run(**kwargs):
+        return AgentOutput(
+            parsed=ParsedCLIResponse(content=long_text, metadata={"events": ["event"]}),
+            sanitized_command=["codex"],
+            returncode=0,
+            stdout="{}",
+            stderr="",
+            duration_seconds=0.2,
+            parser_name="codex_jsonl",
+            output_file_content=None,
+        )
+
+    class DummyAgent:
+        async def run(self, **kwargs):
+            return await fake_run(**kwargs)
+
+    monkeypatch.setattr("tools.clink.create_agent", lambda client: DummyAgent())
+
+    arguments = {
+        "prompt": "Summarize",
+        "cli_name": tool._default_cli_name,
+        "files": [],
+        "images": [],
+    }
+
+    result = await tool.execute(arguments)
+    payload = json.loads(result[0].text)
+    assert payload["status"] in {"success", "continuation_available"}
+    assert "exceeding the configured clink limit" in payload["content"]
+    metadata = payload.get("metadata", {})
+    assert metadata.get("output_truncated") is True
+    assert metadata.get("events_removed_for_normal") is True
+    assert metadata.get("output_original_length") == len(long_text)
