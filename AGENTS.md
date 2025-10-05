@@ -18,9 +18,14 @@ Authoritative documentation and samples live in `docs/`, and runtime diagnostics
 - `python communication_simulator_test.py --quick` – smoke-test orchestration across tools and providers.
 - `./run_integration_tests.sh [--with-simulator]` – exercise provider-dependent flows against remote or Ollama models.
 
+Run code quality checks:
+```bash
+.zen_venv/bin/activate && ./code_quality_checks.sh
+```
+
 For example, this is how we run an individual / all tests:
 
-```
+```bash
 .zen_venv/bin/activate && pytest tests/test_auto_mode_model_listing.py -q
 .zen_venv/bin/activate && pytest -q
 ```
