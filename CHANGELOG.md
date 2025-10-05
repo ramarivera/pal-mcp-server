@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v7.0.1 (2025-10-05)
+
+### Bug Fixes
+
+- --yolo needed for running shell commands, documentation added
+  ([`15ae3f2`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/15ae3f24babccf42f43be5028bf8c60c05a6beaf))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`bc4a27b`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/bc4a27b18a4a3f45afb22178e61ea0be4d6a273c))
+
+### Documentation
+
+- Updated intro
+  ([`fb668c3`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/fb668c39b5f6e3dd37f7027f953f6004f258f2bf))
+
+
 ## v7.0.0 (2025-10-05)
 
 ### Chores
