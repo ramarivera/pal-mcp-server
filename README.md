@@ -1,8 +1,7 @@
 # Zen MCP: Many Workflows. One Context.
 
 <div align="center">
-
-[zen_web.webm](https://github.com/user-attachments/assets/851e3911-7f06-47c0-a4ab-a2601236697c)
+[Zen MCP CLink_web.webm](https://github.com/user-attachments/assets/98ab2d01-c30f-4ef7-85d4-53575cf5a54f)
 
 ### Your CLI + Multiple Models = Your AI Dev Team
 
