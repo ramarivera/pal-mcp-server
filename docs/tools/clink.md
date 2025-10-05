@@ -67,12 +67,17 @@ You can make your own custom roles in `conf/cli_clients/` or tweak any of the sh
 
 **Architecture Planning:**
 ```
-"Use clink with gemini planner to design a 3-phase rollout plan for our feature flags system"
+Use clink with gemini planner to design a 3-phase rollout plan for our feature flags system
 ```
 
 **Code Review with Context:**
 ```
-"Clink to gemini codereviewer: Review payment_service.py for race conditions and concurrency issues"
+clink to gemini codereviewer: Review payment_service.py for race conditions and concurrency issues
+```
+
+**Codex Code Review:**
+```
+"clink with codex cli and perform a full code review using the codereview role"
 ```
 
 **Quick Research Question:**
