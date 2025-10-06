@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v7.2.0 (2025-10-06)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`1854b1e`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/1854b1e26b705cda0dc3f4d733647f1454aa0352))
+
+### Documentation
+
+- Updated
+  ([`bb57f71`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/bb57f719666ab6a586d835688ff8086282a5a0dc))
+
+### Features
+
+- New tool to perform apilookup (latest APIs / SDKs / language features etc)
+  https://github.com/BeehiveInnovations/zen-mcp-server/issues/204
+  ([`5bea595`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/5bea59540f58b3c45044828c10f131aed104dd1c))
+
+### Refactoring
+
+- De-duplicate roles to avoid explosion when more CLIs get added
+  ([`c42e9e9`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/c42e9e9c34d7ae4732e2e4fbed579b681a6d170d))
+
+
 ## v7.1.1 (2025-10-06)
 
 ### Bug Fixes
