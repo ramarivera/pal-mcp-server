@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v7.3.0 (2025-10-06)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`e7920d0`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/e7920d0ed16c0e6de9d1ccaa0b58d3fb5cbd7f2f))
+
+### Documentation
+
+- Fixed typo
+  ([`3ab0aa8`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/3ab0aa8314ad5992bcb00de549a0fab2e522751d))
+
+- Fixed typo
+  ([`c17ce3c`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/c17ce3cf958d488b97fa7127942542ab514b58bd))
+
+- Update apilookup.md
+  ([`1918679`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/19186794edac4fce5523e671310aecff4cbfdc81))
+
+- Update README.md
+  ([`23c6c78`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/23c6c78bf152ede6e7b5f7b7770b12a8442845a3))
+
+### Features
+
+- Codex supports web-search natively but needs to be turned on, run-server script asks if the user
+  would like this done
+  ([`97ba7e4`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/97ba7e44ce7e3fd874759514ed2f0738033fc801))
+
+
 ## v7.2.0 (2025-10-06)
 
 ### Chores
