@@ -27,6 +27,13 @@ class LookupRequest(ToolRequest):
 LOOKUP_PROMPT = """
 MANDATORY: You MUST perform this research in a SEPARATE SUB-AGENT SUB-PROCESS using your web search tool.
 
+CRITICAL RULES:
+- NEVER call `apilookup` / `zen.apilookup` or any other zen tool again for this mission. Launch your environment's dedicated web search capability
+  (for example `websearch`, `web_search`, or another native web-search tool such as the one you use to perform a web search online) to gather sources.
+- ALWAYS run the search from a separate sub-agent/sub-process so the research happens outside this tool invocation.
+- If the environment does not expose a web search tool, immediately report that limitation instead of invoking `apilookup` again.
+- Once you have current, authoritative documentation that answers the prompt, stop researching immediately and return with those sources—do not continue exploring tangential links or extra queries.
+
 MISSION:
 Research the latest, most authoritative documentation for the requested API, SDK, library, framework, programming language feature, or tool to answer the user's question accurately using a SUB-AGENT in a separate process.
 
