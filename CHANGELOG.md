@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v7.1.1 (2025-10-06)
+
+### Bug Fixes
+
+- Clink missing in toml
+  ([`1ff77fa`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/1ff77faa800ad6c2dde49cad98dfa72035fe1c81))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`e02e78d`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/e02e78d903b35f4c01b8039f4157e97b38d3ec7b))
+
+### Documentation
+
+- Example for codex cli
+  ([`344c42b`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/344c42bcbfb543bfd05cbc27fd5b419c76b77954))
+
+- Example for codex cli
+  ([`c3044de`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/c3044de7424e638dde5c8ec49adb6c3c7c5a60b2))
+
+- Update README.md
+  ([`2e719ae`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/2e719ae35e7979f7b83bd910867e79863a7f9ceb))
+
+
 ## v7.1.0 (2025-10-05)
 
 ### Chores
