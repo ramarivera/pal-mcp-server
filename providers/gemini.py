@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from google import genai
 from google.genai import types
 
+from utils.env import get_env
 from utils.image_utils import validate_image
 
 from .base import ModelProvider
@@ -133,6 +134,7 @@ class GeminiModelProvider(ModelProvider):
         self._client = None
         self._token_counters = {}  # Cache for token counting
         self._base_url = kwargs.get("base_url", None)  # Optional custom endpoint
+        self._timeout_override = self._resolve_http_timeout()
 
     # ------------------------------------------------------------------
     # Capability surface
@@ -146,16 +148,48 @@ class GeminiModelProvider(ModelProvider):
     def client(self):
         """Lazy initialization of Gemini client."""
         if self._client is None:
-            # Check if custom base URL is provided
+            http_options_kwargs: dict[str, object] = {}
             if self._base_url:
-                # Use HttpOptions to set custom endpoint
-                http_options = types.HttpOptions(baseUrl=self._base_url)
-                logger.debug(f"Initializing Gemini client with custom endpoint: {self._base_url}")
+                http_options_kwargs["base_url"] = self._base_url
+            if self._timeout_override is not None:
+                http_options_kwargs["timeout"] = self._timeout_override
+
+            if http_options_kwargs:
+                http_options = types.HttpOptions(**http_options_kwargs)
+                logger.debug(
+                    "Initializing Gemini client with options: base_url=%s timeout=%s",
+                    http_options_kwargs.get("base_url"),
+                    http_options_kwargs.get("timeout"),
+                )
                 self._client = genai.Client(api_key=self.api_key, http_options=http_options)
             else:
-                # Use default Google endpoint
                 self._client = genai.Client(api_key=self.api_key)
         return self._client
+
+    def _resolve_http_timeout(self) -> Optional[float]:
+        """Compute timeout override from shared custom timeout environment variables."""
+
+        timeouts: list[float] = []
+        for env_var in [
+            "CUSTOM_CONNECT_TIMEOUT",
+            "CUSTOM_READ_TIMEOUT",
+            "CUSTOM_WRITE_TIMEOUT",
+            "CUSTOM_POOL_TIMEOUT",
+        ]:
+            raw_value = get_env(env_var)
+            if raw_value:
+                try:
+                    timeouts.append(float(raw_value))
+                except (TypeError, ValueError):
+                    logger.warning("Invalid %s value '%s'; ignoring.", env_var, raw_value)
+
+        if timeouts:
+            # Use the largest timeout to best approximate long-running requests
+            resolved = max(timeouts)
+            logger.debug("Using custom Gemini HTTP timeout: %ss", resolved)
+            return resolved
+
+        return None
 
     # ------------------------------------------------------------------
     # Request execution
