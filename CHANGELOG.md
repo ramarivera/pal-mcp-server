@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v7.5.2 (2025-10-06)
+
+### Bug Fixes
+
+- Handle 429 response https://github.com/BeehiveInnovations/zen-mcp-server/issues/273
+  ([`cbe1d79`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/cbe1d7993276bd014b495cbd2d0ece1f5d7583d9))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`74fdd36`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/74fdd36de92d34681fcc5a2f772c3d05634f0a55))
+
+
 ## v7.5.1 (2025-10-06)
 
 ### Chores
