@@ -12,7 +12,7 @@ User: "How do I add glass look to a button in Swift?"
 AI: [Searches based on training data knowledge cutoff]
     "SwiftUI glass morphism frosted glass effect button iOS 18 2025"
 
-Result: You get outdated APIs for iOS 18, which may not work with current iOS 19+
+Result: You get outdated APIs for iOS 18, now the iOS 26 effect you're after
 ```
 
 ### With Zen (Using apilookup)
@@ -20,10 +20,10 @@ Result: You get outdated APIs for iOS 18, which may not work with current iOS 19
 User: "use apilookup how do I add glass look to a button in swift?"
 
 AI: Step 1 - Search: "what is the latest iOS version 2025"
-    → Finds: iOS 19 is current
+    → Finds: iOS 26 is current
 
-    Step 2 - Search: "iOS 19 SwiftUI glass effect button 2025"
-    → Gets current APIs specific to iOS 19
+    Step 2 - Search: "iOS 26 SwiftUI glass effect button 2025"
+    → Gets current APIs specific to iOS 26
 
 Result: You get the correct, current APIs that work with today's iOS version
 ```
