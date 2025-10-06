@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v7.4.0 (2025-10-06)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`76bf98e`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/76bf98e5cd972dabd3c79b25fcb9b9a717b23f6d))
+
+### Features
+
+- Improved prompt
+  ([`b1e9963`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/b1e9963991a41dff082ec1dce5691c318f105e6d))
+
+
 ## v7.3.0 (2025-10-06)
 
 ### Chores
