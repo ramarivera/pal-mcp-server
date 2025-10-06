@@ -95,3 +95,14 @@ The tool returns JSON with:
 - `user_prompt`: Your original request
 
 The AI then performs the actual web searches and synthesizes the results into actionable documentation.
+
+## Codex CLI Configuration Reminder
+
+If you use Zen through the Codex CLI, the assistant needs Codex's native web-search tool to fetch current documentation. After adding the Zen MCP entry to `~/.codex/config.toml`, confirm the file also contains:
+
+```toml
+[tools]
+web_search = true
+```
+
+If `[tools]` is missing, append the block manually. Without this flag, `apilookup` will keep requesting web searches that Codex cannot execute, and you'll see repeated attempts at using `curl` incorrectly.

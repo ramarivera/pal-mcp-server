@@ -147,6 +147,15 @@ PATH = "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin:$HOME/.c
 GEMINI_API_KEY = "your_api_key_here"
 ```
 
+Enable Codex's built-in web-search tool so Zen's `apilookup` instructions can execute successfully:
+
+```toml
+[tools]
+web_search = true
+```
+
+Add the block above if `[tools]` is missing from the file; otherwise ensure `web_search = true` appears in that section.
+
 
 **For Qwen Code CLI:**
 Create or edit `~/.qwen/settings.json`:
