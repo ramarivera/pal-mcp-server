@@ -14,7 +14,8 @@ from utils.env import get_env
 from utils.image_utils import validate_image
 
 from .base import ModelProvider
-from .shared import ModelCapabilities, ModelResponse, ProviderType, TemperatureConstraint
+from .gemini_registry import GeminiModelRegistry
+from .shared import ModelCapabilities, ModelResponse, ProviderType
 
 logger = logging.getLogger(__name__)
 
@@ -27,88 +28,8 @@ class GeminiModelProvider(ModelProvider):
     request to the Gemini APIs.
     """
 
-    # Model configurations using ModelCapabilities objects
-    MODEL_CAPABILITIES = {
-        "gemini-2.5-pro": ModelCapabilities(
-            provider=ProviderType.GOOGLE,
-            model_name="gemini-2.5-pro",
-            friendly_name="Gemini (Pro 2.5)",
-            intelligence_score=18,
-            context_window=1_048_576,  # 1M tokens
-            max_output_tokens=65_536,
-            supports_extended_thinking=True,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,  # Vision capability
-            max_image_size_mb=32.0,  # Higher limit for Pro model
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("range"),
-            max_thinking_tokens=32768,  # Max thinking tokens for Pro model
-            description="Deep reasoning + thinking mode (1M context) - Complex problems, architecture, deep analysis",
-            aliases=["pro", "gemini pro", "gemini-pro"],
-        ),
-        "gemini-2.0-flash": ModelCapabilities(
-            provider=ProviderType.GOOGLE,
-            model_name="gemini-2.0-flash",
-            friendly_name="Gemini (Flash 2.0)",
-            intelligence_score=9,
-            context_window=1_048_576,  # 1M tokens
-            max_output_tokens=65_536,
-            supports_extended_thinking=True,  # Experimental thinking mode
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,  # Vision capability
-            max_image_size_mb=20.0,  # Conservative 20MB limit for reliability
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("range"),
-            max_thinking_tokens=24576,  # Same as 2.5 flash for consistency
-            description="Gemini 2.0 Flash (1M context) - Latest fast model with experimental thinking, supports audio/video input",
-            aliases=["flash-2.0", "flash2"],
-        ),
-        "gemini-2.0-flash-lite": ModelCapabilities(
-            provider=ProviderType.GOOGLE,
-            model_name="gemini-2.0-flash-lite",
-            friendly_name="Gemin (Flash Lite 2.0)",
-            intelligence_score=7,
-            context_window=1_048_576,  # 1M tokens
-            max_output_tokens=65_536,
-            supports_extended_thinking=False,  # Not supported per user request
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=False,  # Does not support images
-            max_image_size_mb=0.0,  # No image support
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("range"),
-            description="Gemini 2.0 Flash Lite (1M context) - Lightweight fast model, text-only",
-            aliases=["flashlite", "flash-lite"],
-        ),
-        "gemini-2.5-flash": ModelCapabilities(
-            provider=ProviderType.GOOGLE,
-            model_name="gemini-2.5-flash",
-            friendly_name="Gemini (Flash 2.5)",
-            intelligence_score=10,
-            context_window=1_048_576,  # 1M tokens
-            max_output_tokens=65_536,
-            supports_extended_thinking=True,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,  # Vision capability
-            max_image_size_mb=20.0,  # Conservative 20MB limit for reliability
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("range"),
-            max_thinking_tokens=24576,  # Flash 2.5 thinking budget limit
-            description="Ultra-fast (1M context) - Quick analysis, simple queries, rapid iterations",
-            aliases=["flash", "flash2.5"],
-        ),
-    }
+    MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {}
+    _registry: Optional[GeminiModelRegistry] = None
 
     # Thinking mode configurations - percentages of model's max_thinking_tokens
     # These percentages work across all models that support thinking
@@ -130,11 +51,50 @@ class GeminiModelProvider(ModelProvider):
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize Gemini provider with API key and optional base URL."""
+        self._ensure_registry()
         super().__init__(api_key, **kwargs)
         self._client = None
         self._token_counters = {}  # Cache for token counting
         self._base_url = kwargs.get("base_url", None)  # Optional custom endpoint
         self._timeout_override = self._resolve_http_timeout()
+        self._invalidate_capability_cache()
+
+    # ------------------------------------------------------------------
+    # Registry access
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _ensure_registry(cls, *, force_reload: bool = False) -> None:
+        """Load capability registry into MODEL_CAPABILITIES."""
+
+        if cls._registry is not None and not force_reload:
+            return
+
+        try:
+            registry = GeminiModelRegistry()
+        except Exception as exc:  # pragma: no cover - defensive logging
+            logger.warning("Unable to load Gemini model registry: %s", exc)
+            cls._registry = None
+            cls.MODEL_CAPABILITIES = {}
+            return
+
+        cls._registry = registry
+        cls.MODEL_CAPABILITIES = dict(registry.model_map)
+
+    @classmethod
+    def reload_registry(cls) -> None:
+        """Force registry reload (primarily for tests)."""
+
+        cls._ensure_registry(force_reload=True)
+
+    def get_all_model_capabilities(self) -> dict[str, ModelCapabilities]:
+        self._ensure_registry()
+        return super().get_all_model_capabilities()
+
+    def get_model_registry(self) -> Optional[dict[str, ModelCapabilities]]:
+        if self._registry is None:
+            return None
+        return dict(self._registry.model_map)
 
     # ------------------------------------------------------------------
     # Capability surface
@@ -225,6 +185,7 @@ class GeminiModelProvider(ModelProvider):
         # Validate parameters and fetch capabilities
         self.validate_parameters(model_name, temperature)
         capabilities = self.get_capabilities(model_name)
+        capability_map = self.get_all_model_capabilities()
 
         resolved_model_name = self._resolve_model_name(model_name)
 
@@ -269,7 +230,7 @@ class GeminiModelProvider(ModelProvider):
         # Add thinking configuration for models that support it
         if capabilities.supports_extended_thinking and thinking_mode in self.THINKING_BUDGETS:
             # Get model's max thinking tokens and calculate actual budget
-            model_config = self.MODEL_CAPABILITIES.get(resolved_model_name)
+            model_config = capability_map.get(resolved_model_name)
             if model_config and model_config.max_thinking_tokens > 0:
                 max_thinking_tokens = model_config.max_thinking_tokens
                 actual_thinking_budget = int(max_thinking_tokens * self.THINKING_BUDGETS[thinking_mode])
@@ -542,6 +503,8 @@ class GeminiModelProvider(ModelProvider):
         if not allowed_models:
             return None
 
+        capability_map = self.get_all_model_capabilities()
+
         # Helper to find best model from candidates
         def find_best(candidates: list[str]) -> Optional[str]:
             """Return best model from candidates (sorted for consistency)."""
@@ -553,16 +516,14 @@ class GeminiModelProvider(ModelProvider):
             pro_thinking = [
                 m
                 for m in allowed_models
-                if "pro" in m and m in self.MODEL_CAPABILITIES and self.MODEL_CAPABILITIES[m].supports_extended_thinking
+                if "pro" in m and m in capability_map and capability_map[m].supports_extended_thinking
             ]
             if pro_thinking:
                 return find_best(pro_thinking)
 
             # Then any model that supports thinking
             any_thinking = [
-                m
-                for m in allowed_models
-                if m in self.MODEL_CAPABILITIES and self.MODEL_CAPABILITIES[m].supports_extended_thinking
+                m for m in allowed_models if m in capability_map and capability_map[m].supports_extended_thinking
             ]
             if any_thinking:
                 return find_best(any_thinking)
@@ -590,3 +551,7 @@ class GeminiModelProvider(ModelProvider):
 
         # Ultimate fallback to best available model
         return find_best(allowed_models)
+
+
+# Load registry data at import time for registry consumers
+GeminiModelProvider._ensure_registry()

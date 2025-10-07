@@ -67,16 +67,26 @@ CUSTOM_MODEL_NAME=llama3.2                          # Default model
 DEFAULT_MODEL=auto  # Claude picks best model for each task (recommended)
 ```
 
-**Available Models:**
-- **`auto`**: Claude automatically selects the optimal model
-- **`pro`** (Gemini 2.5 Pro): Extended thinking, deep analysis
-- **`flash`** (Gemini 2.0 Flash): Ultra-fast responses  
-- **`o3`**: Strong logical reasoning (200K context)
-- **`o3-mini`**: Balanced speed/quality (200K context)
-- **`o4-mini`**: Latest reasoning model, optimized for shorter contexts
-- **`grok-3`**: GROK-3 advanced reasoning (131K context)
-- **`grok-4`**: GROK-4 flagship model (256K context)
-- **Custom models**: via OpenRouter or local APIs
+- **Available Models:** The canonical capability data for native providers lives in JSON manifests under `conf/`:
+  - `conf/openai_models.json` – OpenAI catalogue (can be overridden with `OPENAI_MODELS_CONFIG_PATH`)
+  - `conf/gemini_models.json` – Gemini catalogue (`GEMINI_MODELS_CONFIG_PATH`)
+  - `conf/xai_models.json` – X.AI / GROK catalogue (`XAI_MODELS_CONFIG_PATH`)
+  - `conf/openrouter_models.json` – OpenRouter catalogue (`OPENROUTER_MODELS_CONFIG_PATH`)
+  - `conf/custom_models.json` – Custom/OpenAI-compatible endpoints (`CUSTOM_MODELS_CONFIG_PATH`)
+
+  Each JSON file documents the allowed fields via its `_README` block and controls model aliases, capability limits, and feature flags. Edit these files (or point the matching `*_MODELS_CONFIG_PATH` variable to your own copy) when you want to adjust context windows, enable JSON mode, or expose additional aliases without touching Python code.
+
+  The shipped defaults cover:
+
+  | Provider | Canonical Models | Notable Aliases |
+  |----------|-----------------|-----------------|
+  | OpenAI | `gpt-5`, `gpt-5-pro`, `gpt-5-mini`, `gpt-5-nano`, `gpt-5-codex`, `gpt-4.1`, `o3`, `o3-mini`, `o3-pro`, `o4-mini` | `gpt5`, `gpt5pro`, `mini`, `nano`, `codex`, `o3mini`, `o3pro`, `o4mini` |
+  | Gemini | `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-2.0-flash-lite` | `pro`, `gemini-pro`, `flash`, `flash-2.0`, `flashlite` |
+  | X.AI | `grok-4`, `grok-3`, `grok-3-fast` | `grok`, `grok4`, `grok3`, `grok3fast`, `grokfast` |
+  | OpenRouter | See `conf/openrouter_models.json` for the continually evolving catalogue | e.g., `opus`, `sonnet`, `flash`, `pro`, `mistral` |
+  | Custom | User-managed entries such as `llama3.2` | Define your own aliases per entry |
+
+  > **Tip:** Copy the JSON file you need, customise it, and point the corresponding `*_MODELS_CONFIG_PATH` environment variable to your version. This lets you enable or disable capabilities (JSON mode, function calling, temperature support) without editing Python.
 
 ### Thinking Mode Configuration
 
@@ -114,28 +124,11 @@ XAI_ALLOWED_MODELS=grok-3,grok-3-fast,grok-4
 OPENROUTER_ALLOWED_MODELS=opus,sonnet,mistral
 ```
 
-**Supported Model Names:**
+**Supported Model Names:** The names/aliases listed in the JSON manifests above are the authoritative source. Keep in mind:
 
-**OpenAI Models:**
-- `o3` (200K context, high reasoning)
-- `o3-mini` (200K context, balanced)
-- `o4-mini` (200K context, latest balanced)
-- `mini` (shorthand for o4-mini)
-
-**Gemini Models:**
-- `gemini-2.5-flash` (1M context, fast)
-- `gemini-2.5-pro` (1M context, powerful)
-- `flash` (shorthand for Flash model)
-- `pro` (shorthand for Pro model)
-
-**X.AI GROK Models:**
-- `grok-4` (256K context, flagship Grok model with reasoning, vision, and structured outputs)
-- `grok-3` (131K context, advanced reasoning)
-- `grok-3-fast` (131K context, higher performance)
-- `grok` (shorthand for grok-4)
-- `grok4` (shorthand for grok-4)
-- `grok3` (shorthand for grok-3)
-- `grokfast` (shorthand for grok-3-fast)
+- Aliases are case-insensitive and defined per entry (for example, `mini` maps to `gpt-5-mini` by default, while `flash` maps to `gemini-2.5-flash`).
+- When you override the manifest files you can add or remove aliases as needed; restriction policies (`*_ALLOWED_MODELS`) automatically pick up those changes.
+- Models omitted from a manifest fall back to generic capability detection (where supported) and may have limited feature metadata.
 
 **Example Configurations:**
 ```env
@@ -154,12 +147,14 @@ XAI_ALLOWED_MODELS=grok,grok-3-fast
 
 ### Advanced Configuration
 
-**Custom Model Configuration:**
+**Custom Model Configuration & Manifest Overrides:**
 ```env
-# Override default location of custom_models.json
-CUSTOM_MODELS_CONFIG_PATH=/path/to/your/custom_models.json
-# Override default location of openrouter_models.json
-OPENROUTER_MODELS_CONFIG_PATH=/path/to/your/openrouter_models.json
+# Override default location of built-in catalogues
+OPENAI_MODELS_CONFIG_PATH=/path/to/openai_models.json
+GEMINI_MODELS_CONFIG_PATH=/path/to/gemini_models.json
+XAI_MODELS_CONFIG_PATH=/path/to/xai_models.json
+OPENROUTER_MODELS_CONFIG_PATH=/path/to/openrouter_models.json
+CUSTOM_MODELS_CONFIG_PATH=/path/to/custom_models.json
 ```
 
 **Conversation Settings:**

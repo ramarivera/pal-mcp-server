@@ -7,7 +7,8 @@ if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 from .openai_compatible import OpenAICompatibleProvider
-from .shared import ModelCapabilities, ProviderType, TemperatureConstraint
+from .openai_registry import OpenAIModelRegistry
+from .shared import ModelCapabilities, ProviderType
 
 logger = logging.getLogger(__name__)
 
@@ -20,208 +21,53 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
     OpenAI-compatible gateways) while still respecting restriction policies.
     """
 
-    # Model configurations using ModelCapabilities objects
-    MODEL_CAPABILITIES = {
-        "gpt-5": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="gpt-5",
-            friendly_name="OpenAI (GPT-5)",
-            intelligence_score=16,
-            context_window=400_000,  # 400K tokens
-            max_output_tokens=128_000,  # 128K max output tokens
-            supports_extended_thinking=True,  # Supports reasoning tokens
-            supports_system_prompts=True,
-            supports_streaming=False,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,  # GPT-5 supports vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=True,  # Regular models accept temperature parameter
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="GPT-5 (400K context, 128K output) - Advanced model with reasoning support",
-            aliases=["gpt5", "gpt-5"],
-        ),
-        "gpt-5-pro": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="gpt-5-pro",
-            friendly_name="OpenAI (GPT-5 Pro)",
-            intelligence_score=18,
-            use_openai_response_api=True,
-            context_window=400_000,
-            max_output_tokens=272_000,
-            supports_extended_thinking=True,
-            supports_system_prompts=True,
-            supports_streaming=False,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            default_reasoning_effort="high",
-            description="GPT-5 Pro (400K context, 272K output) - Advanced model with reasoning support",
-            aliases=["gpt5pro", "gpt5-pro"],
-        ),
-        "gpt-5-mini": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="gpt-5-mini",
-            friendly_name="OpenAI (GPT-5-mini)",
-            intelligence_score=15,
-            context_window=400_000,  # 400K tokens
-            max_output_tokens=128_000,  # 128K max output tokens
-            supports_extended_thinking=True,  # Supports reasoning tokens
-            supports_system_prompts=True,
-            supports_streaming=False,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,  # GPT-5-mini supports vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support",
-            aliases=["gpt5-mini", "gpt5mini", "mini"],
-        ),
-        "gpt-5-nano": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="gpt-5-nano",
-            friendly_name="OpenAI (GPT-5 nano)",
-            intelligence_score=13,
-            context_window=400_000,
-            max_output_tokens=128_000,
-            supports_extended_thinking=True,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks",
-            aliases=["gpt5nano", "gpt5-nano", "nano"],
-        ),
-        "o3": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="o3",
-            friendly_name="OpenAI (O3)",
-            intelligence_score=14,
-            context_window=200_000,  # 200K tokens
-            max_output_tokens=65536,  # 64K max output tokens
-            supports_extended_thinking=False,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,  # O3 models support vision
-            max_image_size_mb=20.0,  # 20MB per OpenAI docs
-            supports_temperature=False,  # O3 models don't accept temperature parameter
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="Strong reasoning (200K context) - Logical problems, code generation, systematic analysis",
-            aliases=[],
-        ),
-        "o3-mini": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="o3-mini",
-            friendly_name="OpenAI (O3-mini)",
-            intelligence_score=12,
-            context_window=200_000,
-            max_output_tokens=65536,
-            supports_extended_thinking=False,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=False,
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity",
-            aliases=["o3mini"],
-        ),
-        "o3-pro": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="o3-pro",
-            friendly_name="OpenAI (O3-Pro)",
-            intelligence_score=15,
-            context_window=200_000,
-            max_output_tokens=65536,
-            supports_extended_thinking=False,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=False,
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="Professional-grade reasoning (200K context) - EXTREMELY EXPENSIVE: Only for the most complex problems requiring universe-scale complexity analysis OR when the user explicitly asks for this model. Use sparingly for critical architectural decisions or exceptionally complex debugging that other models cannot handle.",
-            aliases=["o3pro"],
-            use_openai_response_api=True,
-        ),
-        "o4-mini": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="o4-mini",
-            friendly_name="OpenAI (O4-mini)",
-            intelligence_score=11,
-            context_window=200_000,
-            supports_extended_thinking=False,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=False,
-            temperature_constraint=TemperatureConstraint.create("fixed"),
-            description="Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning",
-            aliases=["o4mini"],
-        ),
-        "gpt-4.1": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="gpt-4.1",
-            friendly_name="OpenAI (GPT 4.1)",
-            intelligence_score=13,
-            context_window=1_000_000,
-            max_output_tokens=32_768,
-            supports_extended_thinking=False,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("range"),
-            description="GPT-4.1 (1M context) - Advanced reasoning model with large context window",
-            aliases=["gpt4.1"],
-        ),
-        "gpt-5-codex": ModelCapabilities(
-            provider=ProviderType.OPENAI,
-            model_name="gpt-5-codex",
-            friendly_name="OpenAI (GPT-5 Codex)",
-            intelligence_score=17,
-            context_window=400_000,
-            max_output_tokens=128_000,
-            supports_extended_thinking=True,
-            supports_system_prompts=True,
-            supports_streaming=True,
-            supports_function_calling=True,
-            supports_json_mode=True,
-            supports_images=True,
-            max_image_size_mb=20.0,
-            supports_temperature=True,
-            temperature_constraint=TemperatureConstraint.create("range"),
-            description="GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.",
-            aliases=["gpt5-codex", "codex", "gpt-5-code", "gpt5-code"],
-            use_openai_response_api=True,
-        ),
-    }
+    MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {}
+    _registry: Optional[OpenAIModelRegistry] = None
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize OpenAI provider with API key."""
+        self._ensure_registry()
         # Set default OpenAI base URL, allow override for regions/custom endpoints
         kwargs.setdefault("base_url", "https://api.openai.com/v1")
         super().__init__(api_key, **kwargs)
+        self._invalidate_capability_cache()
+
+    # ------------------------------------------------------------------
+    # Registry access
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _ensure_registry(cls, *, force_reload: bool = False) -> None:
+        """Load capability registry into MODEL_CAPABILITIES."""
+
+        if cls._registry is not None and not force_reload:
+            return
+
+        try:
+            registry = OpenAIModelRegistry()
+        except Exception as exc:  # pragma: no cover - defensive logging
+            logger.warning("Unable to load OpenAI model registry: %s", exc)
+            cls._registry = None
+            cls.MODEL_CAPABILITIES = {}
+            return
+
+        cls._registry = registry
+        cls.MODEL_CAPABILITIES = dict(registry.model_map)
+
+    @classmethod
+    def reload_registry(cls) -> None:
+        """Force registry reload (primarily for tests)."""
+
+        cls._ensure_registry(force_reload=True)
+
+    def get_all_model_capabilities(self) -> dict[str, ModelCapabilities]:
+        self._ensure_registry()
+        return super().get_all_model_capabilities()
+
+    def get_model_registry(self) -> Optional[dict[str, ModelCapabilities]]:
+        if self._registry is None:
+            return None
+        return dict(self._registry.model_map)
 
     # ------------------------------------------------------------------
     # Capability surface
@@ -234,6 +80,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
     ) -> Optional[ModelCapabilities]:
         """Look up OpenAI capabilities from built-ins or the custom registry."""
 
+        self._ensure_registry()
         builtin = super()._lookup_capabilities(canonical_name, requested_name)
         if builtin is not None:
             return builtin
@@ -319,3 +166,7 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
             # Include GPT-5-Codex for coding workflows
             preferred = find_first(["gpt-5", "gpt-5-codex", "gpt-5-pro", "gpt-5-mini", "o4-mini", "o3-mini"])
             return preferred if preferred else allowed_models[0]
+
+
+# Load registry data at import time so dependent providers (Azure) can reuse it
+OpenAIModelProvider._ensure_registry()

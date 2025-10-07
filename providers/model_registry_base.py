@@ -85,6 +85,11 @@ class CustomModelRegistryBase:
     def get_entry(self, model_name: str) -> dict | None:
         return self._extras.get(model_name)
 
+    def get_model_config(self, model_name: str) -> ModelCapabilities | None:
+        """Backwards-compatible accessor for registries expecting this helper."""
+
+        return self.model_map.get(model_name) or self.resolve(model_name)
+
     def iter_entries(self) -> Iterable[tuple[str, ModelCapabilities, dict]]:
         for model_name, capability in self.model_map.items():
             yield model_name, capability, self._extras.get(model_name, {})
