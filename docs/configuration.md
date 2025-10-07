@@ -75,7 +75,7 @@ DEFAULT_MODEL=auto  # Claude picks best model for each task (recommended)
   - `conf/dial_models.json` – DIAL aggregation catalogue (`DIAL_MODELS_CONFIG_PATH`)
   - `conf/custom_models.json` – Custom/OpenAI-compatible endpoints (`CUSTOM_MODELS_CONFIG_PATH`)
 
-  Each JSON file documents the allowed fields via its `_README` block and controls model aliases, capability limits, and feature flags. Edit these files (or point the matching `*_MODELS_CONFIG_PATH` variable to your own copy) when you want to adjust context windows, enable JSON mode, or expose additional aliases without touching Python code.
+  Each JSON file documents the allowed fields via its `_README` block and controls model aliases, capability limits, and feature flags (including `allow_code_generation`). Edit these files (or point the matching `*_MODELS_CONFIG_PATH` variable to your own copy) when you want to adjust context windows, enable JSON mode, enable structured code generation, or expose additional aliases without touching Python code.
 
   The shipped defaults cover:
 
@@ -87,7 +87,63 @@ DEFAULT_MODEL=auto  # Claude picks best model for each task (recommended)
   | OpenRouter | See `conf/openrouter_models.json` for the continually evolving catalogue | e.g., `opus`, `sonnet`, `flash`, `pro`, `mistral` |
   | Custom | User-managed entries such as `llama3.2` | Define your own aliases per entry |
 
-  > **Tip:** Copy the JSON file you need, customise it, and point the corresponding `*_MODELS_CONFIG_PATH` environment variable to your version. This lets you enable or disable capabilities (JSON mode, function calling, temperature support) without editing Python.
+  > **Tip:** Copy the JSON file you need, customise it, and point the corresponding `*_MODELS_CONFIG_PATH` environment variable to your version. This lets you enable or disable capabilities (JSON mode, function calling, temperature support, code generation) without editing Python.
+
+### Code Generation Capability
+
+**`allow_code_generation` Flag:**
+
+The `allow_code_generation` capability enables models to generate complete, production-ready implementations in a structured format. When enabled, the `chat` tool will inject special instructions for substantial code generation tasks.
+
+```json
+{
+  "model_name": "gpt-5",
+  "allow_code_generation": true,
+  ...
+}
+```
+
+**When to Enable:**
+
+- **Enable for**: Models MORE capable than your primary CLI's model (e.g., GPT-5, GPT-5 Pro when using Claude Code with Sonnet 4.5)
+- **Purpose**: Get complete implementations from a more powerful reasoning model that your primary CLI can then review and apply
+- **Use case**: Large-scale implementations, major refactoring, complete module creation
+
+**Important Guidelines:**
+
+1. Only enable for models significantly more capable than your primary CLI to ensure high-quality generated code
+2. The capability triggers structured code output (`<GENERATED-CODE>` blocks) for substantial implementation requests
+3. Minor code changes still use inline code blocks regardless of this setting
+4. Generated code is saved to `zen_generated.code` in the user's working directory
+5. Your CLI receives instructions to review and apply the generated code systematically
+
+**Example Configuration:**
+
+```json
+// OpenAI models configuration (conf/openai_models.json)
+{
+  "models": [
+    {
+      "model_name": "gpt-5",
+      "allow_code_generation": true,
+      "intelligence_score": 18,
+      ...
+    },
+    {
+      "model_name": "gpt-5-pro",
+      "allow_code_generation": true,
+      "intelligence_score": 19,
+      ...
+    }
+  ]
+}
+```
+
+**Typical Workflow:**
+1. You ask your AI agent to implement a complex new feature using `chat` with a higher-reasoning model such as **gpt-5-pro**
+2. GPT-5-Pro generates structured implementation and shares the complete implementation with Zen
+3. Zen saves the code to `zen_generated.code` and asks AI agent to implement the plan
+4. AI agent continues from the previous context, reads the file, applies the implementation
 
 ### Thinking Mode Configuration
 

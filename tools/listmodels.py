@@ -140,6 +140,8 @@ class ListModelsTool(BaseTool):
             except AttributeError:
                 description = "No description available"
             lines = [header, f"  - {context_str}", f"  - {description}"]
+            if capabilities.allow_code_generation:
+                lines.append("  - Supports structured code generation")
             return lines
 
         # Check each native provider type
@@ -187,6 +189,8 @@ class ListModelsTool(BaseTool):
 
                         output_lines.append(f"- `{model_name}` - {context_str}")
                         output_lines.append(f"  - {description}")
+                        if capabilities.allow_code_generation:
+                            output_lines.append("  - Supports structured code generation")
 
                         for alias in capabilities.aliases or []:
                             if alias != model_name:

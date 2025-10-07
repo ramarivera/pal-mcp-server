@@ -39,13 +39,14 @@ word verdict in the end.
 - **Collaborative thinking partner** for your analysis and planning
 - **Get second opinions** on your designs and approaches
 - **Brainstorm solutions** and explore alternatives together
+- **Structured code generation**: When using GPT-5 Pro or Gemini 2.5 Pro, get complete, production-ready implementations saved to `zen_generated.code` for your CLI to review and apply
 - **Validate your checklists** and implementation plans
 - **General development questions** and explanations
 - **Technology comparisons** and best practices
 - **Architecture and design discussions**
 - **File reference support**: `"Use gemini to explain this algorithm with context from algorithm.py"`
 - **Image support**: Include screenshots, diagrams, UI mockups for visual analysis: `"Chat with gemini about this error dialog screenshot to understand the user experience issue"`
-- **Dynamic collaboration**: Gemini can request additional files or context during the conversation if needed for a more thorough response
+- **Dynamic collaboration**: Models can request additional files or context during the conversation if needed for a more thorough response
 - **Web search awareness**: Automatically identifies when online research would help and instructs Claude to perform targeted searches using continuation IDs
 
 ## Tool Parameters
@@ -54,9 +55,47 @@ word verdict in the end.
 - `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
 - `files`: Optional files for context (absolute paths)
 - `images`: Optional images for visual context (absolute paths)
+- `working_directory`: **Required** - Absolute directory path where generated code artifacts will be saved
 - `temperature`: Response creativity (0-1, default 0.5)
 - `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
 - `continuation_id`: Continue previous conversations
+
+## Structured Code Generation
+
+When using advanced reasoning models like **GPT-5 Pro** or **Gemini 2.5 Pro**, the chat tool can generate complete, production-ready code implementations in a structured format.
+
+### How It Works
+
+1. You ask your AI agent to implement a complex new feature using `chat` with a higher-reasoning model such as **GPT-5 Pro** or **Gemini 2.5 Pro**
+2. The model generates structured implementation and shares the complete implementation with Zen
+3. Zen saves the code to `zen_generated.code` and asks AI agent to implement the plan
+4. AI agent continues from the previous context, reads the file, applies the implementation
+
+### When Code Generation Activates
+
+The structured format activates for **substantial implementation work**:
+- Creating new features from scratch with multiple files or significant code
+- Major refactoring across multiple files or large sections
+- Implementing new modules, components, or subsystems
+- Large-scale updates affecting substantial portions of the codebase
+- Complete rewrites of functions, algorithms, or approaches
+
+For minor changes (small tweaks, bug fixes, algorithm improvements), the model responds normally with inline code blocks.
+
+### Example Usage
+
+```
+chat with gpt-5-pro and ask it to make me a standalone, classic version of the
+Pacman game using pygame that I can run from the commandline. Give me a single
+script to execute in the end with any / all dependencies setup for me. 
+Do everything using pygame, we have no external resources / images / audio at
+hand. Instead of ghosts, it'll be different geometric shapes moving around 
+in the maze that Pacman can eat (so there are no baddies). Pacman gets to eat
+everything including bread-crumbs and large geometric shapes but make me the
+classic maze / walls that it navigates within using keyboard arrow keys.
+```
+
+See the [Configuration Guide](../configuration.md#code-generation-capability) for details on the `allow_code_generation` flag.
 
 ## Usage Examples
 

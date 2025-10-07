@@ -4,6 +4,8 @@ Test per-tool model default selection functionality
 
 import json
 import os
+import shutil
+import tempfile
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -290,7 +292,13 @@ class TestAutoModeErrorMessages:
                         mock_get_provider_for.return_value = None
 
                         tool = ChatTool()
-                        result = await tool.execute({"prompt": "test", "model": "auto"})
+                        temp_dir = tempfile.mkdtemp()
+                        try:
+                            result = await tool.execute(
+                                {"prompt": "test", "model": "auto", "working_directory": temp_dir}
+                            )
+                        finally:
+                            shutil.rmtree(temp_dir, ignore_errors=True)
 
                         assert len(result) == 1
                         # The SimpleTool will wrap the error message
@@ -418,7 +426,13 @@ class TestRuntimeModelSelection:
                     mock_get_provider.return_value = None
 
                     tool = ChatTool()
-                    result = await tool.execute({"prompt": "test", "model": "gpt-5-turbo"})
+                    temp_dir = tempfile.mkdtemp()
+                    try:
+                        result = await tool.execute(
+                            {"prompt": "test", "model": "gpt-5-turbo", "working_directory": temp_dir}
+                        )
+                    finally:
+                        shutil.rmtree(temp_dir, ignore_errors=True)
 
                     # Should require model selection
                     assert len(result) == 1
@@ -515,7 +529,11 @@ class TestUnavailableModelFallback:
                         mock_get_model_provider.return_value = mock_provider
 
                         tool = ChatTool()
-                        result = await tool.execute({"prompt": "test"})  # No model specified
+                        temp_dir = tempfile.mkdtemp()
+                        try:
+                            result = await tool.execute({"prompt": "test", "working_directory": temp_dir})
+                        finally:
+                            shutil.rmtree(temp_dir, ignore_errors=True)
 
                         # Should work normally, not require model parameter
                         assert len(result) == 1
