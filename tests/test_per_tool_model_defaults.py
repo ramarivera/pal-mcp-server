@@ -90,7 +90,7 @@ class TestModelSelection:
             ModelProviderRegistry.unregister_provider(provider_type)
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False):
-            from providers.openai_provider import OpenAIModelProvider
+            from providers.openai import OpenAIModelProvider
 
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
 
@@ -125,7 +125,7 @@ class TestModelSelection:
             ModelProviderRegistry.unregister_provider(provider_type)
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False):
-            from providers.openai_provider import OpenAIModelProvider
+            from providers.openai import OpenAIModelProvider
 
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
 
@@ -159,7 +159,7 @@ class TestModelSelection:
             ModelProviderRegistry.unregister_provider(provider_type)
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False):
-            from providers.openai_provider import OpenAIModelProvider
+            from providers.openai import OpenAIModelProvider
 
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
 
@@ -220,7 +220,7 @@ class TestFlexibleModelSelection:
             with patch.dict(os.environ, case["env"], clear=False):
                 # Register the appropriate provider
                 if case["provider_type"] == ProviderType.OPENAI:
-                    from providers.openai_provider import OpenAIModelProvider
+                    from providers.openai import OpenAIModelProvider
 
                     ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
                 elif case["provider_type"] == ProviderType.GOOGLE:

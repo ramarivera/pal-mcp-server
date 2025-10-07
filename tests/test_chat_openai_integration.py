@@ -54,7 +54,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch):
 
         # Reset registry and register only OpenAI provider
         ModelProviderRegistry.reset_for_testing()
-        from providers.openai_provider import OpenAIModelProvider
+        from providers.openai import OpenAIModelProvider
 
         ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
 
@@ -115,7 +115,7 @@ async def test_chat_openai_continuation(monkeypatch):
             m.delenv(key, raising=False)
 
         ModelProviderRegistry.reset_for_testing()
-        from providers.openai_provider import OpenAIModelProvider
+        from providers.openai import OpenAIModelProvider
 
         ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
 

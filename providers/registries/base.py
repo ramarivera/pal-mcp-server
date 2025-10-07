@@ -12,7 +12,7 @@ from pathlib import Path
 from utils.env import get_env
 from utils.file_utils import read_json_file
 
-from .shared import ModelCapabilities, ProviderType, TemperatureConstraint
+from ..shared import ModelCapabilities, ProviderType, TemperatureConstraint
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class CustomModelRegistryBase:
         self._default_filename = default_filename
         self._use_resources = False
         self._resource_package = "conf"
-        self._default_path = Path(__file__).parent.parent / "conf" / default_filename
+        self._default_path = Path(__file__).resolve().parents[3] / "conf" / default_filename
 
         if config_path:
             self.config_path = Path(config_path)
@@ -51,7 +51,7 @@ class CustomModelRegistryBase:
                     else:
                         raise AttributeError("resource accessor not available")
                 except Exception:
-                    self.config_path = Path(__file__).parent.parent / "conf" / default_filename
+                    self.config_path = Path(__file__).resolve().parents[3] / "conf" / default_filename
 
         self.alias_map: dict[str, str] = {}
         self.model_map: dict[str, ModelCapabilities] = {}
@@ -213,7 +213,7 @@ class CustomModelRegistryBase:
 
 
 class CapabilityModelRegistry(CustomModelRegistryBase):
-    """Registry that returns `ModelCapabilities` objects with alias support."""
+    """Registry that returns :class:`ModelCapabilities` objects with alias support."""
 
     def __init__(
         self,

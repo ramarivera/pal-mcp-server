@@ -1,15 +1,15 @@
 """X.AI (GROK) model provider implementation."""
 
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional
 
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 from .openai_compatible import OpenAICompatibleProvider
+from .registries.xai import XAIModelRegistry
 from .registry_provider_mixin import RegistryBackedProviderMixin
 from .shared import ModelCapabilities, ProviderType
-from .xai_registry import XAIModelRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
     FRIENDLY_NAME = "X.AI"
 
     REGISTRY_CLASS = XAIModelRegistry
-    MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {}
+    MODEL_CAPABILITIES: ClassVar[dict[str, ModelCapabilities]] = {}
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize X.AI provider with API key."""

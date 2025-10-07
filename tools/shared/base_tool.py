@@ -89,7 +89,7 @@ class BaseTool(ABC):
         """Get cached OpenRouter registry instance, creating if needed."""
         # Use BaseTool class directly to ensure cache is shared across all subclasses
         if BaseTool._openrouter_registry_cache is None:
-            from providers.openrouter_registry import OpenRouterModelRegistry
+            from providers.registries.openrouter import OpenRouterModelRegistry
 
             BaseTool._openrouter_registry_cache = OpenRouterModelRegistry()
             logger.debug("Created cached OpenRouter registry instance")
@@ -99,7 +99,7 @@ class BaseTool(ABC):
     def _get_custom_registry(cls):
         """Get cached custom-endpoint registry instance."""
         if BaseTool._custom_registry_cache is None:
-            from providers.custom_registry import CustomEndpointModelRegistry
+            from providers.registries.custom import CustomEndpointModelRegistry
 
             BaseTool._custom_registry_cache = CustomEndpointModelRegistry()
             logger.debug("Created cached Custom registry instance")

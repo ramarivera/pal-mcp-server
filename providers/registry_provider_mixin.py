@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 from typing import ClassVar
 
-from .model_registry_base import CapabilityModelRegistry
+from .registries.base import CapabilityModelRegistry
 from .shared import ModelCapabilities
 
 

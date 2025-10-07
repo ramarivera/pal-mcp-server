@@ -11,8 +11,8 @@ from typing import Any, Optional
 
 from mcp.types import TextContent
 
-from providers.custom_registry import CustomEndpointModelRegistry
-from providers.openrouter_registry import OpenRouterModelRegistry
+from providers.registries.custom import CustomEndpointModelRegistry
+from providers.registries.openrouter import OpenRouterModelRegistry
 from tools.models import ToolModelCategory, ToolOutput
 from tools.shared.base_models import ToolRequest
 from tools.shared.base_tool import BaseTool

@@ -1,13 +1,13 @@
 """OpenAI model provider implementation."""
 
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional
 
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 from .openai_compatible import OpenAICompatibleProvider
-from .openai_registry import OpenAIModelRegistry
+from .registries.openai import OpenAIModelRegistry
 from .registry_provider_mixin import RegistryBackedProviderMixin
 from .shared import ModelCapabilities, ProviderType
 
@@ -23,7 +23,7 @@ class OpenAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider)
     """
 
     REGISTRY_CLASS = OpenAIModelRegistry
-    MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {}
+    MODEL_CAPABILITIES: ClassVar[dict[str, ModelCapabilities]] = {}
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize OpenAI provider with API key."""
@@ -50,7 +50,7 @@ class OpenAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider)
             return builtin
 
         try:
-            from .openrouter_registry import OpenRouterModelRegistry
+            from .registries.openrouter import OpenRouterModelRegistry
 
             registry = OpenRouterModelRegistry()
             config = registry.get_model_config(canonical_name)

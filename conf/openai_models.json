@@ -53,7 +53,7 @@
         "gpt5-pro"
       ],
       "intelligence_score": 18,
-      "description": "GPT-5 Pro (400K context, 272K output) - Advanced model with reasoning support",
+      "description": "GPT-5 Pro (400K context, 272K output) - Very advanced, reasoning model",
       "context_window": 400000,
       "max_output_tokens": 272000,
       "supports_extended_thinking": true,
@@ -156,7 +156,7 @@
         "o3pro"
       ],
       "intelligence_score": 15,
-      "description": "Professional-grade reasoning (200K context) - EXTREMELY EXPENSIVE: Only for the most complex problems requiring universe-scale complexity analysis OR when the user explicitly asks for this model. Use sparingly for critical architectural decisions or exceptionally complex debugging that other models cannot handle.",
+      "description": "Professional-grade reasoning (200K context)",
       "context_window": 200000,
       "max_output_tokens": 65536,
       "supports_extended_thinking": false,

@@ -3,7 +3,7 @@
 import os
 from unittest.mock import MagicMock, patch
 
-from providers.openai_provider import OpenAIModelProvider
+from providers.openai import OpenAIModelProvider
 from providers.shared import ProviderType
 
 

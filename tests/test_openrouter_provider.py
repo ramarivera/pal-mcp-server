@@ -282,7 +282,7 @@ class TestOpenRouterRegistry:
 
     def test_registry_loading(self):
         """Test registry loads models from config."""
-        from providers.openrouter_registry import OpenRouterModelRegistry
+        from providers.registries.openrouter import OpenRouterModelRegistry
 
         registry = OpenRouterModelRegistry()
 
@@ -301,7 +301,7 @@ class TestOpenRouterRegistry:
 
     def test_registry_capabilities(self):
         """Test registry provides correct capabilities."""
-        from providers.openrouter_registry import OpenRouterModelRegistry
+        from providers.registries.openrouter import OpenRouterModelRegistry
 
         registry = OpenRouterModelRegistry()
 
@@ -322,7 +322,7 @@ class TestOpenRouterRegistry:
 
     def test_multiple_aliases_same_model(self):
         """Test multiple aliases pointing to same model."""
-        from providers.openrouter_registry import OpenRouterModelRegistry
+        from providers.registries.openrouter import OpenRouterModelRegistry
 
         registry = OpenRouterModelRegistry()
 

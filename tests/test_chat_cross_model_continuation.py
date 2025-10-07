@@ -105,7 +105,7 @@ async def test_chat_cross_model_continuation(monkeypatch):
 
         ModelProviderRegistry.reset_for_testing()
         from providers.gemini import GeminiModelProvider
-        from providers.openai_provider import OpenAIModelProvider
+        from providers.openai import OpenAIModelProvider
 
         ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
         ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
@@ -170,7 +170,7 @@ async def test_chat_cross_model_continuation(monkeypatch):
 
         ModelProviderRegistry.reset_for_testing()
         from providers.gemini import GeminiModelProvider
-        from providers.openai_provider import OpenAIModelProvider
+        from providers.openai import OpenAIModelProvider
 
         ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
         ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)

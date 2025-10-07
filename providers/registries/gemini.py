@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from .model_registry_base import CapabilityModelRegistry
-from .shared import ProviderType
+from ..shared import ProviderType
+from .base import CapabilityModelRegistry
 
 
 class GeminiModelRegistry(CapabilityModelRegistry):
-    """Capability registry backed by `conf/gemini_models.json`."""
+    """Capability registry backed by ``conf/gemini_models.json``."""
 
     def __init__(self, config_path: str | None = None) -> None:
         super().__init__(

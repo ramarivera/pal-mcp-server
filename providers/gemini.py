@@ -2,7 +2,7 @@
 
 import base64
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional
 
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
@@ -14,7 +14,7 @@ from utils.env import get_env
 from utils.image_utils import validate_image
 
 from .base import ModelProvider
-from .gemini_registry import GeminiModelRegistry
+from .registries.gemini import GeminiModelRegistry
 from .registry_provider_mixin import RegistryBackedProviderMixin
 from .shared import ModelCapabilities, ModelResponse, ProviderType
 
@@ -30,7 +30,7 @@ class GeminiModelProvider(RegistryBackedProviderMixin, ModelProvider):
     """
 
     REGISTRY_CLASS = GeminiModelRegistry
-    MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {}
+    MODEL_CAPABILITIES: ClassVar[dict[str, ModelCapabilities]] = {}
 
     # Thinking mode configurations - percentages of model's max_thinking_tokens
     # These percentages work across all models that support thinking
