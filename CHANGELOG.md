@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v7.7.0 (2025-10-07)
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`70ae62a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/70ae62a2cd663c3abcabddd1be1bc6ed9512d7df))
+
+### Documentation
+
+- Video
+  ([`ed5dda7`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/ed5dda7c5a9439c2835cc69d76e6377169ad048a))
+
+### Features
+
+- More aliases
+  ([`5f0aaf5`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/5f0aaf5f69c9d188d817b5ffbf6738c61da40ec7))
+
+
 ## v7.6.0 (2025-10-07)
 
 ### Chores
