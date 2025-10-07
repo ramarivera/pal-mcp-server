@@ -8,10 +8,10 @@
 
 ### Your CLI + Multiple Models = Your AI Dev Team
 
-**Use the 🤖 CLI you love:**
-[Claude Code](https://www.anthropic.com/claude-code) · [Gemini CLI](https://github.com/google-gemini/gemini-cli) · [Codex CLI](https://github.com/openai/codex) · [Qwen Code CLI](https://qwenlm.github.io/qwen-code-docs/) · _and more_
+**Use the 🤖 CLI you love:**  
+[Claude Code](https://www.anthropic.com/claude-code) · [Gemini CLI](https://github.com/google-gemini/gemini-cli) · [Codex CLI](https://github.com/openai/codex) · [Qwen Code CLI](https://qwenlm.github.io/qwen-code-docs/) · [Cursor](https://cursor.com) · _and more_
 
-**With multiple models:**
+**With multiple models within a single prompt:**  
 Gemini · OpenAI · Anthropic · Grok · Azure · Ollama · OpenRouter · DIAL · On-Device Model
 
 </div>
