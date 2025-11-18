@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v9.2.1 (2025-11-18)
+
+### Bug Fixes
+
+- **server**: Iterate provider instances during shutdown
+  ([`d40fc83`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/d40fc83d7549293372f3d20cc599a79ec355acef))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`84f6c4f`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/84f6c4fb241257b611f4b954c22a6b9340007a73))
+
+
 ## v9.2.0 (2025-11-18)
 
 ### Chores
