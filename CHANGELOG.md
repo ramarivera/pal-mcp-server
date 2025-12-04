@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v9.4.2 (2025-12-04)
+
+### Bug Fixes
+
+- Rebranding, see [docs/name-change.md](docs/name-change.md) for details
+  ([`b2dc849`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/b2dc84992d70839b29b611178b3871f4922b747f))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`bcfacce`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/bcfaccecd490859fe189f45df4cf5b8e102d7874))
+
+
 ## v9.4.1 (2025-11-21)
 
 ### Bug Fixes
