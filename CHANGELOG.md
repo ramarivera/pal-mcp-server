@@ -2,6 +2,41 @@
 
 <!-- version list -->
 
+## v9.5.0 (2025-12-11)
+
+### Bug Fixes
+
+- Grok test
+  ([`39c7721`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/39c77215e5d6892269e523ff25b706dd5671c042))
+
+### Chores
+
+- Sync version to config.py [skip ci]
+  ([`5c3dd75`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/5c3dd75ca6b259f590bfd5078ea8e2f684e52de4))
+
+- Sync version to config.py [skip ci]
+  ([`605633b`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/605633b2a2b044bbc5e41f2994dde27409a5b9b4))
+
+### Documentation
+
+- Cleanup
+  ([`74f26e8`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/74f26e82e7a9c8a0214deef1cb18a3b2fa074050))
+
+- Cleanup
+  ([`2b22174`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/2b221746fee6f7749d8aed8d07a85e428ac8e00f))
+
+- Update subheading
+  ([`591287c`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/591287cb2f442a1fa34cd1139e3a0ad887388e5b))
+
+### Features
+
+- GPT-5.2 support
+  ([`8b16405`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/8b16405f0609e232ff808361dc2a4d8ec258b0f3))
+
+- Grok-4.1 support https://github.com/BeehiveInnovations/pal-mcp-server/issues/339
+  ([`514c9c5`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/514c9c58fcc91933348d2188ed8c82bbe98132f2))
+
+
 ## v9.4.2 (2025-12-04)
 
 ### Bug Fixes
