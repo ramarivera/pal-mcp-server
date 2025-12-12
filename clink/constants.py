@@ -45,4 +45,9 @@ INTERNAL_DEFAULTS: dict[str, CLIInternalDefaults] = {
         default_role_prompt="systemprompts/clink/default.txt",
         runner="claude",
     ),
+    "cursor": CLIInternalDefaults(
+        parser="cursor_ndjson",
+        additional_args=["-p", "--force", "--output-format", "stream-json"],
+        default_role_prompt="systemprompts/clink/default.txt",
+    ),
 }
