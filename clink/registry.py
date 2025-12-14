@@ -131,29 +131,50 @@ class ClinkRegistry:
 
         normalized_name = raw.name.strip()
         internal_defaults = INTERNAL_DEFAULTS.get(normalized_name.lower())
-        if internal_defaults is None:
-            raise RegistryLoadError(f"CLI '{raw.name}' is not supported by clink")
+
+        # Determine if this is a custom CLI (not in INTERNAL_DEFAULTS)
+        is_custom_cli = internal_defaults is None
+
+        if is_custom_cli:
+            # Custom CLIs must provide required fields in config
+            self._validate_custom_cli_config(raw, source_path)
+            logger.info("Loading custom CLI '%s' from %s", raw.name, source_path)
 
         executable = self._resolve_executable(raw, internal_defaults, source_path)
 
-        internal_args = list(internal_defaults.additional_args) if internal_defaults else []
+        # Internal args: prefer config, fall back to internal defaults
+        if is_custom_cli or raw.internal_args:
+            internal_args = list(raw.internal_args)
+        else:
+            internal_args = list(internal_defaults.additional_args) if internal_defaults else []
+
         config_args = list(raw.additional_args)
 
         timeout_seconds = raw.timeout_seconds or (
             internal_defaults.timeout_seconds if internal_defaults else DEFAULT_TIMEOUT_SECONDS
         )
 
-        parser_name = internal_defaults.parser
-        if not parser_name:
+        # Parser: prefer config, fall back to internal defaults
+        parser_spec = raw.parser or (internal_defaults.parser if internal_defaults else None)
+        if not parser_spec:
             raise RegistryLoadError(
-                f"CLI '{raw.name}' must define a parser either in configuration or internal defaults"
+                f"CLI '{raw.name}' must define a 'parser' field in configuration or have internal defaults"
             )
 
-        runner_name = internal_defaults.runner if internal_defaults else None
+        # Runner: prefer config, fall back to internal defaults (None means BaseCLIAgent)
+        runner_spec = raw.runner
+        if runner_spec is None and internal_defaults:
+            runner_spec = internal_defaults.runner
 
         env = self._merge_env(raw, internal_defaults)
         working_dir = self._resolve_optional_path(raw.working_dir, source_path.parent)
-        roles = self._resolve_roles(raw, internal_defaults, source_path)
+
+        # Default role prompt: prefer config, fall back to internal defaults
+        default_role_prompt = raw.default_role_prompt or (
+            internal_defaults.default_role_prompt if internal_defaults else None
+        )
+
+        roles = self._resolve_roles(raw, default_role_prompt, source_path)
 
         output_to_file = raw.output_to_file
 
@@ -164,12 +185,29 @@ class ClinkRegistry:
             config_args=config_args,
             env=env,
             timeout_seconds=int(timeout_seconds),
-            parser=parser_name,
-            runner=runner_name,
+            parser=parser_spec,
+            runner=runner_spec,
             roles=roles,
             output_to_file=output_to_file,
             working_dir=working_dir,
+            config_source_path=source_path,
         )
+
+    def _validate_custom_cli_config(self, raw: CLIClientConfig, source_path: Path) -> None:
+        """Validate that a custom CLI config has all required fields."""
+        errors: list[str] = []
+
+        if not raw.command:
+            errors.append("'command' field is required for custom CLIs")
+
+        if not raw.parser:
+            errors.append("'parser' field is required for custom CLIs")
+
+        if errors:
+            error_list = "; ".join(errors)
+            raise RegistryLoadError(
+                f"Custom CLI '{raw.name}' at {source_path} is missing required fields: {error_list}"
+            )
 
     def _resolve_executable(
         self,
@@ -196,12 +234,11 @@ class ClinkRegistry:
     def _resolve_roles(
         self,
         raw: CLIClientConfig,
-        internal_defaults: CLIInternalDefaults | None,
+        default_role_prompt: str | None,
         source_path: Path,
     ) -> dict[str, ResolvedCLIRole]:
         roles: dict[str, CLIRoleConfig] = dict(raw.roles)
 
-        default_role_prompt = internal_defaults.default_role_prompt if internal_defaults else None
         if "default" not in roles:
             roles["default"] = CLIRoleConfig(prompt_path=default_role_prompt)
         elif roles["default"].prompt_path is None and default_role_prompt:

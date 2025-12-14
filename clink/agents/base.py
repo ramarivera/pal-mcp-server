@@ -15,7 +15,7 @@ from pathlib import Path
 
 from clink.constants import DEFAULT_STREAM_LIMIT
 from clink.models import ResolvedCLIClient, ResolvedCLIRole
-from clink.parsers import BaseParser, ParsedCLIResponse, ParserError, get_parser
+from clink.parsers import BaseParser, ParsedCLIResponse, ParserError, get_parser_from_spec
 
 logger = logging.getLogger("clink.agent")
 
@@ -49,7 +49,11 @@ class BaseCLIAgent:
 
     def __init__(self, client: ResolvedCLIClient):
         self.client = client
-        self._parser: BaseParser = get_parser(client.parser)
+        # Use spec-based parser loading to support custom parsers from user-provided modules
+        self._parser: BaseParser = get_parser_from_spec(
+            client.parser,
+            config_base_dir=client.config_base_dir,
+        )
         self._logger = logging.getLogger(f"clink.runner.{client.name}")
 
     async def run(
