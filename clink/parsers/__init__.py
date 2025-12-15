@@ -13,6 +13,7 @@ from .claude import ClaudeJSONParser
 from .codex import CodexJSONLParser
 from .cursor import CursorNDJSONParser
 from .gemini import GeminiJSONParser
+from .opencode import OpenCodeJSONParser
 
 # Registry of builtin parser classes
 _PARSER_CLASSES: dict[str, type[BaseParser]] = {
@@ -20,6 +21,7 @@ _PARSER_CLASSES: dict[str, type[BaseParser]] = {
     GeminiJSONParser.name: GeminiJSONParser,
     ClaudeJSONParser.name: ClaudeJSONParser,
     CursorNDJSONParser.name: CursorNDJSONParser,
+    OpenCodeJSONParser.name: OpenCodeJSONParser,
 }
 
 
